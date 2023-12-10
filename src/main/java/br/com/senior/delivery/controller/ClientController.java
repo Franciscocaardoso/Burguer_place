@@ -1,7 +1,7 @@
-package br.com.senior.e_commerce.controller;
+package br.com.senior.delivery.controller;
 
-import br.com.senior.e_commerce.domain.client.CustomerRegistrationData;
-import br.com.senior.e_commerce.domain.client.ClientService;
+import br.com.senior.delivery.domain.customer.CustomerRegistrationData;
+import br.com.senior.delivery.domain.customer.CustomerService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ClientController {
 
     @Autowired
-    ClientService clientService;
+    CustomerService clientService;
 
     @PostMapping
     public void register(@RequestBody @Valid CustomerRegistrationData data){

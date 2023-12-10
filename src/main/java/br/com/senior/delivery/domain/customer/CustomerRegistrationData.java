@@ -1,4 +1,4 @@
-package br.com.senior.e_commerce.domain.client;
+package br.com.senior.delivery.domain.customer;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

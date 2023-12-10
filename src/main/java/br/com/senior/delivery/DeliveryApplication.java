@@ -1,13 +1,13 @@
-package br.com.senior.e_commerce;
+package br.com.senior.delivery;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ECommerceApplication {
+public class DeliveryApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ECommerceApplication.class, args);
+		SpringApplication.run(DeliveryApplication.class, args);
 	}
 
 }

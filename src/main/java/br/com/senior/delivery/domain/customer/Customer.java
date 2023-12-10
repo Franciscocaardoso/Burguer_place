@@ -1,4 +1,4 @@
-package br.com.senior.e_commerce.domain.client;
+package br.com.senior.delivery.domain.customer;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 @Table(name = "customer")
-@Entity(name = "Client")
+@Entity(name = "Customer")
 public class Customer {
         @Id
         @GeneratedValue(strategy =  GenerationType.IDENTITY)

@@ -1,13 +1,13 @@
-package br.com.senior.e_commerce.domain.client;
+package br.com.senior.delivery.domain.customer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ClientService {
+public class CustomerService {
 
     @Autowired
-    ClientRepository clientRepository;
+    CustomerRepository clientRepository;
 
     public Customer addCustomer(CustomerRegistrationData data){
         return clientRepository.save(new Customer(data));
