@@ -10,14 +10,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Table(name = "order_item")
+@Table(name = "order_items")
 @Entity(name = "OrderItem")
 public class OrderItem {
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long id;
     private int qtdItens;
-    private double subtotalValue;
+    private double itemValue;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
