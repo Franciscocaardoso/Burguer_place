@@ -5,5 +5,6 @@ CREATE TABLE customers (
     cpf                 VARCHAR(11)     NOT NULL UNIQUE,
     postal_code         VARCHAR(8)      NOT NULL,
     residential_number  INT,
+    active              BOOLEAN         NOT NULL,
     complement          VARCHAR(255)
 );

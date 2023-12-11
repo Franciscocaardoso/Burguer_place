@@ -1,9 +1,10 @@
-package br.com.senior.delivery.domain.order_item;
+package br.com.senior.delivery.domain.order;
 
 import br.com.senior.delivery.domain.order.Order;
 import br.com.senior.delivery.domain.product.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "order_items")
 @Entity(name = "OrderItem")
+@EqualsAndHashCode(of = "id")
 public class OrderItem {
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
@@ -24,4 +26,10 @@ public class OrderItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
+
+    public OrderItem(int qtdItens, double itemValue, Product product) {
+        this.qtdItens = qtdItens;
+        this.itemValue = itemValue;
+        this.product = product;
+    }
 }

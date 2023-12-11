@@ -1,11 +1,8 @@
 package br.com.senior.delivery.domain.order;
 
 import br.com.senior.delivery.domain.customer.Customer;
-import br.com.senior.delivery.domain.order_item.OrderItem;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,19 +10,33 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Table(name = "order")
+@Setter
+@Table(name = "orders")
 @Entity(name = "Order")
+@ToString
 public class Order {
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long id;
-    private String status;
     private LocalDateTime openedAt;
     private LocalDateTime closedAt;
+    @Enumerated(EnumType.STRING)
     private PaymentForm paymentForm;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "customer_id")
     private Customer customer;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order")
     private List<OrderItem> orderItems;
+    private boolean active;
+
+    public Order(LocalDateTime openedAt, LocalDateTime closedAt, PaymentForm paymentForm, OrderStatus status, Customer customer, List<OrderItem> orderItems) {
+        this.openedAt = openedAt;
+        this.closedAt = closedAt;
+        this.paymentForm = paymentForm;
+        this.status = status;
+        this.customer = customer;
+        this.orderItems = orderItems;
+    }
 }
