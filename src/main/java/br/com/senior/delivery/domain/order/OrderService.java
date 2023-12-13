@@ -122,4 +122,18 @@ public class OrderService {
 
         this.orderItemRepository.saveAll(orderItems);
     }
+
+    public void removeOrderItems(Long orderId, RemoveOrderItemsData orderItemsData) {
+        Order order = this.orderRepository.getReferenceByIdAndActiveTrue(orderId);
+
+        if (order == null) {
+            throw new EntityNotFoundException("Pedido não existe");
+        }
+
+        if (orderItemsData.orderItems().isEmpty()) {
+            throw new IllegalArgumentException("Lista de itens do pedido está vazia");
+        }
+
+        List<OrderItem> orderItems = this.orderItemRepository.findByOrderId(orderId);
+    }
 }

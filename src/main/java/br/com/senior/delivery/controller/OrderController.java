@@ -2,10 +2,7 @@ package br.com.senior.delivery.controller;
 
 import br.com.senior.delivery.domain.order.OrderService;
 import br.com.senior.delivery.domain.order.OrderStatus;
-import br.com.senior.delivery.domain.order.dto.AddNewOrderItemsData;
-import br.com.senior.delivery.domain.order.dto.CreateOrderData;
-import br.com.senior.delivery.domain.order.dto.CreateOrderItemData;
-import br.com.senior.delivery.domain.order.dto.OrderData;
+import br.com.senior.delivery.domain.order.dto.*;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +71,20 @@ public class OrderController {
             AddNewOrderItemsData orderItemData
     ) {
         this.orderService.addOrderItemToOrder(id, orderItemData);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/items")
+    @Transactional
+    public ResponseEntity removeOrderItems(
+            @PathVariable
+            Long id,
+            @RequestBody
+            @Valid
+            RemoveOrderItemsData orderItemData
+    ) {
+        this.orderService.removeOrderItems(id, orderItemData);
 
         return ResponseEntity.noContent().build();
     }

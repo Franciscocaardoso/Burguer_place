@@ -26,11 +26,13 @@ public class OrderItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
+    private boolean active;
 
     public OrderItem(int qtdItens, double itemValue, Product product) {
         this.qtdItens = qtdItens;
         this.itemValue = itemValue;
         this.product = product;
+        this.active = true;
     }
 
     public OrderItem(int qtdItens, double itemValue, Product product, Order order) {
