@@ -24,7 +24,7 @@ public class Order {
     private PaymentForm paymentForm;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private Customer customer;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order")

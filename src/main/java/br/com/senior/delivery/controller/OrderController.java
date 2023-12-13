@@ -1,6 +1,7 @@
 package br.com.senior.delivery.controller;
 
 import br.com.senior.delivery.domain.order.OrderService;
+import br.com.senior.delivery.domain.order.OrderStatus;
 import br.com.senior.delivery.domain.order.dto.CreateOrderData;
 import br.com.senior.delivery.domain.order.dto.OrderData;
 import jakarta.transaction.Transactional;
@@ -21,8 +22,11 @@ public class OrderController {
     private OrderService orderService;
 
     @GetMapping
-    public ResponseEntity listOrders(Pageable pageable) {
-        return ResponseEntity.ok(this.orderService.getOrders(pageable));
+    public ResponseEntity listOrders(
+            Pageable pageable,
+            @RequestParam(name = "status", required = false) OrderStatus orderStatus
+    ) {
+        return ResponseEntity.ok(this.orderService.getOrders(pageable, orderStatus));
     }
 
     @GetMapping("/{id}")

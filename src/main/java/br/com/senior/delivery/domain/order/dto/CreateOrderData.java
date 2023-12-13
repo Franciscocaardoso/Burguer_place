@@ -12,6 +12,6 @@ public record CreateOrderData(
         @NotNull
         Long clientId,
         @NotEmpty
-        List<OrderItemData> orderItems
+        List<CreateOrderItemData> orderItems
 ) {
 }

@@ -1,13 +1,21 @@
 package br.com.senior.delivery.domain.order.dto;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import br.com.senior.delivery.domain.order.OrderItem;
 
 public record OrderItemData(
-        @NotNull
+        Long id,
         Long productId,
-        @NotNull
-        @Positive
+        String productDescription,
+        Double unitCost,
         Integer amount
 ) {
+    public OrderItemData(OrderItem orderItem) {
+        this(
+                orderItem.getId(),
+                orderItem.getProduct().getId(),
+                orderItem.getProduct().getDescription(),
+                orderItem.getItemValue(),
+                orderItem.getQtdItens()
+        );
+    }
 }

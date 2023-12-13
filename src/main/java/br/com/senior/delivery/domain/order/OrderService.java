@@ -3,22 +3,22 @@ package br.com.senior.delivery.domain.order;
 import br.com.senior.delivery.domain.customer.Customer;
 import br.com.senior.delivery.domain.customer.CustomerRepository;
 import br.com.senior.delivery.domain.order.dto.CreateOrderData;
+import br.com.senior.delivery.domain.order.dto.ListOrderData;
 import br.com.senior.delivery.domain.order.dto.OrderData;
-import br.com.senior.delivery.domain.order.dto.OrderItemData;
+import br.com.senior.delivery.domain.order.dto.CreateOrderItemData;
 import br.com.senior.delivery.domain.product.Product;
 import br.com.senior.delivery.domain.product.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.Tuple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -29,10 +29,16 @@ public class OrderService {
     @Autowired
     private ProductRepository productRepository;
 
-    public Page<OrderData> getOrders(Pageable pageable) {
+    public Page<ListOrderData> getOrders(Pageable pageable, OrderStatus orderStatusParam) {
+        Specification<Order> orderSpecification = Specification.where(null);
+
+        if (orderStatusParam != null) {
+            orderSpecification = orderSpecification.and(OrderSpecification.filterByOrderStatus(orderStatusParam));
+        }
+
         return this.orderRepository
-                .findAll(pageable)
-                .map(OrderData::new);
+                .findAll(orderSpecification, pageable)
+                .map(ListOrderData::new);
     }
 
     public Optional<OrderData> showOrder(Long id) {
@@ -54,7 +60,7 @@ public class OrderService {
         List<Product> products = this.productRepository.getProductPriceById(
                 orderData.orderItems()
                         .stream()
-                        .map(OrderItemData::productId)
+                        .map(CreateOrderItemData::productId)
                         .toList()
         );
 
@@ -83,4 +89,6 @@ public class OrderService {
         this.orderRepository.save(order);
         return new OrderData(order);
     }
+
+
 }
