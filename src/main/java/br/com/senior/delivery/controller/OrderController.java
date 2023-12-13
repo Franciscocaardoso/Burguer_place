@@ -2,7 +2,9 @@ package br.com.senior.delivery.controller;
 
 import br.com.senior.delivery.domain.order.OrderService;
 import br.com.senior.delivery.domain.order.OrderStatus;
+import br.com.senior.delivery.domain.order.dto.AddNewOrderItemsData;
 import br.com.senior.delivery.domain.order.dto.CreateOrderData;
+import br.com.senior.delivery.domain.order.dto.CreateOrderItemData;
 import br.com.senior.delivery.domain.order.dto.OrderData;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -59,6 +62,20 @@ public class OrderController {
                 .toUri();
 
         return ResponseEntity.created(uri).body(order);
+    }
+
+    @PostMapping("/{id}/items")
+    @Transactional
+    public ResponseEntity addOrderItems(
+            @PathVariable
+            Long id,
+            @RequestBody
+            @Valid
+            AddNewOrderItemsData orderItemData
+    ) {
+        this.orderService.addOrderItemToOrder(id, orderItemData);
+
+        return ResponseEntity.noContent().build();
     }
 ////
 //    @PutMapping("/{id}")

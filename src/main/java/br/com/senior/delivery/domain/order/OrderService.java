@@ -2,10 +2,7 @@ package br.com.senior.delivery.domain.order;
 
 import br.com.senior.delivery.domain.customer.Customer;
 import br.com.senior.delivery.domain.customer.CustomerRepository;
-import br.com.senior.delivery.domain.order.dto.CreateOrderData;
-import br.com.senior.delivery.domain.order.dto.ListOrderData;
-import br.com.senior.delivery.domain.order.dto.OrderData;
-import br.com.senior.delivery.domain.order.dto.CreateOrderItemData;
+import br.com.senior.delivery.domain.order.dto.*;
 import br.com.senior.delivery.domain.product.Product;
 import br.com.senior.delivery.domain.product.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,6 +21,8 @@ import java.util.Optional;
 public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
+    @Autowired
+    private OrderItemRepository orderItemRepository;
     @Autowired
     private CustomerRepository customerRepository;
     @Autowired
@@ -90,5 +89,37 @@ public class OrderService {
         return new OrderData(order);
     }
 
+    public void addOrderItemToOrder(Long orderId, AddNewOrderItemsData orderItemsData) {
+        Order order = this.orderRepository.getReferenceByIdAndActiveTrue(orderId);
 
+        if (order == null) {
+            throw new EntityNotFoundException("Pedido não existe");
+        }
+
+        if (orderItemsData.orderItems().isEmpty()) {
+            throw new IllegalArgumentException("Lista de itens do pedido está vazia");
+        }
+
+        List<Product> products = this.productRepository.getProductPriceById(
+                orderItemsData.orderItems()
+                        .stream()
+                        .map(CreateOrderItemData::productId)
+                        .toList()
+        );
+
+        if (products.size() != orderItemsData.orderItems().size()) {
+            throw new EntityNotFoundException("Existem produtos inválidos!");
+        }
+
+        List<OrderItem> orderItems = orderItemsData.orderItems().stream().map(item -> {
+            Product prod = products.stream()
+                    .filter(p -> Objects.equals(p.getId(), item.productId()))
+                    .findFirst()
+                    .get();
+
+            return new OrderItem(item.amount(), prod.getPrice(), prod, order);
+        }).toList();
+
+        this.orderItemRepository.saveAll(orderItems);
+    }
 }

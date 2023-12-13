@@ -32,4 +32,9 @@ public class OrderItem {
         this.itemValue = itemValue;
         this.product = product;
     }
+
+    public OrderItem(int qtdItens, double itemValue, Product product, Order order) {
+        this(qtdItens, itemValue, product);
+        this.order = order;
+    }
 }
