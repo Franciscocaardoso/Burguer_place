@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Table(name = "review")
+@Table(name = "reviews")
 @Entity(name = "Review")
 public class Review {
     @Id
@@ -17,6 +17,7 @@ public class Review {
     private Long id;
     private int grade;
     private String comment;
+    private int qtdGrades; // ESSE ATRIBUTO DEVE SER AUTOINCREMENTADO APÓS CADA AVALIAÇÃO FEITA
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
