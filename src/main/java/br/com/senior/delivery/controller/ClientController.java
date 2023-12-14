@@ -1,7 +1,7 @@
 package br.com.senior.delivery.controller;
 
-import br.com.senior.delivery.domain.customer.CustomerRegistrationData;
 import br.com.senior.delivery.domain.customer.CustomerService;
+import br.com.senior.delivery.domain.customer.dto.CustomerRegistrationData;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

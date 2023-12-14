@@ -5,6 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
-    Customer getReferenceByIdAndActiveTrue(Long id);
-    boolean existsByIdAndActiveTrue(Long id);
+    Customer getReferenceByIdAndActiveTrue(Long aLong);
 }
