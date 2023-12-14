@@ -3,10 +3,13 @@ package br.com.senior.delivery.domain.customer;
 import br.com.senior.delivery.domain.customer.dto.CustomerRegistrationData;
 import br.com.senior.delivery.domain.customer.dto.CustomerUploadData;
 import br.com.senior.delivery.domain.customer.dto.listingDataCustomers;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.NoSuchElementException;
 
 @Service
 public class CustomerService {
@@ -24,8 +27,7 @@ public class CustomerService {
     }
 // COMENTEI PARA TESTAR SE DE FATO É DESNECESSÁRIO. A PRINCIPIO CONSIGO TRATAR TUDO DIRETANENTE NO HANDLER
     public Customer listCustomerById(Long id) {
-        return clientRepository.findById(id).get();
-//                .orElseThrow(() -> new NoSuchElementException("Cliente não cadastrado"));
+        return clientRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Cliente não cadastrado"));
     }
 
     public void deleteCustomer(Long id) {
@@ -35,8 +37,11 @@ public class CustomerService {
         clientRepository.deleteById(id);
     }
 
-    public void updateCustomer(CustomerUploadData data) {
-        Customer customer = clientRepository.getReferenceById(data.id());
-        customer.updateInformation(data);
+    public void updateCustomer(Long id, CustomerUploadData data) {
+        Customer customer = clientRepository.getReferenceByIdAndActiveTrue(id);
+        if (customer == null){
+            throw new EntityNotFoundException("Cliente não existe ou está inativado");
+        }
+            customer.updateInformation(data);
     }
 }

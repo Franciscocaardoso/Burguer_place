@@ -5,8 +5,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 public record CustomerUploadData(
-        @NotNull
-        Long id,
         String name,
         String email,
         @Valid

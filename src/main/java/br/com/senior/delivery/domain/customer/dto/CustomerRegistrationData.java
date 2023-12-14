@@ -14,7 +14,9 @@ public record CustomerRegistrationData(
         String cpf,
         @NotNull
         @Valid
-        AdressData address
+        AdressData address,
+
+        boolean active
 
 ) {
 }

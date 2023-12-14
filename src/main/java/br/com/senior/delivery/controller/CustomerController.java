@@ -24,7 +24,7 @@ public class CustomerController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity register(@RequestBody @Valid CustomerRegistrationData data){
+    public ResponseEntity<Object> register(@RequestBody @Valid CustomerRegistrationData data) {
         Customer customer = customerService.addCustomer(data);
         return ResponseEntity.status(HttpStatus.OK).body(customer);
     }
@@ -35,21 +35,27 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity listCustomerById(@PathVariable Long id){
+    public ResponseEntity<Object> listCustomerById(@PathVariable Long id) {
         Customer customer = customerService.listCustomerById(id);
         return ResponseEntity.ok(new listingDataCustomers(customer));
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity updateCustomer(@RequestBody @Valid CustomerUploadData data){
-        customerService.updateCustomer(data);
-        return  ResponseEntity.status(HttpStatus.ACCEPTED).body(data);
+    public ResponseEntity<Object> updateCustomer(
+            @PathVariable
+            Long id,
+            @RequestBody
+            @Valid
+            CustomerUploadData data
+    ) {
+        customerService.updateCustomer(id, data);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(data);
     }
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity deleteCustomer(@PathVariable Long id) {
+    public ResponseEntity<Object> deleteCustomer(@PathVariable Long id) {
         customerService.deleteCustomer(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
