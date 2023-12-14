@@ -90,9 +90,7 @@ public class OrderService {
     }
 
     public void addOrderItemToOrder(Long orderId, AddNewOrderItemsData orderItemsData) {
-        Order order = this.orderRepository.getReferenceByIdAndActiveTrue(orderId);
-
-        if (order == null) {
+        if (!this.orderRepository.existsByIdAndActiveTrue(orderId)) {
             throw new EntityNotFoundException("Pedido não existe");
         }
 
@@ -117,16 +115,14 @@ public class OrderService {
                     .findFirst()
                     .get();
 
-            return new OrderItem(item.amount(), prod.getPrice(), prod, order);
+            return new OrderItem(item.amount(), prod.getPrice(), prod);
         }).toList();
 
         this.orderItemRepository.saveAll(orderItems);
     }
 
     public void removeOrderItems(Long orderId, RemoveOrderItemsData orderItemsData) {
-        Order order = this.orderRepository.getReferenceByIdAndActiveTrue(orderId);
-
-        if (order == null) {
+        if (!this.orderRepository.existsByIdAndActiveTrue(orderId)) {
             throw new EntityNotFoundException("Pedido não existe");
         }
 
@@ -134,6 +130,67 @@ public class OrderService {
             throw new IllegalArgumentException("Lista de itens do pedido está vazia");
         }
 
-        List<OrderItem> orderItems = this.orderItemRepository.findByOrderId(orderId);
+        List<OrderItem> orderItems = this.orderItemRepository.findOrderItems(orderId, orderItemsData.orderItems());
+
+        if (orderItems.isEmpty()) {
+            throw new EntityNotFoundException("Nenhum item pertence ao pedido");
+        }
+
+        if (orderItemsData.orderItems().size() > orderItems.size()) {
+            throw new IllegalArgumentException("Existem itens que não pertencem ao pedido");
+        }
+
+        orderItemsData.orderItems()
+                .forEach(orderItemId -> {
+                    OrderItem orderItem = orderItems.stream()
+                            .filter(item -> item.getId().equals(orderItemId))
+                            .findFirst()
+                            .get();
+
+                    orderItem.inactivate();
+                });
+    }
+
+    public void removeOrderItemFromOrder(Long orderId, Long orderItemId) {
+        if (!this.orderRepository.existsByIdAndActiveTrue(orderId)) {
+            throw new EntityNotFoundException("Pedido não existe");
+        }
+
+        OrderItem orderItem = this.orderItemRepository.getReferenceByIdAndOrderId(orderItemId, orderId);
+
+        if (orderItem == null) {
+            throw new EntityNotFoundException("Item não existe ou não pertence a esse pedido");
+        }
+
+        orderItem.inactivate();
+    }
+
+    public void updateOrderItem(Long orderId, Long orderItemId, UpdateOrderItemData orderItemData) {
+        if (!this.orderRepository.existsByIdAndActiveTrue(orderId)) {
+            throw new EntityNotFoundException("Pedido não existe");
+        }
+
+        OrderItem orderItem = this.orderItemRepository.getReferenceByIdAndOrderId(orderItemId, orderId);
+
+        if (orderItem == null) {
+            throw new EntityNotFoundException("Item não existe ou não pertence a esse pedido");
+        }
+
+        orderItem.update(orderItemData);
+    }
+
+    public void inactivateOrder(Long orderId) {
+        Order order = this.orderRepository.getReferenceByIdAndActiveTrue(orderId);
+
+        if (order == null) {
+            throw new EntityNotFoundException("Pedido não existe");
+        }
+        order.inactivate();
+
+        List<OrderItem> orderItems = this.orderItemRepository.findByOrderIdAndActiveTrue(orderId);
+
+        if (!orderItems.isEmpty()) {
+            orderItems.forEach(OrderItem::inactivate);
+        }
     }
 }

@@ -39,4 +39,8 @@ public class Order {
         this.customer = customer;
         this.orderItems = orderItems;
     }
+
+    public void inactivate() {
+        this.active = false;
+    }
 }

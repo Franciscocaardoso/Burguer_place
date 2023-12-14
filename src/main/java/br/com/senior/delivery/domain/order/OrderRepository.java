@@ -13,4 +13,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> findAll(Specification<Order> specification, Pageable pageable);
 
     Order getReferenceByIdAndActiveTrue(Long id);
+
+    boolean existsByIdAndActiveTrue(Long id);
 }

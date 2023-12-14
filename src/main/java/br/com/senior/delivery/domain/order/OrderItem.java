@@ -1,22 +1,24 @@
 package br.com.senior.delivery.domain.order;
 
-import br.com.senior.delivery.domain.order.Order;
+import br.com.senior.delivery.domain.order.dto.UpdateOrderItemData;
 import br.com.senior.delivery.domain.product.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@EqualsAndHashCode(of = "id")
 @Table(name = "order_items")
 @Entity(name = "OrderItem")
-@EqualsAndHashCode(of = "id")
+@SQLRestriction("active = TRUE")
 public class OrderItem {
     @Id
-    @GeneratedValue(strategy =  GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private int qtdItens;
     private double itemValue;
@@ -38,5 +40,15 @@ public class OrderItem {
     public OrderItem(int qtdItens, double itemValue, Product product, Order order) {
         this(qtdItens, itemValue, product);
         this.order = order;
+    }
+
+    public void inactivate() {
+        this.active = false;
+    }
+
+    public void update(UpdateOrderItemData orderItemData) {
+        if (orderItemData.amount() != null && orderItemData.amount() > 0) {
+            this.qtdItens = orderItemData.amount();
+        }
     }
 }

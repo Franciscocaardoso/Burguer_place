@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -29,12 +28,12 @@ public class OrderController {
         return ResponseEntity.ok(this.orderService.getOrders(pageable, orderStatus));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{orderId}")
     public ResponseEntity showOrder(
             @PathVariable
-            Long id
+            Long orderId
     ) {
-        Optional<OrderData> orderOptional = this.orderService.showOrder(id);
+        Optional<OrderData> orderOptional = this.orderService.showOrder(orderId);
 
         if (orderOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -54,50 +53,77 @@ public class OrderController {
         OrderData order = this.orderService.createOrder(orderData);
 
         URI uri = uriComponentsBuilder
-                .path("/pets/{id}")
+                .path("/orders/{orderId}")
                 .buildAndExpand(order.id())
                 .toUri();
 
         return ResponseEntity.created(uri).body(order);
     }
 
-    @PostMapping("/{id}/items")
+    @PostMapping("/{orderId}/items")
     @Transactional
     public ResponseEntity addOrderItems(
             @PathVariable
-            Long id,
+            Long orderId,
             @RequestBody
             @Valid
             AddNewOrderItemsData orderItemData
     ) {
-        this.orderService.addOrderItemToOrder(id, orderItemData);
+        this.orderService.addOrderItemToOrder(orderId, orderItemData);
 
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{id}/items")
+    @DeleteMapping("/{orderId}/items")
     @Transactional
     public ResponseEntity removeOrderItems(
             @PathVariable
-            Long id,
+            Long orderId,
             @RequestBody
             @Valid
             RemoveOrderItemsData orderItemData
     ) {
-        this.orderService.removeOrderItems(id, orderItemData);
+        this.orderService.removeOrderItems(orderId, orderItemData);
 
         return ResponseEntity.noContent().build();
     }
-////
-//    @PutMapping("/{id}")
-//    @Transactional
-//    public ResponseEntity updateOrder() {}
-//
-//    @DeleteMapping("/{id}")
-//    @Transactional
-//    public ResponseEntity deleteOrder() {}
-//
-//    @PatchMapping("/{id}")
-//    @Transactional
-//    public ResponseEntity cancelOrder() {}
+
+    @DeleteMapping("/{orderId}/items/{itemId}")
+    @Transactional
+    public ResponseEntity removeOrderItems(
+            @PathVariable
+            Long orderId,
+            @PathVariable
+            Long itemId
+    ) {
+        this.orderService.removeOrderItemFromOrder(orderId, itemId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{orderId}/items/{itemId}")
+    @Transactional
+    public ResponseEntity updateOrder(
+            @PathVariable
+            Long orderId,
+            @PathVariable
+            Long itemId,
+            @RequestBody
+            UpdateOrderItemData orderItemData
+    ) {
+        this.orderService.updateOrderItem(orderId, itemId, orderItemData);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{orderId}")
+    @Transactional
+    public ResponseEntity inactivateOrder(
+            @PathVariable
+            Long orderId
+    ) {
+        this.orderService.inactivateOrder(orderId);
+
+        return ResponseEntity.noContent().build();
+    }
 }
