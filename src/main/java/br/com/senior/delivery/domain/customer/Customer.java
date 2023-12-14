@@ -1,17 +1,18 @@
 package br.com.senior.delivery.domain.customer;
 
+import br.com.senior.delivery.domain.address.Address;
+import br.com.senior.delivery.domain.customer.dto.CustomerRegistrationData;
+import br.com.senior.delivery.domain.customer.dto.CustomerUploadData;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Table(name = "customers")
 @Entity(name = "Customer")
-@ToString
 public class Customer {
         @Id
         @GeneratedValue(strategy =  GenerationType.IDENTITY)
@@ -19,16 +20,25 @@ public class Customer {
         private String name;
         private String email;
         private String cpf;
-        private String postalCode;
-        private int residentialNumber;
-        private String complement;
         private boolean active;
-
+        @Embedded
+        private Address address;
         public Customer(CustomerRegistrationData data) {
                 this.name = data.name();
                 this.email = data.email();
                 this.cpf = data.cpf();
-                this.postalCode = data.postalCode();
-                this.complement = data.complement();
+                this.address = new Address(data.address());
+        }
+
+        public void updateInformation(CustomerUploadData data) {
+                if (data.name() != null){
+                        this.name = data.name();
+                }
+                if (data.email() != null){
+                        this.email = data.email();
+                }
+                if (data.adressData() != null){
+                        this.address.updateInformation(data.adressData());
+                }
         }
 }

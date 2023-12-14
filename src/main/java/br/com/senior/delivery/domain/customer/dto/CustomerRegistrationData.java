@@ -1,8 +1,9 @@
-package br.com.senior.delivery.domain.customer;
+package br.com.senior.delivery.domain.customer.dto;
 
+import br.com.senior.delivery.domain.address.AdressData;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 
 public record CustomerRegistrationData(
         @NotBlank
@@ -11,12 +12,9 @@ public record CustomerRegistrationData(
         String email,
         @NotBlank
         String cpf,
-        @NotBlank
-        @Pattern(regexp = "\\d{8}")
-        String postalCode,
         @NotNull
-        int residentialNumber,
-        @NotBlank
-        String complement
+        @Valid
+        AdressData address
+
 ) {
 }
