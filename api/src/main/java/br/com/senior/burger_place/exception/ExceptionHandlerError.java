@@ -1,6 +1,7 @@
 package br.com.senior.burger_place.exception;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -16,6 +17,11 @@ public class ExceptionHandlerError {
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity entityNotFoundException(EntityNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseError(e));
+    }
+
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity duplicateKeyException(DuplicateKeyException e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseError(e));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

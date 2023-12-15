@@ -24,6 +24,7 @@ public class Customer {
         @Embedded
         private Address address;
         public Customer(CustomerRegistrationData data) {
+                this.active = true;
                 this.name = data.name();
                 this.email = data.email();
                 this.cpf = data.cpf();
@@ -40,5 +41,9 @@ public class Customer {
                 if (data.adressData() != null){
                         this.address.updateInformation(data.adressData());
                 }
+        }
+
+        public void inactivate() {
+                this.active = false;
         }
 }

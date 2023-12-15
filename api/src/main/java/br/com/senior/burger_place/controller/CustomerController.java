@@ -56,7 +56,8 @@ public class CustomerController {
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<Object> deleteCustomer(@PathVariable Long id) {
-        customerService.deleteCustomer(id);
+        Customer customer = customerService.listCustomerById(id);
+        customer.inactivate();
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
