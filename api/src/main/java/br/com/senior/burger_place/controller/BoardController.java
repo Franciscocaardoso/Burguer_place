@@ -29,6 +29,6 @@ public class BoardController {
 
     @GetMapping
     public ResponseEntity<Object> listBoard(@PageableDefault(sort = {"capacity"})Pageable pageable){
-
+        return ResponseEntity.ok().build();
     }
 }

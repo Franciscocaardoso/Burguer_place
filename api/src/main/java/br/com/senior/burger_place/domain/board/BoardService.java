@@ -2,7 +2,9 @@ package br.com.senior.burger_place.domain.board;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.stereotype.Service;
 
+@Service
 public class BoardService {
 
     @Autowired

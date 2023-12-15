@@ -1,6 +1,6 @@
 package br.com.senior.burger_place.domain.review;
 
-import br.com.senior.burger_place.domain.order.Order;
+import br.com.senior.burger_place.domain.occupation.Occupation;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,5 +20,5 @@ public class Review {
     private int qtdGrades; // ESSE ATRIBUTO DEVE SER AUTOINCREMENTADO APÓS CADA AVALIAÇÃO FEITA
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
-    private Order order;
+    private Occupation occupation;
 }

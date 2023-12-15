@@ -1,4 +1,4 @@
-package br.com.senior.burger_place.domain.order;
+package br.com.senior.burger_place.domain.occupation;
 
 public enum PaymentForm {
     PIX,

@@ -16,11 +16,12 @@ public class Board {
     private Long id;
     private int number;
     private int capacity;
-    private Localizacao localizacao;
+    @Enumerated(EnumType.STRING)
+    private BoardLocation location;
 
     public Board(BoardRegisterData data) {
         this.number = data.number();
         this.capacity = data.capacity();
-        this.localizacao = data.localizacao();
+        this.location = data.boardLocation();
     }
 }
