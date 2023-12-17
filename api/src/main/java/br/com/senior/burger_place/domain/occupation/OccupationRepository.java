@@ -19,5 +19,5 @@ public interface OccupationRepository extends JpaRepository<Occupation, Long> {
 //
 //    Occupation getReferenceByIdAndActiveTrue(Long id);
 //
-//    boolean existsByIdAndActiveTrue(Long id);
+    boolean existsByIdAndActiveTrue(Long id);
 }

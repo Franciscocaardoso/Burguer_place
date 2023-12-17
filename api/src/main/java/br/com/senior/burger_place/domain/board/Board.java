@@ -18,6 +18,7 @@ public class Board {
     private int capacity;
     @Enumerated(EnumType.STRING)
     private BoardLocation location;
+    private boolean active;
 
     public Board(BoardRegisterData data) {
         this.number = data.number();

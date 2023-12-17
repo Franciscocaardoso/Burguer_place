@@ -1,9 +1,7 @@
 package br.com.senior.burger_place.controller;
 
 import br.com.senior.burger_place.domain.occupation.OccupationService;
-import br.com.senior.burger_place.domain.occupation.OrderItemStatus;
-import br.com.senior.burger_place.domain.occupation.dto.CreateOccupationData;
-import br.com.senior.burger_place.domain.occupation.dto.OccupationData;
+import br.com.senior.burger_place.domain.occupation.dto.*;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +29,7 @@ public class OccupationController {
             @PathVariable
             Long occupationId
     ) {
-        Optional<OccupationData> orderOptional = this.occupationService.showOccupation(occupationId);
+        Optional<OccupationDTO> orderOptional = this.occupationService.showOccupation(occupationId);
 
         if (orderOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -45,83 +43,136 @@ public class OccupationController {
     public ResponseEntity createOccupation(
             @RequestBody
             @Valid
-            CreateOccupationData orderData,
+            CreateOccupationDTO orderDTO,
             UriComponentsBuilder uriComponentsBuilder
     ) {
-        OccupationData occupationData = this.occupationService.createOccupation(orderData);
+        OccupationDTO occupationDTO = this.occupationService.createOccupation(orderDTO);
 
         URI uri = uriComponentsBuilder
                 .path("/occupations/{occupationId}")
-                .buildAndExpand(occupationData.id())
+                .buildAndExpand(occupationDTO.id())
                 .toUri();
 
-        return ResponseEntity.created(uri).body(occupationData);
+        return ResponseEntity.created(uri).body(occupationDTO);
     }
-//
-//    @PostMapping("/{orderId}/items")
-//    @Transactional
-//    public ResponseEntity addOrderItems(
-//            @PathVariable
-//            Long orderId,
-//            @RequestBody
-//            @Valid
-//            AddNewOrderItemsData orderItemData
-//    ) {
-//        this.orderService.addOrderItemToOrder(orderId, orderItemData);
-//
-//        return ResponseEntity.noContent().build();
-//    }
-//
-//    @DeleteMapping("/{orderId}/items")
-//    @Transactional
-//    public ResponseEntity removeOrderItems(
-//            @PathVariable
-//            Long orderId,
-//            @RequestBody
-//            @Valid
-//            RemoveOrderItemsData orderItemData
-//    ) {
-//        this.orderService.removeOrderItems(orderId, orderItemData);
-//
-//        return ResponseEntity.noContent().build();
-//    }
-//
-//    @DeleteMapping("/{orderId}/items/{itemId}")
-//    @Transactional
-//    public ResponseEntity removeOrderItems(
-//            @PathVariable
-//            Long orderId,
-//            @PathVariable
-//            Long itemId
-//    ) {
-//        this.orderService.removeOrderItemFromOrder(orderId, itemId);
-//
-//        return ResponseEntity.noContent().build();
-//    }
-//
-//    @PutMapping("/{orderId}/items/{itemId}")
-//    @Transactional
-//    public ResponseEntity updateOrder(
-//            @PathVariable
-//            Long orderId,
-//            @PathVariable
-//            Long itemId,
-//            @RequestBody
-//            UpdateOrderItemData orderItemData
-//    ) {
-//        this.orderService.updateOrderItem(orderId, itemId, orderItemData);
-//
-//        return ResponseEntity.noContent().build();
-//    }
-//
-//    @DeleteMapping("/{orderId}")
-//    @Transactional
-//    public ResponseEntity inactivateOrder(
-//            @PathVariable
-//            Long orderId
-//    ) {
-//        this.orderService.inactivateOrder(orderId);
-//
-//        return ResponseEntity.noContent().build();
-//    }
+
+    @PostMapping("/{occupationId}/items")
+    @Transactional
+    public ResponseEntity addOrderItems(
+            @PathVariable
+            Long occupationId,
+            @RequestBody
+            @Valid
+            AddOrderItemsDTO itemsDTO
+    ) {
+        this.occupationService.addOrderItems(occupationId, itemsDTO);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{occupationId}/items")
+    @Transactional
+    public ResponseEntity removeOrderItems(
+            @PathVariable
+            Long occupationId,
+            @RequestBody
+            @Valid
+            RemoveOrderItemsDTO itemsDTO
+    ) {
+        this.occupationService.removeOrderItems(occupationId, itemsDTO);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{occupationId}/items/{itemId}")
+    @Transactional
+    public ResponseEntity updateOrder(
+            @PathVariable
+            Long occupationId,
+            @PathVariable
+            Long itemId,
+            @RequestBody
+            UpdateOrderItemDTO itemDTO
+    ) {
+        this.occupationService.updateOrderItem(occupationId, itemId, itemDTO);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{occupationId}")
+    @Transactional
+    public ResponseEntity inactivateOrder(
+            @PathVariable
+            Long occupationId
+    ) {
+        this.occupationService.inactivateOccupation(occupationId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{occupationId}/items/{itemId}/start-preparation")
+    @Transactional
+    public ResponseEntity startOrderItemPreparation(
+            @PathVariable
+            Long occupationId,
+            @PathVariable
+            Long itemId
+    ) {
+        this.occupationService.startOrderItemPreparation(occupationId, itemId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{occupationId}/items/{itemId}/finish-preparation")
+    @Transactional
+    public ResponseEntity finishOrderItemPreparation(
+            @PathVariable
+            Long occupationId,
+            @PathVariable
+            Long itemId
+    ) {
+        this.occupationService.finishOrderItemPreparation(occupationId, itemId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{occupationId}/items/{itemId}/deliver")
+    @Transactional
+    public ResponseEntity deliverOrderItemPreparation(
+            @PathVariable
+            Long occupationId,
+            @PathVariable
+            Long itemId
+    ) {
+        this.occupationService.deliverOrderItem(occupationId, itemId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{occupationId}/items/{itemId}/cancel")
+    @Transactional
+    public ResponseEntity cancelOrderItem(
+            @PathVariable
+            Long occupationId,
+            @PathVariable
+            Long itemId
+    ) {
+        this.occupationService.cancelOrderItem(occupationId, itemId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{occupationId}/finish")
+    @Transactional
+    public ResponseEntity finishOccupation(
+            @PathVariable
+            Long occupationId,
+            @RequestBody
+            @Valid
+            FinishOccupationDTO occupationDTO
+    ) {
+        this.occupationService.finishOccupation(occupationId, occupationDTO);
+
+        return ResponseEntity.noContent().build();
+    }
 }

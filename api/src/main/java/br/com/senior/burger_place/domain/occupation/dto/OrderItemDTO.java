@@ -3,7 +3,7 @@ package br.com.senior.burger_place.domain.occupation.dto;
 import br.com.senior.burger_place.domain.occupation.OrderItem;
 import br.com.senior.burger_place.domain.occupation.OrderItemStatus;
 
-public record OrderItemData(
+public record OrderItemDTO(
         Long id,
         Long productId,
         String productDescription,
@@ -12,7 +12,7 @@ public record OrderItemData(
         OrderItemStatus status,
         String observation
 ) {
-    public OrderItemData(OrderItem orderItem) {
+    public OrderItemDTO(OrderItem orderItem) {
         this(
                 orderItem.getId(),
                 orderItem.getProduct().getId(),

@@ -2,11 +2,11 @@ package br.com.senior.burger_place.domain.occupation.dto;
 
 import br.com.senior.burger_place.domain.customer.Customer;
 
-public record CustomerOccupationData(
+public record CustomerOccupationDTO(
         Long id,
         String name
 ) {
-    public CustomerOccupationData(Customer customer) {
+    public CustomerOccupationDTO(Customer customer) {
         this(
                 customer.getId(),
                 customer.getName()

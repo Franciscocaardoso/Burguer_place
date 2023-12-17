@@ -1,6 +1,7 @@
 package br.com.senior.burger_place.domain.occupation;
 
 import br.com.senior.burger_place.domain.board.Board;
+import br.com.senior.burger_place.domain.occupation.dto.FinishOccupationDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,9 +34,15 @@ public class Occupation {
         this.beginOccupation = beginOccupation;
         this.peopleCount = peopleCount;
         this.board = board;
+        this.active = true;
     }
 
     public void inactivate() {
         this.active = false;
+    }
+
+    public void finish(FinishOccupationDTO occupationDTO) {
+        this.endOccupation = occupationDTO.endOccupation();
+        this.paymentForm = occupationDTO.paymentForm();
     }
 }

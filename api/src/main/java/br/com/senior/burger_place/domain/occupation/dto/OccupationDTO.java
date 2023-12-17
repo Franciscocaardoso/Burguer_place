@@ -6,16 +6,16 @@ import br.com.senior.burger_place.domain.occupation.PaymentForm;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record OccupationData(
+public record OccupationDTO(
         Long id,
-        LocalDateTime openedAt,
-        LocalDateTime closedAt,
+        LocalDateTime beginOccupation,
+        LocalDateTime endOccupation,
         PaymentForm paymentForm,
         Integer peopleCount,
         OccupationBoardDTO board,
-        List<OrderItemData> orderItems
+        List<OrderItemDTO> orderItems
 ) {
-    public OccupationData(Occupation occupation) {
+    public OccupationDTO(Occupation occupation) {
         this(
                 occupation.getId(),
                 occupation.getBeginOccupation(),
@@ -23,7 +23,9 @@ public record OccupationData(
                 occupation.getPaymentForm(),
                 occupation.getPeopleCount(),
                 new OccupationBoardDTO(occupation.getBoard()),
-                occupation.getOrderItems().stream().map(OrderItemData::new).toList()
+                occupation.getOrderItems() != null
+                        ? occupation.getOrderItems().stream().map(OrderItemDTO::new).toList()
+                        : null
         );
     }
 }

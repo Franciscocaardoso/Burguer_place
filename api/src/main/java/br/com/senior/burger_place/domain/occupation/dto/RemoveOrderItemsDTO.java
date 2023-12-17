@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotEmpty;
 
 import java.util.List;
 
-public record RemoveOrderItemsData(
+public record RemoveOrderItemsDTO(
         @NotEmpty
         List<Long> orderItems
 ) {

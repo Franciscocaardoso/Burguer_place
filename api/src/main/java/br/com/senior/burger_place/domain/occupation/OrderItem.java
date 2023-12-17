@@ -1,6 +1,6 @@
 package br.com.senior.burger_place.domain.occupation;
 
-import br.com.senior.burger_place.domain.occupation.dto.UpdateOrderItemData;
+import br.com.senior.burger_place.domain.occupation.dto.UpdateOrderItemDTO;
 import br.com.senior.burger_place.domain.product.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -40,18 +40,45 @@ public class OrderItem {
         this.active = true;
     }
 
-    public OrderItem(int amount, double itemValue, Product product, Occupation occupation) {
+    public OrderItem(
+            int amount,
+            double itemValue,
+            Product product,
+            Occupation occupation,
+            String observation
+    ) {
         this(amount, itemValue, product);
         this.occupation = occupation;
+        this.observation = observation;
+        this.status = OrderItemStatus.RECEBIDO;
     }
 
     public void inactivate() {
         this.active = false;
     }
 
-    public void update(UpdateOrderItemData orderItemData) {
-        if (orderItemData.amount() != null && orderItemData.amount() > 0) {
-            this.amount = orderItemData.amount();
+    public void update(UpdateOrderItemDTO itemDTO) {
+        if (itemDTO.amount() != null && itemDTO.amount() > 0) {
+            this.amount = itemDTO.amount();
         }
+
+        if (itemDTO.observation() != null) {
+            this.observation = itemDTO.observation().isEmpty()
+                    ? null
+                    : itemDTO.observation();
+        }
+    }
+
+    public void startPreparation() {
+        this.status = OrderItemStatus.EM_ANDAMENTO;
+    }
+    public void finishPreparation() {
+        this.status = OrderItemStatus.PRONTO;
+    }
+    public void cancel() {
+        this.status = OrderItemStatus.CANCELADO;
+    }
+    public void deliver() {
+        this.status = OrderItemStatus.ENTREGUE;
     }
 }
