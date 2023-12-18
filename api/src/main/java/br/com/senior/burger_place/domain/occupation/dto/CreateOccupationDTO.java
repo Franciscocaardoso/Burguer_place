@@ -5,6 +5,7 @@ import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 public record CreateOccupationDTO(
         @NotNull
@@ -15,7 +16,8 @@ public record CreateOccupationDTO(
         Integer peopleCount,
         @NotNull
         @Positive
-        Long boardId
+        Long boardId,
+        Set<Long> customerIds
 
 ) {
 }

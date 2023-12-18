@@ -5,6 +5,7 @@ import br.com.senior.burger_place.domain.occupation.PaymentForm;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public record OccupationDTO(
         Long id,
@@ -13,7 +14,8 @@ public record OccupationDTO(
         PaymentForm paymentForm,
         Integer peopleCount,
         OccupationBoardDTO board,
-        List<OrderItemDTO> orderItems
+        List<OrderItemDTO> orderItems,
+        List<CustomerOccupationDTO> customers
 ) {
     public OccupationDTO(Occupation occupation) {
         this(
@@ -25,7 +27,8 @@ public record OccupationDTO(
                 new OccupationBoardDTO(occupation.getBoard()),
                 occupation.getOrderItems() != null
                         ? occupation.getOrderItems().stream().map(OrderItemDTO::new).toList()
-                        : null
+                        : null,
+                occupation.getCustomers().stream().map(CustomerOccupationDTO::new).toList()
         );
     }
 }

@@ -2,6 +2,8 @@ package br.com.senior.burger_place.domain.occupation;
 
 import br.com.senior.burger_place.domain.board.Board;
 import br.com.senior.burger_place.domain.board.BoardRepository;
+import br.com.senior.burger_place.domain.customer.Customer;
+import br.com.senior.burger_place.domain.customer.CustomerRepository;
 import br.com.senior.burger_place.domain.occupation.dto.*;
 import br.com.senior.burger_place.domain.product.Product;
 import br.com.senior.burger_place.domain.product.ProductRepository;
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class OccupationService {
@@ -26,6 +29,8 @@ public class OccupationService {
     private BoardRepository boardRepository;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private CustomerRepository customerRepository;
 
     public Page<ListOccupationDTO> listOccupations(Pageable pageable) {
         return this.occupationRepository.findAllByActiveTrue(pageable).map(ListOccupationDTO::new);
@@ -56,13 +61,27 @@ public class OccupationService {
             throw new IllegalArgumentException("A data de entrada deve ser menor ou igual a atual");
         }
 
-        Occupation savedOccupation = this.occupationRepository.save(
-                new Occupation(
-                        orderData.beginOccupation(),
-                        orderData.peopleCount(),
-                        board
-                )
+        Occupation occupation = new Occupation(
+                orderData.beginOccupation(),
+                orderData.peopleCount(),
+                board
         );
+
+        if (!orderData.customerIds().isEmpty()) {
+            Set<Customer> customers = this.customerRepository.getCustomers(orderData.customerIds());
+
+            if (customers.isEmpty()) {
+                throw new EntityNotFoundException("Clientes não existem ou foram desativados");
+            }
+
+            if (orderData.customerIds().size() != customers.size()) {
+                throw new IllegalArgumentException("Algum cliente não existe ou foi desativado");
+            }
+
+            occupation.setCustomers(customers);
+        }
+
+        Occupation savedOccupation = this.occupationRepository.save(occupation);
 
         return new OccupationDTO(savedOccupation);
     }

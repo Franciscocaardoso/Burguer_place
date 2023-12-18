@@ -1,12 +1,14 @@
 package br.com.senior.burger_place.domain.occupation;
 
 import br.com.senior.burger_place.domain.board.Board;
+import br.com.senior.burger_place.domain.customer.Customer;
 import br.com.senior.burger_place.domain.occupation.dto.FinishOccupationDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,6 +30,13 @@ public class Occupation {
     private List<OrderItem> orderItems;
     @ManyToOne(fetch = FetchType.LAZY)
     private Board board;
+    @ManyToMany
+    @JoinTable(
+            name = "customer_occupations",
+            joinColumns = @JoinColumn(name = "occupation_id"),
+            inverseJoinColumns = @JoinColumn(name = "customer_id")
+    )
+    private Set<Customer> customers;
     private boolean active;
 
     public Occupation(LocalDateTime beginOccupation, Integer peopleCount, Board board) {
