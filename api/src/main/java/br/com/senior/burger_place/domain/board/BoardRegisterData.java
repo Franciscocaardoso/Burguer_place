@@ -8,6 +8,6 @@ public record BoardRegisterData (
         @NotNull
         int capacity,
         @NotNull
-        Localizacao localizacao
+        BoardLocation boardLocation
 ){
 }
