@@ -13,7 +13,7 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
             """)
     List<OrderItem> findOrderItems(Long occupationId, List<Long> orderItemIds);
 
-    OrderItem getReferenceByIdAndOccupationIdAndActiveTrue(Long id, Long orderId);
+    OrderItem getReferenceByIdAndOccupationIdAndActiveTrue(Long id, Long occupationId);
 
     List<OrderItem> findByOccupationId(Long occupationId);
 }
