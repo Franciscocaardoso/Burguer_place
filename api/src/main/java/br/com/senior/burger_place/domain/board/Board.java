@@ -14,15 +14,32 @@ public class Board {
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long id;
-    private int number;
-    private int capacity;
+    private Integer number;
+    private Integer capacity;
     @Enumerated(EnumType.STRING)
     private BoardLocation location;
     private boolean active;
 
     public Board(BoardRegisterData data) {
+        this.active = true;
         this.number = data.number();
         this.capacity = data.capacity();
-        this.location = data.boardLocation();
+        this.location = data.location();
+    }
+
+    public void updateInformation(BoardUpdateData data) {
+        if (data.location() != null){
+            this.location = data.location();
+        }
+        if (data.capacity() != null){
+            this.capacity = data.capacity();
+        }
+        if (data.number() != null){
+            this.number = data.number();
+        }
+    }
+
+    public void inactivate() {
+        this.active = false;
     }
 }

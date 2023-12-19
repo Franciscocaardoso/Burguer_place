@@ -1,9 +1,11 @@
 package br.com.senior.burger_place.domain.board;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
@@ -31,5 +33,23 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     boolean isBoardOccupied(Long id);
 
     Board getReferenceByIdAndActiveTrue(Long id);
+
+    Page<Board> findByLocationAndActiveTrue(BoardLocation location, Pageable pageable);
+
+    @Query(
+            nativeQuery = true,
+            value = """
+                SELECT *
+                FROM boards b
+                WHERE b.active IS TRUE
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM occupations o
+                    WHERE o.board_id = b.id
+                    AND o.end_occupation IS NULL
+                )
+                """
+    )
+    Page<Board> findAllBoardsAvailable(Pageable pageable);
 }
 

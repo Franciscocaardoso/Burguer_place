@@ -32,7 +32,7 @@ public class ExceptionHandlerError {
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity handleNotFoundException (NoSuchElementException e){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseError(e));
     }
 
     private record DadosErroValidacao(String field, String message){

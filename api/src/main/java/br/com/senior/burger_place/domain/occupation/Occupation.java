@@ -3,6 +3,7 @@ package br.com.senior.burger_place.domain.occupation;
 import br.com.senior.burger_place.domain.board.Board;
 import br.com.senior.burger_place.domain.customer.Customer;
 import br.com.senior.burger_place.domain.occupation.dto.FinishOccupationDTO;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,6 +18,7 @@ import java.util.Set;
 @Table(name = "occupations")
 @Entity(name = "Occupation")
 @ToString
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 public class Occupation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +46,10 @@ public class Occupation {
         this.peopleCount = peopleCount;
         this.board = board;
         this.active = true;
+    }
+
+    public Occupation(Long occupationId) {
+        this.id = occupationId;
     }
 
     public void inactivate() {
