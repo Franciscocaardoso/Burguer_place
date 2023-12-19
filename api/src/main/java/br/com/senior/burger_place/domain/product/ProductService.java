@@ -1,7 +1,7 @@
 package br.com.senior.burger_place.domain.product;
 
-import br.com.senior.burger_place.domain.product.dto.CreateProductData;
-import br.com.senior.burger_place.domain.product.dto.ProductData;
+import br.com.senior.burger_place.domain.product.dto.CreateProductDTO;
+import br.com.senior.burger_place.domain.product.dto.ProductDTO;
 import br.com.senior.burger_place.domain.product.dto.UpdateProductData;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,32 +16,67 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    public Page<ProductData> listProducts(Pageable pageable) {
-        return this.productRepository.findAllByActiveTrue(pageable).map(ProductData::new);
+    public Page<ProductDTO> listProducts(Pageable pageable) {
+        return this.productRepository.findAllByActiveTrue(pageable).map(ProductDTO::new);
     }
 
-    public Optional<ProductData> showProduct(Long id) {
+    public Optional<ProductDTO> showProduct(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID não pode ser null");
+        }
+
+        if (id <= 0) {
+            throw new IllegalArgumentException("ID inválida");
+        }
+
         Product product = this.productRepository.getReferenceByIdAndActiveTrue(id);
 
         if (product == null) {
             return Optional.empty();
         }
 
-        return Optional.of(new ProductData(product));
+        return Optional.of(new ProductDTO(product));
     }
 
-    public ProductData createProduct(CreateProductData productData) {
+    public ProductDTO createProduct(CreateProductDTO productData) {
+        if (productData == null) {
+            throw new IllegalArgumentException("DTO não pode ser null");
+        }
+
+        if (productData.name() == null) {
+            throw new IllegalArgumentException("nome inválido");
+        }
+
+        if (productData.price() == null || productData.price() <= 0) {
+            throw new IllegalArgumentException("preço inválido");
+        }
+
         Product product = new Product(
                 productData.name(),
                 productData.price(),
                 productData.description()
         );
 
-        this.productRepository.save(product);
-        return new ProductData(product);
+        return new ProductDTO(this.productRepository.save(product));
     }
 
-    public ProductData updateProduct(Long id, UpdateProductData productData) {
+    public ProductDTO updateProduct(Long id, UpdateProductData productData) {
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("ID inválida");
+        }
+
+        if (productData == null) {
+            throw new IllegalArgumentException("DTO não pode ser null");
+        }
+
+        if (productData.name() == null || productData.name().trim().isEmpty()) {
+            throw new IllegalArgumentException("nome inválido");
+        }
+
+        if (productData.price() == null || productData.price() <= 0) {
+            throw new IllegalArgumentException("preço inválido");
+        }
+
         Product product = this.productRepository.getReferenceByIdAndActiveTrue(id);
 
         if (product == null) {
@@ -49,10 +84,14 @@ public class ProductService {
         }
 
         product.update(productData);
-        return new ProductData(product);
+        return new ProductDTO(product);
     }
 
     public void deleteProduct(Long id) {
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("ID inválida");
+        }
+
         Product product = this.productRepository.getReferenceByIdAndActiveTrue(id);
 
         if (product == null) {

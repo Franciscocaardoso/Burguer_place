@@ -1,8 +1,8 @@
 package br.com.senior.burger_place.controller;
 
 import br.com.senior.burger_place.domain.product.ProductService;
-import br.com.senior.burger_place.domain.product.dto.CreateProductData;
-import br.com.senior.burger_place.domain.product.dto.ProductData;
+import br.com.senior.burger_place.domain.product.dto.CreateProductDTO;
+import br.com.senior.burger_place.domain.product.dto.ProductDTO;
 import br.com.senior.burger_place.domain.product.dto.UpdateProductData;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -32,7 +32,7 @@ public class ProductController {
             @PathVariable
             Long id
     ) {
-        Optional<ProductData> productOptional = this.productService.showProduct(id);
+        Optional<ProductDTO> productOptional = this.productService.showProduct(id);
 
         if (productOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -46,10 +46,10 @@ public class ProductController {
     public ResponseEntity createProduct(
             @RequestBody
             @Valid
-            CreateProductData productData,
+            CreateProductDTO productData,
             UriComponentsBuilder uriComponentsBuilder
     ) {
-        ProductData product = this.productService.createProduct(productData);
+        ProductDTO product = this.productService.createProduct(productData);
 
         URI uri = uriComponentsBuilder
                 .path("/pets/{id}")
