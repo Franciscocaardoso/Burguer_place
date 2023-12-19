@@ -6,8 +6,8 @@ INSERT INTO boards(capacity, number, location, active) VALUES
 (4, 5, 'AREA_INTERNA', true),
 (4, 6, 'AREA_INTERNA', true),
 (8, 7, 'AREA_INTERNA', true),
-(2, 8, 'AREA_INTERNA', true),
-(2, 9, 'AREA_INTERNA', true),
-(2, 10, 'AREA_EXTERNA_VARANDA', true),
-(2, 11, 'AREA_EXTERNA_VARANDA', true),
-(4, 12, 'AREA_EXTERNA_VARANDA', true);
+(2, 8, 'TERRACO', true),
+(2, 9, 'TERRACO', true),
+(2, 10, 'VARANDA', true),
+(2, 11, 'VARANDA', true),
+(4, 12, 'VARANDA', true);
