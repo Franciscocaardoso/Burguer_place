@@ -4,10 +4,10 @@ import jakarta.validation.constraints.NotNull;
 
 public record BoardRegisterData (
         @NotNull
-        int number,
+        Integer number,
         @NotNull
-        int capacity,
+        Integer capacity,
         @NotNull
-        BoardLocation boardLocation
+        BoardLocation location
 ){
 }
