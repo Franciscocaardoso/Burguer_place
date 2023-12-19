@@ -28,7 +28,9 @@ public record OccupationDTO(
                 occupation.getOrderItems() != null
                         ? occupation.getOrderItems().stream().map(OrderItemDTO::new).toList()
                         : null,
-                occupation.getCustomers().stream().map(CustomerOccupationDTO::new).toList()
+                occupation.getCustomers() != null
+                        ? occupation.getCustomers().stream().map(CustomerOccupationDTO::new).toList()
+                        : null
         );
     }
 }
