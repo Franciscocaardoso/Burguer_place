@@ -10,6 +10,5 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findAllByActiveTrue(Pageable id);
     Product getReferenceByIdAndActiveTrue(Long id);
-    @Query("SELECT p FROM Product p WHERE p.id IN ?1")
-    List<Product> getProductsPriceById(List<Long> ids);
+    List<Product> getReferenceByActiveTrueAndIdIn(List<Long> ids);
 }

@@ -625,7 +625,7 @@ public class OccupationServiceTest {
         );
 
         when(this.occupationRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(someOccupation);
-        when(this.productRepository.getProductsPriceById(anyList())).thenReturn(someProducts);
+        when(this.productRepository.getReferenceByActiveTrueAndIdIn(anyList())).thenReturn(someProducts);
 
         EntityNotFoundException exception = assertThrows(
                 EntityNotFoundException.class,
@@ -660,7 +660,7 @@ public class OccupationServiceTest {
         );
 
         when(this.occupationRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(someOccupation);
-        when(this.productRepository.getProductsPriceById(anyList())).thenReturn(someProducts);
+        when(this.productRepository.getReferenceByActiveTrueAndIdIn(anyList())).thenReturn(someProducts);
 
         ArgumentCaptor<List<OrderItem>> argumentCaptor = ArgumentCaptor.forClass(List.class);
 

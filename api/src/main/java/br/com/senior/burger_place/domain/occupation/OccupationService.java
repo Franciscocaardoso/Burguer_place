@@ -139,7 +139,7 @@ public class OccupationService {
             throw new IllegalCallerException("A ocupação já foi finalizada");
         }
 
-        List<Product> products = this.productRepository.getProductsPriceById(
+        List<Product> products = this.productRepository.getReferenceByActiveTrueAndIdIn(
                 itemsDTO.orderItems()
                         .stream()
                         .map(CreateOrderItemDTO::productId)
