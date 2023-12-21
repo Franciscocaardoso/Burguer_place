@@ -12,12 +12,5 @@ import java.util.Optional;
 public interface OccupationRepository extends JpaRepository<Occupation, Long> {
     Page<Occupation> findAllByActiveTrue(Pageable pageable);
     Occupation getReferenceByIdAndActiveTrue(Long id);
-
-//    Page<Occupation> findAll(Pageable pageable);
-//
-//    Page<Occupation> findAll(Specification<Occupation> specification, Pageable pageable);
-//
-//    Occupation getReferenceByIdAndActiveTrue(Long id);
-//
     boolean existsByIdAndActiveTrue(Long id);
 }

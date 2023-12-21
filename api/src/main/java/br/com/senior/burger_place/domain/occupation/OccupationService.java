@@ -185,7 +185,7 @@ public class OccupationService {
             throw new EntityNotFoundException("Ocupação não existe ou foi inativada");
         }
 
-        List<OrderItem> orderItems = this.orderItemRepository.findOrderItems(occupationId, itemsDTO.orderItems());
+        List<OrderItem> orderItems = this.orderItemRepository.getReferenceByActiveTrueAndOccupationIdAndIdIn(occupationId, itemsDTO.orderItems());
 
         if (orderItems.isEmpty()) {
             throw new EntityNotFoundException("Nenhum item pertence ao pedido");
