@@ -625,7 +625,7 @@ public class OccupationServiceTest {
         );
 
         when(this.occupationRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(someOccupation);
-        when(this.productRepository.getProductsPriceById(anyList())).thenReturn(someProducts);
+        when(this.productRepository.getReferenceByActiveTrueAndIdIn(anyList())).thenReturn(someProducts);
 
         EntityNotFoundException exception = assertThrows(
                 EntityNotFoundException.class,
@@ -660,7 +660,7 @@ public class OccupationServiceTest {
         );
 
         when(this.occupationRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(someOccupation);
-        when(this.productRepository.getProductsPriceById(anyList())).thenReturn(someProducts);
+        when(this.productRepository.getReferenceByActiveTrueAndIdIn(anyList())).thenReturn(someProducts);
 
         ArgumentCaptor<List<OrderItem>> argumentCaptor = ArgumentCaptor.forClass(List.class);
 
@@ -747,7 +747,7 @@ public class OccupationServiceTest {
         RemoveOrderItemsDTO input = new RemoveOrderItemsDTO(List.of(1L, 2L));
 
         when(this.occupationRepository.existsByIdAndActiveTrue(anyLong())).thenReturn(true);
-        when(this.orderItemRepository.findOrderItems(anyLong(), anyList())).thenReturn(new ArrayList<>());
+        when(this.orderItemRepository.getReferenceByActiveTrueAndOccupationIdAndIdIn(anyLong(), anyList())).thenReturn(new ArrayList<>());
 
         EntityNotFoundException exception = assertThrows(
                 EntityNotFoundException.class,
@@ -766,7 +766,7 @@ public class OccupationServiceTest {
         );
 
         when(this.occupationRepository.existsByIdAndActiveTrue(anyLong())).thenReturn(true);
-        when(this.orderItemRepository.findOrderItems(anyLong(), anyList())).thenReturn(someOrderItems);
+        when(this.orderItemRepository.getReferenceByActiveTrueAndOccupationIdAndIdIn(anyLong(), anyList())).thenReturn(someOrderItems);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -786,7 +786,7 @@ public class OccupationServiceTest {
         );
 
         when(this.occupationRepository.existsByIdAndActiveTrue(anyLong())).thenReturn(true);
-        when(this.orderItemRepository.findOrderItems(anyLong(), anyList())).thenReturn(someOrderItems);
+        when(this.orderItemRepository.getReferenceByActiveTrueAndOccupationIdAndIdIn(anyLong(), anyList())).thenReturn(someOrderItems);
 
 
         this.occupationService.removeOrderItems(1L, input);
