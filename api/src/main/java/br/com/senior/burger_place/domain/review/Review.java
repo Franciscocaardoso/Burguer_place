@@ -1,6 +1,8 @@
 package br.com.senior.burger_place.domain.review;
 
 import br.com.senior.burger_place.domain.occupation.Occupation;
+import br.com.senior.burger_place.domain.review.dto.ReviewRegisterDTO;
+import br.com.senior.burger_place.domain.review.dto.ReviewUpdateDTO;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,7 +29,7 @@ public class Review {
     @JsonIgnoreProperties({"beginOccupation", "endOccupation", "peopleCount", "paymentForm", "orderItems", "board", "customers", "active"})
     private Occupation occupation;
 
-    public Review(Long occupationId, ReviewRegisterData data) {
+    public Review(Long occupationId, ReviewRegisterDTO data) {
         if (data.grade() < 0 || data.grade() > 5){
             throw new NoSuchElementException("A nota deve ser entre 0 e 5");
         }
@@ -36,7 +38,7 @@ public class Review {
         this.occupation = new Occupation(occupationId);
     }
 
-    public void updateInformation(ReviewUpdateData data) {
+    public void updateInformation(ReviewUpdateDTO data) {
         if (data.grade() < 0 || data.grade() > 5){
             throw new NoSuchElementException("A nota deve ser entre 0 e 5");
         }

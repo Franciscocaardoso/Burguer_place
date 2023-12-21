@@ -1,10 +1,10 @@
 package br.com.senior.burger_place.controller;
 
 import br.com.senior.burger_place.domain.customer.Customer;
-import br.com.senior.burger_place.domain.customer.dto.CustomerRegistrationData;
+import br.com.senior.burger_place.domain.customer.dto.CustomerRegistrationDTO;
 import br.com.senior.burger_place.domain.customer.CustomerService;
-import br.com.senior.burger_place.domain.customer.dto.CustomerUploadData;
-import br.com.senior.burger_place.domain.customer.dto.listingDataCustomers;
+import br.com.senior.burger_place.domain.customer.dto.CustomerUploadDTO;
+import br.com.senior.burger_place.domain.customer.dto.listingCustomersDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,20 +24,20 @@ public class CustomerController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<Object> register(@RequestBody @Valid CustomerRegistrationData data) {
-        Customer customer = customerService.addCustomer(data);
+    public ResponseEntity<Object> register(@RequestBody @Valid CustomerRegistrationDTO dto) {
+        Customer customer = customerService.addCustomer(dto);
         return ResponseEntity.status(HttpStatus.OK).body(customer);
     }
 
     @GetMapping
-    public Page<listingDataCustomers> listCustomer(@PageableDefault(size = 5, sort = {"name"}) Pageable pageable) {
+    public Page<listingCustomersDTO> listCustomer(@PageableDefault(size = 5, sort = {"name"}) Pageable pageable) {
         return customerService.listCustomer(pageable);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> listCustomerById(@PathVariable Long id) {
         Customer customer = customerService.listCustomerById(id);
-        return ResponseEntity.ok(new listingDataCustomers(customer));
+        return ResponseEntity.ok(new listingCustomersDTO(customer));
     }
 
     @PutMapping("/{id}")
@@ -47,10 +47,10 @@ public class CustomerController {
             Long id,
             @RequestBody
             @Valid
-            CustomerUploadData data
+            CustomerUploadDTO dto
     ) {
-        customerService.updateCustomer(id, data);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(data);
+        customerService.updateCustomer(id, dto);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(dto);
     }
 
     @DeleteMapping("/{id}")

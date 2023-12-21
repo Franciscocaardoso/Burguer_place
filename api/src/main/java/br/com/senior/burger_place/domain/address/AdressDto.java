@@ -4,7 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
-public record AdressData(
+public record AdressDto(
         @NotBlank
         @Column(name = "street_address")
         String streetAddress,

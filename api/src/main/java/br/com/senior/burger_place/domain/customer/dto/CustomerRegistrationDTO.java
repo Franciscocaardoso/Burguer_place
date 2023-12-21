@@ -1,11 +1,11 @@
 package br.com.senior.burger_place.domain.customer.dto;
 
-import br.com.senior.burger_place.domain.address.AdressData;
+import br.com.senior.burger_place.domain.address.AdressDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record CustomerRegistrationData(
+public record CustomerRegistrationDTO(
         @NotBlank
         String name,
         @NotBlank
@@ -14,7 +14,7 @@ public record CustomerRegistrationData(
         String cpf,
         @NotNull
         @Valid
-        AdressData address,
+        AdressDto address,
 
         boolean active
 

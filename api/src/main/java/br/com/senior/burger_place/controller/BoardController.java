@@ -1,6 +1,10 @@
 package br.com.senior.burger_place.controller;
 
 import br.com.senior.burger_place.domain.board.*;
+import br.com.senior.burger_place.domain.board.dto.BoardRegisterDTO;
+import br.com.senior.burger_place.domain.board.dto.BoardUpdateDTO;
+import br.com.senior.burger_place.domain.board.dto.ListingBoardDTO;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("boards")
 public class BoardController {
@@ -22,8 +24,8 @@ public class BoardController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<Object> register(@RequestBody @Valid BoardRegisterData data){
-        Board board = service.addBoard(data);
+    public ResponseEntity<Object> register(@RequestBody @Valid BoardRegisterDTO dto){
+        Board board = service.addBoard(dto);
         return ResponseEntity.status(HttpStatus.OK).body(board);
     }
 
@@ -34,10 +36,10 @@ public class BoardController {
             Long id,
             @RequestBody
             @Valid
-            BoardUpdateData data
+            BoardUpdateDTO dto
     ){
-        service.updateBoard(id, data);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(data);
+        service.updateBoard(id, dto);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(dto);
     }
 
     @GetMapping
@@ -50,19 +52,19 @@ public class BoardController {
     @GetMapping("/{id}")
     public ResponseEntity<Object> listBoardById(@PathVariable Long id){
         Board board = service.verifyOccupiedBoard(id);
-        return ResponseEntity.ok(new ListingDataBoard(board));
+        return ResponseEntity.ok(new ListingBoardDTO(board));
     }
 
     @GetMapping("/locale")
-    public ResponseEntity<Page<ListingDataBoard>> listBoardByLocation(
+    public ResponseEntity<Page<ListingBoardDTO>> listBoardByLocation(
             @RequestParam
             (required = false) BoardLocation location,
             @PageableDefault(size = 10)
             Pageable pageable) {
-        Page<ListingDataBoard> boards;
+        Page<ListingBoardDTO> boards;
 
         if (location == null) {
-            throw new RuntimeException("Localização não pode ser nula");
+            throw new EntityNotFoundException("Localização não pode ser nula");
         }
         boards = service.listBoardsByLocation(location, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(boards);

@@ -1,8 +1,8 @@
 package br.com.senior.burger_place.domain.customer;
 
 import br.com.senior.burger_place.domain.address.Address;
-import br.com.senior.burger_place.domain.customer.dto.CustomerRegistrationData;
-import br.com.senior.burger_place.domain.customer.dto.CustomerUploadData;
+import br.com.senior.burger_place.domain.customer.dto.CustomerRegistrationDTO;
+import br.com.senior.burger_place.domain.customer.dto.CustomerUploadDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,7 +23,7 @@ public class Customer {
         private boolean active;
         @Embedded
         private Address address;
-        public Customer(CustomerRegistrationData data) {
+        public Customer(CustomerRegistrationDTO data) {
                 this.active = true;
                 this.name = data.name();
                 this.email = data.email();
@@ -31,15 +31,16 @@ public class Customer {
                 this.address = new Address(data.address());
         }
 
-        public void updateInformation(CustomerUploadData data) {
+
+        public void updateInformation(CustomerUploadDTO data) {
                 if (data.name() != null){
                         this.name = data.name();
                 }
                 if (data.email() != null){
                         this.email = data.email();
                 }
-                if (data.adressData() != null){
-                        this.address.updateInformation(data.adressData());
+                if (data.adressDto() != null){
+                        this.address.updateInformation(data.adressDto());
                 }
         }
 

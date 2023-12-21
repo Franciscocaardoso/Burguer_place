@@ -1,9 +1,9 @@
 package br.com.senior.burger_place.controller;
 
 import br.com.senior.burger_place.domain.review.Review;
-import br.com.senior.burger_place.domain.review.ReviewRegisterData;
+import br.com.senior.burger_place.domain.review.dto.ReviewRegisterDTO;
 import br.com.senior.burger_place.domain.review.ReviewService;
-import br.com.senior.burger_place.domain.review.ReviewUpdateData;
+import br.com.senior.burger_place.domain.review.dto.ReviewUpdateDTO;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +27,9 @@ public class ReviewController {
             @PathVariable
             Long occupationId,
             @RequestBody @Valid
-            ReviewRegisterData data
+            ReviewRegisterDTO dto
     ) {
-        Review review = service.addReview(occupationId, data);
+        Review review = service.addReview(occupationId, dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(review);
     }
 
@@ -52,9 +52,9 @@ public class ReviewController {
             Long id,
             @RequestBody
             @Valid
-            ReviewUpdateData data
+            ReviewUpdateDTO dto
     ){
-        ReviewRegisterData newReview = service.updateReview(id, data);
+        ReviewRegisterDTO newReview = service.updateReview(id, dto);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(newReview);
     }
 

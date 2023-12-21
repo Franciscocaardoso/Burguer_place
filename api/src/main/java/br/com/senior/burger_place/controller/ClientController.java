@@ -1,7 +1,7 @@
 package br.com.senior.burger_place.controller;
 
 import br.com.senior.burger_place.domain.customer.CustomerService;
-import br.com.senior.burger_place.domain.customer.dto.CustomerRegistrationData;
+import br.com.senior.burger_place.domain.customer.dto.CustomerRegistrationDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +17,7 @@ public class ClientController {
     CustomerService clientService;
 
     @PostMapping
-    public void register(@RequestBody @Valid CustomerRegistrationData data){
-        clientService.addCustomer(data);
+    public void register(@RequestBody @Valid CustomerRegistrationDTO dto){
+        clientService.addCustomer(dto);
     }
 }
