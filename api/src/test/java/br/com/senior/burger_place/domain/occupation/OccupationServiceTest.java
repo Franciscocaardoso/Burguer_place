@@ -56,7 +56,7 @@ public class OccupationServiceTest {
                         2,
                         null,
                         null,
-                        new Board(1L, 1, 2, BoardLocation.AREA_EXTERNA_SACADA, true),
+                        new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true),
                         null,
                         true
                 ),
@@ -67,7 +67,7 @@ public class OccupationServiceTest {
                         2,
                         PaymentForm.CARTAO_CREDITO,
                         someOrderItems,
-                        new Board(2L, 1, 2, BoardLocation.AREA_EXTERNA_SACADA, true),
+                        new Board(2L, 1, 2, BoardLocation.AREA_INTERNA, true),
                         null,
                         true
                 )
@@ -146,7 +146,7 @@ public class OccupationServiceTest {
                 2,
                 null,
                 new ArrayList<>(),
-                new Board(1L, 1, 2, BoardLocation.AREA_EXTERNA_SACADA, true),
+                new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true),
                 new HashSet<>(),
                 true
         );
@@ -276,7 +276,7 @@ public class OccupationServiceTest {
                 null
         );
 
-        Board board = new Board(1L, 1, 2, BoardLocation.AREA_EXTERNA_SACADA, true);
+        Board board = new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true);
 
         when(this.boardRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(board);
         when(this.boardRepository.isBoardOccupied(anyLong())).thenReturn(true);
@@ -337,7 +337,7 @@ public class OccupationServiceTest {
                 2,
                 null,
                 new ArrayList<>(),
-                new Board(1L, 1, 2, BoardLocation.AREA_EXTERNA_SACADA, true),
+                new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true),
                 someCustomers,
                 true
         );
@@ -347,7 +347,7 @@ public class OccupationServiceTest {
                 1L,
                 Set.of(1L, 2L)
         );
-        Board board = new Board(1L, 1, 2, BoardLocation.AREA_EXTERNA_SACADA, true);
+        Board board = new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true);
 
         when(this.boardRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(board);
         when(this.boardRepository.isBoardOccupied(anyLong())).thenReturn(false);
@@ -388,7 +388,7 @@ public class OccupationServiceTest {
                 2,
                 null,
                 new ArrayList<>(),
-                new Board(1L, 1, 2, BoardLocation.AREA_EXTERNA_SACADA, true),
+                new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true),
                 new HashSet<>(),
                 true
         );
@@ -398,7 +398,7 @@ public class OccupationServiceTest {
                 1L,
                 Set.of(1L, 2L)
         );
-        Board board = new Board(1L, 1, 2, BoardLocation.AREA_EXTERNA_SACADA, true);
+        Board board = new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true);
 
         when(this.boardRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(board);
         when(this.boardRepository.isBoardOccupied(anyLong())).thenReturn(false);
@@ -423,7 +423,7 @@ public class OccupationServiceTest {
                 1L,
                 Set.of(1L, 2L)
         );
-        Board board = new Board(1L, 1, 2, BoardLocation.AREA_EXTERNA_SACADA, true);
+        Board board = new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true);
 
         when(this.boardRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(board);
         when(this.boardRepository.isBoardOccupied(anyLong())).thenReturn(false);
@@ -586,7 +586,7 @@ public class OccupationServiceTest {
                 2,
                 null,
                 new ArrayList<>(),
-                new Board(1L, 1, 2, BoardLocation.AREA_EXTERNA_SACADA, true),
+                new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true),
                 new HashSet<>(),
                 true
         );
@@ -616,7 +616,7 @@ public class OccupationServiceTest {
                 2,
                 null,
                 new ArrayList<>(),
-                new Board(1L, 1, 2, BoardLocation.AREA_EXTERNA_SACADA, true),
+                new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true),
                 new HashSet<>(),
                 true
         );
@@ -650,7 +650,7 @@ public class OccupationServiceTest {
                 2,
                 null,
                 new ArrayList<>(),
-                new Board(1L, 1, 2, BoardLocation.AREA_EXTERNA_SACADA, true),
+                new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true),
                 new HashSet<>(),
                 true
         );

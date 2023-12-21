@@ -2,7 +2,7 @@ package br.com.senior.burger_place.domain.product;
 
 import br.com.senior.burger_place.domain.product.dto.CreateProductDTO;
 import br.com.senior.burger_place.domain.product.dto.ProductDTO;
-import br.com.senior.burger_place.domain.product.dto.UpdateProductData;
+import br.com.senior.burger_place.domain.product.dto.UpdateProductDTO;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -221,7 +221,7 @@ public class ProductServiceTest {
 
     @Test
     void updateProduct_whenDTONameIsNull_shouldThrow() {
-        UpdateProductData input = new UpdateProductData(null, null, null);
+        UpdateProductDTO input = new UpdateProductDTO(null, null, null);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -234,7 +234,7 @@ public class ProductServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"", " "})
     void updateProduct_whenDTONameIsEmpty_shouldThrow(String name) {
-        UpdateProductData input = new UpdateProductData(name, null, null);
+        UpdateProductDTO input = new UpdateProductDTO(name, null, null);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -246,7 +246,7 @@ public class ProductServiceTest {
 
     @Test
     void updateProduct_whenDTOPriceIsNull_shouldThrow() {
-        UpdateProductData input = new UpdateProductData("Hamburguer duplo", null, null);
+        UpdateProductDTO input = new UpdateProductDTO("Hamburguer duplo", null, null);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -259,7 +259,7 @@ public class ProductServiceTest {
     @ParameterizedTest
     @ValueSource(doubles = {0D, -1D, -10D})
     void updateProduct_whenDTOPriceIsLessThanOrEqualToZero_shouldThrow(Double price) {
-        UpdateProductData input = new UpdateProductData("Hamburguer duplo", price, null);
+        UpdateProductDTO input = new UpdateProductDTO("Hamburguer duplo", price, null);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -271,7 +271,7 @@ public class ProductServiceTest {
 
     @Test
     void updateProduct_whenProductDoesNotExist_shouldThrow() {
-        UpdateProductData input = new UpdateProductData("Hamburguer duplo", 10.5, null);
+        UpdateProductDTO input = new UpdateProductDTO("Hamburguer duplo", 10.5, null);
 
         when(this.productRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(null);
 
@@ -286,7 +286,7 @@ public class ProductServiceTest {
     @Test
     void updateProduct_whenProductExists_shouldUpdateAndReturnProductDTO() {
         Product product = new Product(1L, "Hamburguer duplo", 10.5, null, true);
-        UpdateProductData input = new UpdateProductData(product.getName(), product.getPrice(), product.getDescription());
+        UpdateProductDTO input = new UpdateProductDTO(product.getName(), product.getPrice(), product.getDescription());
 
         Product productSpy = spy(product);
 
@@ -294,7 +294,7 @@ public class ProductServiceTest {
 
         ProductDTO output = this.productService.updateProduct(1L, input);
 
-        verify(productSpy, atMostOnce()).update(any(UpdateProductData.class));
+        verify(productSpy, atMostOnce()).update(any(UpdateProductDTO.class));
         assertAll(
                 () -> assertEquals(product.getId(), output.id()),
                 () -> assertEquals(product.getName(), output.name()),

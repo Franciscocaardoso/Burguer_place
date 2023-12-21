@@ -1,6 +1,6 @@
 package br.com.senior.burger_place.domain.product;
 
-import br.com.senior.burger_place.domain.product.dto.UpdateProductData;
+import br.com.senior.burger_place.domain.product.dto.UpdateProductDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,7 +29,7 @@ public class Product {
         this.active = true;
     }
 
-    public void update(UpdateProductData productData) {
+    public void update(UpdateProductDTO productData) {
         this.name = productData.name();
         this.price = productData.price();
         this.description = productData.description();

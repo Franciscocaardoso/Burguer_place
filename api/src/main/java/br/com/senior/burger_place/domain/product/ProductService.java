@@ -2,7 +2,7 @@ package br.com.senior.burger_place.domain.product;
 
 import br.com.senior.burger_place.domain.product.dto.CreateProductDTO;
 import br.com.senior.burger_place.domain.product.dto.ProductDTO;
-import br.com.senior.burger_place.domain.product.dto.UpdateProductData;
+import br.com.senior.burger_place.domain.product.dto.UpdateProductDTO;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -60,7 +60,7 @@ public class ProductService {
         return new ProductDTO(this.productRepository.save(product));
     }
 
-    public ProductDTO updateProduct(Long id, UpdateProductData productData) {
+    public ProductDTO updateProduct(Long id, UpdateProductDTO productData) {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("ID inválida");
         }
