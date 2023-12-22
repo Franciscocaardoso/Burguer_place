@@ -31,7 +31,7 @@ class CustomerServiceTest {
     private ArgumentCaptor<Customer> customerCaptor;
 
     @Test
-    public void addCustomer_whenExistsAclientWithSameEmail_shouldSaveCustomer() {
+    public void addCustomer_whenNotExistsAclientWithSameEmail_shouldSaveCustomer() {
 
         AdressDto adressDto = new AdressDto("Rua A", "Bairro A", "Cidade A", "Estado A", "88888888", null, null);
         CustomerRegistrationDTO dto = new CustomerRegistrationDTO("Ricardo Almeira", "Ricardo@email.com", "99999999900", adressDto, true);
