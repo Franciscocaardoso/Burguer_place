@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+
 @ExtendWith(MockitoExtension.class)
 class CustomerTest {
 
@@ -22,16 +23,44 @@ class CustomerTest {
     private Customer customer;
     @Test
     public void updateInformation_whenNoNullValues_shouldUpdateData(){
+        AdressDto oldAddress = new AdressDto("Rua A", "Bairro A", "Cidade A", "Estado A", "88888888", null, null);
+        CustomerRegistrationDTO dto = new CustomerRegistrationDTO("Nome Antigo", "emailAntigo@email.com", "99999999999", oldAddress, true);
+        Customer oldCustomer = new Customer(dto);
 
-        AdressDto adressDto = new AdressDto("Rua A", "Bairro A", "Cidade A", "Estado A", "88888888", null, null);
-        CustomerUploadDTO customerUploadDTO = new CustomerUploadDTO("Felipe", "felipe@email.com", adressDto);
+        AdressDto adressDto = new AdressDto("Rua B", "Bairro B", "Cidade B", "Estado B", "999999999", null, null);
+        CustomerUploadDTO customerUploadDTO = new CustomerUploadDTO("Novo nome", "novoEmail@email.com", adressDto);
+
+        oldCustomer.updateInformation(customerUploadDTO);
+
+        assertEquals("Novo nome", oldCustomer.getName());
+        assertEquals("novoEmail@email.com", oldCustomer.getEmail());
+
+    }
+    @Test
+    public void updateInformation_whenNullValues_shouldNotUpdateData(){
+        AdressDto adressDto = mock(AdressDto.class);
+        CustomerRegistrationDTO dto = new CustomerRegistrationDTO("Nome Antigo", "emailAntigo@email.com", "99999999999", adressDto, true);
+        Customer oldCustomer = new Customer(dto);
+
+        CustomerUploadDTO customerUploadDTO = new CustomerUploadDTO(null, null, null);
 
         customer.updateInformation(customerUploadDTO);
 
-        assertEquals("Felipe", customer.getName());
-        assertEquals("felipe@email.com", customer.getEmail());
+        assertEquals("Nome Antigo", oldCustomer.getName());
+        assertEquals("emailAntigo@email.com", oldCustomer.getEmail());
 
-        verify(address, times(1)).updateInformation(adressDto);
+        verify(address, never()).updateInformationAdress(any(AdressDto.class));
+
+    }
+
+    @Test
+    public void updateInformation_whenAddressIsNotNull_shouldCallUpdateInformationAdressMethod(){
+        AdressDto adressDto = new AdressDto("Rua B", "Bairro B", "Cidade B", "Estado B", "999999999", null, null);
+        CustomerUploadDTO customerUploadDTO = new CustomerUploadDTO("Novo nome", "novoEmail@email.com", adressDto);
+
+        customer.updateInformation(customerUploadDTO);
+
+        verify(address, times(1)).updateInformationAdress(customerUploadDTO.adressDto());
     }
 
     @Test
@@ -42,5 +71,28 @@ class CustomerTest {
         assertTrue(customer.isActive());
         customer.inactivate();
         assertFalse(customer.isActive());
+    }
+
+    @Test
+    public void testAllArgsConstructor(){
+        Long id = 1l;
+        String name = "Nome";
+        String email = "email@email.com";
+        String cpf = "11111111111";
+        boolean active = true;
+        Address address = mock(Address.class);
+
+        Customer customer = new Customer(id, name, email, cpf, active, address);
+
+        assertEquals(id, customer.getId());
+        assertEquals(name, customer.getName());
+        assertEquals(email, customer.getEmail());
+        assertEquals(cpf, customer.getCpf());
+        assertEquals(active, customer.isActive());
+        assertEquals(address, customer.getAddress());
+    }
+    @Test
+    public void testNoArgsConstructor(){
+
     }
 }
