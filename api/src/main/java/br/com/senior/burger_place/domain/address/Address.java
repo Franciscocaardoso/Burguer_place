@@ -28,7 +28,7 @@ public class Address {
         this.complement = adressDto.complement();
     }
 
-    public void updateInformation(AdressDto adressDto) {
+    public void updateInformationAdress(AdressDto adressDto) {
         if (adressDto.streetAddress() != null){
             this.streetAddress = adressDto.streetAddress();
         }

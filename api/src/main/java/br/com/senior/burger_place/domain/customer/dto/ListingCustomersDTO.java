@@ -3,13 +3,13 @@ package br.com.senior.burger_place.domain.customer.dto;
 import br.com.senior.burger_place.domain.address.Address;
 import br.com.senior.burger_place.domain.customer.Customer;
 
-public record listingCustomersDTO(
+public record ListingCustomersDTO(
         String name,
         String email,
         Address address
 
 ) {
-    public listingCustomersDTO(Customer customer) {
+    public ListingCustomersDTO(Customer customer) {
         this(customer.getName(), customer.getEmail(), customer.getAddress());
     }
 

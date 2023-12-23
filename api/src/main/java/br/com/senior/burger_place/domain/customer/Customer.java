@@ -31,7 +31,6 @@ public class Customer {
                 this.address = new Address(data.address());
         }
 
-
         public void updateInformation(CustomerUploadDTO data) {
                 if (data.name() != null){
                         this.name = data.name();
@@ -40,10 +39,9 @@ public class Customer {
                         this.email = data.email();
                 }
                 if (data.adressDto() != null){
-                        this.address.updateInformation(data.adressDto());
+                        this.address.updateInformationAdress(data.adressDto());
                 }
         }
-
         public void inactivate() {
                 this.active = false;
         }

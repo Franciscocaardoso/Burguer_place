@@ -2,7 +2,7 @@ package br.com.senior.burger_place.domain.customer;
 
 import br.com.senior.burger_place.domain.customer.dto.CustomerRegistrationDTO;
 import br.com.senior.burger_place.domain.customer.dto.CustomerUploadDTO;
-import br.com.senior.burger_place.domain.customer.dto.listingCustomersDTO;
+import br.com.senior.burger_place.domain.customer.dto.ListingCustomersDTO;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -26,8 +26,8 @@ public class CustomerService {
         return customerRepository.save(new Customer(data));
     }
 
-    public Page<listingCustomersDTO> listCustomer(@PageableDefault(size = 5) Pageable pageable) {
-        return customerRepository.findAllByActiveTrue(pageable).map(listingCustomersDTO::new);
+    public Page<ListingCustomersDTO> listCustomer(@PageableDefault(size = 5) Pageable pageable) {
+        return customerRepository.findAllByActiveTrue(pageable).map(ListingCustomersDTO::new);
     }
 
     public Customer listCustomerById(Long id) {

@@ -3,7 +3,7 @@ package br.com.senior.burger_place.domain.customer;
 import br.com.senior.burger_place.domain.address.AdressDto;
 import br.com.senior.burger_place.domain.customer.dto.CustomerRegistrationDTO;
 import br.com.senior.burger_place.domain.customer.dto.CustomerUploadDTO;
-import br.com.senior.burger_place.domain.customer.dto.listingCustomersDTO;
+import br.com.senior.burger_place.domain.customer.dto.ListingCustomersDTO;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -98,7 +98,7 @@ class CustomerServiceTest {
                 thenReturn(new PageImpl<>(customersActiveList));
 
         Pageable pageable = PageRequest.of(0, 10);
-        Page<listingCustomersDTO> result = customerService.listCustomer(pageable);
+        Page<ListingCustomersDTO> result = customerService.listCustomer(pageable);
 
         verify(customerRepository, times(1)).findAllByActiveTrue(any(Pageable.class));
 

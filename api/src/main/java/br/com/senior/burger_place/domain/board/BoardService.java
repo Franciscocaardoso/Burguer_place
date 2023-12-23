@@ -27,13 +27,15 @@ public class BoardService {
 
     public void updateBoard(Long id, BoardUpdateDTO data) {
         Optional<Board> optionalBoard = repository.findById(id);
+        if (optionalBoard == null){
+            throw new EntityNotFoundException("Mesa não cadastrada");
+        }
         if (optionalBoard.isEmpty()){
             throw new EntityNotFoundException("Mesa não cadastrada");
         }
         Board board = optionalBoard.get();
         board.updateInformation(data);
     }
-
     public Board listBoardsById(Long id) {
         Board board = repository.getReferenceByIdAndActiveTrue(id);
         if (board == null){
@@ -41,8 +43,6 @@ public class BoardService {
         }
         return board;
     }
-
-
     public Board verifyOccupiedBoard(Long id) {
         Board board = listBoardsById(id);
         if (repository.isBoardOccupied(id)){
