@@ -5,12 +5,14 @@ import br.com.senior.burger_place.domain.occupation.dto.*;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -20,27 +22,24 @@ public class OccupationController {
     private OccupationService occupationService;
 
     @GetMapping
-    public ResponseEntity listOccupations(Pageable pageable) {
+    public ResponseEntity<Page<ListOccupationDTO>> listOccupations(Pageable pageable) {
         return ResponseEntity.ok(this.occupationService.listOccupations(pageable));
     }
 
     @GetMapping("/{occupationId}")
-    public ResponseEntity showOccupation(
+    public ResponseEntity<OccupationDTO> showOccupation(
             @PathVariable
             Long occupationId
     ) {
         Optional<OccupationDTO> orderOptional = this.occupationService.showOccupation(occupationId);
 
-        if (orderOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
+        return orderOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 
-        return ResponseEntity.ok(orderOptional.get());
     }
 
     @PostMapping
     @Transactional
-    public ResponseEntity createOccupation(
+    public ResponseEntity<OccupationDTO> createOccupation(
             @RequestBody
             @Valid
             CreateOccupationDTO orderDTO,
@@ -58,7 +57,7 @@ public class OccupationController {
 
     @PostMapping("/{occupationId}/items")
     @Transactional
-    public ResponseEntity addOrderItems(
+    public ResponseEntity<Void> addOrderItems(
             @PathVariable
             Long occupationId,
             @RequestBody
@@ -72,7 +71,7 @@ public class OccupationController {
 
     @DeleteMapping("/{occupationId}/items")
     @Transactional
-    public ResponseEntity removeOrderItems(
+    public ResponseEntity<Void> removeOrderItems(
             @PathVariable
             Long occupationId,
             @RequestBody
@@ -92,6 +91,7 @@ public class OccupationController {
             @PathVariable
             Long itemId,
             @RequestBody
+            @Valid
             UpdateOrderItemDTO itemDTO
     ) {
         this.occupationService.updateOrderItem(occupationId, itemId, itemDTO);
