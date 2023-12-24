@@ -7,6 +7,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
@@ -21,6 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static br.com.senior.burger_place.utils.ProductTestFactory.*;
+import static br.com.senior.burger_place.utils.ProductTestFactory.updateProductDTOFactory;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -34,8 +38,8 @@ public class ProductServiceTest {
     @Test
     void listProducts_whenExistProducts_shouldReturnPageWithProducts() {
         List<Product> someProducts = Arrays.asList(
-                new Product(1L, "Hamburguer clássico", 45.8, null, true),
-                new Product(2L, "Hamburguer clássico americano", 42.8, null, true)
+                productFactory(1L),
+                productFactory(2L)
         );
 
         Page<Product> somePage = new PageImpl<>(someProducts);
@@ -61,7 +65,8 @@ public class ProductServiceTest {
     void listProducts_whenExistProducts_shouldReturnPageWithoutProducts() {
         Page<Product> someEmptyPage = new PageImpl<>(new ArrayList<>());
 
-        when(this.productRepository.findAllByActiveTrue(any(Pageable.class))).thenReturn(someEmptyPage);
+        when(this.productRepository.findAllByActiveTrue(any(Pageable.class)))
+                .thenReturn(someEmptyPage);
 
         List<ProductDTO> output = this.productService.listProducts(Pageable.ofSize(20)).toList();
 
@@ -70,11 +75,14 @@ public class ProductServiceTest {
 
     @Test
     void showProduct_whenProductExists_shouldReturnAnOptionalWithProduct() {
-        Product someProduct = new Product(1L, "Hamburguer clássico", 45.8, null, true);
+        Long someProductId = 1L;
 
-        when(this.productRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(someProduct);
+        Product someProduct = productFactory(someProductId);
 
-        Optional<ProductDTO> output = this.productService.showProduct(1L);
+        when(this.productRepository.getReferenceByIdAndActiveTrue(anyLong()))
+                .thenReturn(someProduct);
+
+        Optional<ProductDTO> output = this.productService.showProduct(someProductId);
 
         assertAll(
                 () -> assertFalse(output.isEmpty()),
@@ -87,26 +95,19 @@ public class ProductServiceTest {
 
     @Test
     void showProduct_whenProductDoesNotExist_shouldReturnAnEmptyOptional() {
+        Long someProductId = 1L;
+
         when(this.productRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(null);
 
-        Optional<ProductDTO> output = this.productService.showProduct(1L);
+        Optional<ProductDTO> output = this.productService.showProduct(someProductId);
 
         assertTrue(output.isEmpty());
     }
 
-    @Test
-    void showProduct_whenIdIsNull_shouldThrow() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.productService.showProduct(null)
-        );
-
-        assertEquals("ID não pode ser null", exception.getMessage());
-    }
-
     @ParameterizedTest()
+    @NullSource
     @ValueSource(longs = {0L, -1L})
-    void showProduct_whenIdLessThanOrEqualToZero_shouldThrow(Long id) {
+    void showProduct_whenIdInvalid_shouldThrow(Long id) {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> this.productService.showProduct(id)
@@ -122,12 +123,14 @@ public class ProductServiceTest {
                 () -> this.productService.createProduct(null)
         );
 
-        assertEquals("DTO não pode ser null", exception.getMessage());
+        assertEquals("DTO inválido", exception.getMessage());
     }
 
-    @Test
-    void createProduct_whenDTONameIsNull_shouldThrow() {
-        CreateProductDTO input = new CreateProductDTO(null, 10.5, null);
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "  ", "\t", "\n    "})
+    void createProduct_whenDTONameIsNull_shouldThrow(String name) {
+        CreateProductDTO input = createProductDTOFactory(name, 10.5);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -137,22 +140,11 @@ public class ProductServiceTest {
         assertEquals("nome inválido", exception.getMessage());
     }
 
-    @Test
-    void createProduct_whenDTOPriceIsNull_shouldThrow() {
-        CreateProductDTO input = new CreateProductDTO("Hamburguer tradicional", null, null);
-
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.productService.createProduct(input)
-        );
-
-        assertEquals("preço inválido", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(doubles = {0D, -1D, -10D})
-    void createProduct_whenDTOPriceIsLessThanOrEqualToZero_shouldThrow(Double price) {
-        CreateProductDTO input = new CreateProductDTO("Hamburguer tradicional", price, null);
+    void createProduct_whenDTOPriceIsInvalid_shouldThrow(Double price) {
+        CreateProductDTO input = createProductDTOFactory("Hamburguer tradicional", price);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -164,8 +156,11 @@ public class ProductServiceTest {
 
     @Test
     void createProduct_whenDTOIsValid_shouldSaveAndReturnProductDTO() {
-        Product product = new Product(1L, "Hamburguer tradicional", 10.2D, null, true);
-        CreateProductDTO input = new CreateProductDTO(product.getName(), product.getPrice(), product.getDescription());
+        Product product = productFactory(1L);
+        CreateProductDTO input = createProductDTOFactory(
+                product.getName(),
+                product.getPrice()
+        );
 
         ArgumentCaptor<Product> argumentCaptor = ArgumentCaptor.forClass(Product.class);
 
@@ -178,29 +173,22 @@ public class ProductServiceTest {
         verify(this.productRepository).save(argumentCaptor.capture());
         Product capturedValue = argumentCaptor.getValue();
 
-        assertEquals(input.name(), capturedValue.getName());
-        assertEquals(input.description(), capturedValue.getDescription());
-        assertEquals(input.price(), capturedValue.getPrice());
+        assertAll(
+                () -> assertEquals(input.name(), capturedValue.getName()),
+                () -> assertEquals(input.description(), capturedValue.getDescription()),
+                () -> assertEquals(input.price(), capturedValue.getPrice()),
 
-        assertEquals(product.getId(), output.id());
-        assertEquals(product.getName(), output.name());
-        assertEquals(product.getDescription(), output.description());
-        assertEquals(product.getPrice(), output.price());
-    }
-
-    @Test
-    void updateProduct_whenIdIsNull_shouldThrow() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.productService.updateProduct(null, null)
+                () -> assertEquals(product.getId(), output.id()),
+                () -> assertEquals(product.getName(), output.name()),
+                () -> assertEquals(product.getDescription(), output.description()),
+                () -> assertEquals(product.getPrice(), output.price())
         );
-
-        assertEquals("ID inválida", exception.getMessage());
     }
 
     @ParameterizedTest
+    @NullSource
     @ValueSource(longs = {0L, -1L, -10L})
-    void updateProduct_whenIdIsLessThanOrEqualsToZero_shouldThrow(Long id) {
+    void updateProduct_whenIdIsInvalid_shouldThrow(Long id) {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> this.productService.updateProduct(id, null)
@@ -216,25 +204,14 @@ public class ProductServiceTest {
                 () -> this.productService.updateProduct(1L, null)
         );
 
-        assertEquals("DTO não pode ser null", exception.getMessage());
-    }
-
-    @Test
-    void updateProduct_whenDTONameIsNull_shouldThrow() {
-        UpdateProductDTO input = new UpdateProductDTO(null, null, null);
-
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.productService.updateProduct(1L, input)
-        );
-
-        assertEquals("nome inválido", exception.getMessage());
+        assertEquals("DTO inválido", exception.getMessage());
     }
 
     @ParameterizedTest
+    @NullSource
     @ValueSource(strings = {"", " "})
-    void updateProduct_whenDTONameIsEmpty_shouldThrow(String name) {
-        UpdateProductDTO input = new UpdateProductDTO(name, null, null);
+    void updateProduct_whenDTONameIsInvalid_shouldThrow(String name) {
+        UpdateProductDTO input = updateProductDTOFactory(name, null);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -244,22 +221,11 @@ public class ProductServiceTest {
         assertEquals("nome inválido", exception.getMessage());
     }
 
-    @Test
-    void updateProduct_whenDTOPriceIsNull_shouldThrow() {
-        UpdateProductDTO input = new UpdateProductDTO("Hamburguer duplo", null, null);
-
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.productService.updateProduct(1L, input)
-        );
-
-        assertEquals("preço inválido", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(doubles = {0D, -1D, -10D})
-    void updateProduct_whenDTOPriceIsLessThanOrEqualToZero_shouldThrow(Double price) {
-        UpdateProductDTO input = new UpdateProductDTO("Hamburguer duplo", price, null);
+    void updateProduct_whenDTOPriceIsInvalid_shouldThrow(Double price) {
+        UpdateProductDTO input = updateProductDTOFactory("Hamburguer duplo", price);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -271,7 +237,7 @@ public class ProductServiceTest {
 
     @Test
     void updateProduct_whenProductDoesNotExist_shouldThrow() {
-        UpdateProductDTO input = new UpdateProductDTO("Hamburguer duplo", 10.5, null);
+        UpdateProductDTO input = updateProductDTOFactory("Hamburguer duplo", 10.5);
 
         when(this.productRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(null);
 
@@ -285,14 +251,18 @@ public class ProductServiceTest {
 
     @Test
     void updateProduct_whenProductExists_shouldUpdateAndReturnProductDTO() {
-        Product product = new Product(1L, "Hamburguer duplo", 10.5, null, true);
-        UpdateProductDTO input = new UpdateProductDTO(product.getName(), product.getPrice(), product.getDescription());
+        Long someProductId = 1L;
+        Product product = productFactory(someProductId);
+        UpdateProductDTO input = updateProductDTOFactory(
+                product.getName(),
+                product.getPrice()
+        );
 
         Product productSpy = spy(product);
 
         when(this.productRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(productSpy);
 
-        ProductDTO output = this.productService.updateProduct(1L, input);
+        ProductDTO output = this.productService.updateProduct(someProductId, input);
 
         verify(productSpy, atMostOnce()).update(any(UpdateProductDTO.class));
         assertAll(
@@ -303,19 +273,10 @@ public class ProductServiceTest {
         );
     }
 
-    @Test
-    void deleteProduct_whenIdIsNull_shouldThrow() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.productService.deleteProduct(null)
-        );
-
-        assertEquals("ID inválida", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(longs = {0L, -1L, -10L})
-    void deleteProduct_whenIdIsLessThanOrEqualsToZero_shouldThrow(Long id) {
+    void deleteProduct_whenIdIsInvalid_shouldThrow(Long id) {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> this.productService.deleteProduct(id)
@@ -338,10 +299,11 @@ public class ProductServiceTest {
 
     @Test
     void deleteProduct_whenProductExists_shouldInactivateProduct() {
-        Product productSpy = spy(new Product(1L, "Hamburguer tradicional", 10.5, null, true));
+        Long someProductId = 1L;
+        Product productSpy = spy(productFactory(someProductId));
         when(this.productRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(productSpy);
 
-        this.productService.deleteProduct(1L);
+        this.productService.deleteProduct(someProductId);
 
         verify(productSpy, atMostOnce()).inactivate();
         assertFalse(productSpy.isActive());
