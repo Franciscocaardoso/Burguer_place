@@ -1,17 +1,18 @@
 package br.com.senior.burger_place.domain.occupation;
 
 import br.com.senior.burger_place.domain.board.Board;
-import br.com.senior.burger_place.domain.board.BoardLocation;
 import br.com.senior.burger_place.domain.board.BoardRepository;
 import br.com.senior.burger_place.domain.customer.Customer;
 import br.com.senior.burger_place.domain.customer.CustomerRepository;
 import br.com.senior.burger_place.domain.occupation.dto.*;
 import br.com.senior.burger_place.domain.product.Product;
 import br.com.senior.burger_place.domain.product.ProductRepository;
+import br.com.senior.burger_place.utils.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
@@ -44,33 +45,9 @@ public class OccupationServiceTest {
 
     @Test
     void listOccupations_whenExistProducts_shouldReturnPageWithOccupationsDTO() {
-        Product someProduct = new Product("Hamburguer tradicional", 10.6, null);
-        List<OrderItem> someOrderItems = List.of(
-                new OrderItem(2, someProduct.getPrice(), someProduct)
-        );
         List<Occupation> someOccupations = Arrays.asList(
-                new Occupation(
-                        1L,
-                        LocalDateTime.now(),
-                        null,
-                        2,
-                        null,
-                        null,
-                        new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true),
-                        null,
-                        true
-                ),
-                new Occupation(
-                        2L,
-                        LocalDateTime.now(),
-                        LocalDateTime.now().plusMinutes(20),
-                        2,
-                        PaymentForm.CARTAO_CREDITO,
-                        someOrderItems,
-                        new Board(2L, 1, 2, BoardLocation.AREA_INTERNA, true),
-                        null,
-                        true
-                )
+                OccupationTestFactory.openedOccupationFactory(1L),
+                OccupationTestFactory.closedOccupationFactory(2L)
         );
 
         Page<Occupation> somePage = new PageImpl<>(someOccupations);
@@ -79,20 +56,14 @@ public class OccupationServiceTest {
 
         List<ListOccupationDTO> output = this.occupationService.listOccupations(Pageable.ofSize(20)).toList();
 
+        List<ListOccupationDTO> expectedOccupations = Arrays.asList(
+                new ListOccupationDTO(someOccupations.get(0)),
+                new ListOccupationDTO(someOccupations.get(1))
+        );
+
         assertAll(
-                () -> assertEquals(someOccupations.size(), output.size()),
-                () -> assertEquals(someOccupations.get(0).getId(), output.get(0).id()),
-                () -> assertEquals(someOccupations.get(0).getBeginOccupation(), output.get(0).beginOccupation()),
-                () -> assertEquals(someOccupations.get(0).getEndOccupation(), output.get(0).endOccupation()),
-                () -> assertEquals(someOccupations.get(0).getPeopleCount(), output.get(0).peopleCount()),
-                () -> assertEquals(someOccupations.get(0).getPaymentForm(), output.get(0).paymentForm()),
-                () -> assertEquals(someOccupations.get(0).getBoard().getNumber(), output.get(0).board().number()),
-                () -> assertEquals(someOccupations.get(1).getId(), output.get(1).id()),
-                () -> assertEquals(someOccupations.get(1).getBeginOccupation(), output.get(1).beginOccupation()),
-                () -> assertEquals(someOccupations.get(1).getEndOccupation(), output.get(1).endOccupation()),
-                () -> assertEquals(someOccupations.get(1).getPeopleCount(), output.get(1).peopleCount()),
-                () -> assertEquals(someOccupations.get(1).getPaymentForm(), output.get(1).paymentForm()),
-                () -> assertEquals(someOccupations.get(1).getBoard().getNumber(), output.get(1).board().number())
+                () -> assertEquals(expectedOccupations.size(), output.size()),
+                () -> assertEquals(expectedOccupations, output)
         );
     }
 
@@ -107,19 +78,10 @@ public class OccupationServiceTest {
         assertTrue(output.isEmpty());
     }
 
-    @Test
-    void showOccupation_whenIdIsNull_shouldThrow() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.occupationService.showOccupation(null)
-        );
-
-        assertEquals("ID inválida", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(longs = {0L, -1L, -10L})
-    void showOccupation_whenIdIsLessThanOrEqualToZero_shouldThrow(Long id) {
+    void showOccupation_whenIdIsInvalid_shouldThrow(Long id) {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> this.occupationService.showOccupation(id)
@@ -139,32 +101,17 @@ public class OccupationServiceTest {
 
     @Test
     void showOccupation_whenProductExists_shouldReturnAnOptionalWithOccupationDTO() {
-        Occupation someOccupation = new Occupation(
-                1L,
-                LocalDateTime.now(),
-                null,
-                2,
-                null,
-                new ArrayList<>(),
-                new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true),
-                new HashSet<>(),
-                true
-        );
+        Occupation someOccupation = OccupationTestFactory.openedOccupationFactory(1L);
 
         when(this.occupationRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(someOccupation);
 
         Optional<OccupationDTO> output = this.occupationService.showOccupation(1L);
 
+        OccupationDTO expectedOccupationDTO = new OccupationDTO(someOccupation);
+
         assertAll(
                 () -> assertFalse(output.isEmpty()),
-                () -> assertEquals(someOccupation.getId(), output.get().id()),
-                () -> assertEquals(someOccupation.getBeginOccupation(), output.get().beginOccupation()),
-                () -> assertEquals(someOccupation.getEndOccupation(), output.get().endOccupation()),
-                () -> assertEquals(someOccupation.getOrderItems().size(), output.get().orderItems().size()),
-                () -> assertEquals(someOccupation.getCustomers().size(), output.get().customers().size()),
-                () -> assertEquals(someOccupation.getPaymentForm(), output.get().paymentForm()),
-                () -> assertEquals(someOccupation.getBoard().getNumber(), output.get().board().number()),
-                () -> assertEquals(someOccupation.getBoard().getLocation(), output.get().board().location())
+                () -> assertEquals(expectedOccupationDTO, output.get())
         );
 
     }
@@ -179,26 +126,10 @@ public class OccupationServiceTest {
         assertEquals("DTO inválido", exception.getMessage());
     }
 
-    @Test
-    void createOccupation_whenDTOBoardIdIsNull_shouldThrow() {
-        CreateOccupationDTO input = new CreateOccupationDTO(
-                LocalDateTime.now().minusMinutes(10),
-                2,
-                null,
-                null
-        );
-
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.occupationService.createOccupation(input)
-        );
-
-        assertEquals("ID da mesa é inválida", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(longs = {0L, -1L, -10L})
-    void createOccupation_whenDTOBoardIdIsLessThanOrEqualToZero_shouldThrow(Long id) {
+    void createOccupation_whenDTOBoardIdIsInvalid_shouldThrow(Long id) {
         CreateOccupationDTO input = new CreateOccupationDTO(
                 LocalDateTime.now().minusMinutes(10),
                 2,
@@ -269,16 +200,15 @@ public class OccupationServiceTest {
 
     @Test
     void createOccupation_whenBoardIsOccupied_shouldThrow() {
+        Board someBoard = BoardTestFactory.boardFactory(1L, 1, 2);
         CreateOccupationDTO input = new CreateOccupationDTO(
                 LocalDateTime.now().minusMinutes(10),
                 2,
-                1L,
+                someBoard.getId(),
                 null
         );
 
-        Board board = new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true);
-
-        when(this.boardRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(board);
+        when(this.boardRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(someBoard);
         when(this.boardRepository.isBoardOccupied(anyLong())).thenReturn(true);
 
         IllegalArgumentException exception = assertThrows(
@@ -289,24 +219,8 @@ public class OccupationServiceTest {
         assertEquals("Mesa já está ocupada", exception.getMessage());
     }
 
-    @Test
-    void createOccupation_whenDTOPeopleCountIsNull_shouldThrow() {
-        CreateOccupationDTO input = new CreateOccupationDTO(
-                LocalDateTime.now().minusMinutes(10),
-                null,
-                1L,
-                null
-        );
-
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.occupationService.createOccupation(input)
-        );
-
-        assertEquals("Quantidade de pessoas é inválida", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(ints = {0, -1, -10})
     void createOccupation_whenDTOPeopleCountIsLessThanOrEqualToZero_shouldThrow(Integer peopleCount) {
         CreateOccupationDTO input = new CreateOccupationDTO(
@@ -325,31 +239,21 @@ public class OccupationServiceTest {
     }
 
     @Test
-    void createOccupation_whenDTOCustomerIdsIsEmpty_shouldSaveAndReturnOccupation() {
+    void createOccupation_whenDTOCustomerIdsIsNotEmpty_shouldSaveAndReturnOccupation() {
         Set<Customer> someCustomers = Set.of(
-                new Customer(1L, "Cliente 01", null, null, true, null),
-                new Customer(2L, "Cliente 02", null, null, true, null)
+                CustomerTestFactory.customerFactory(1L),
+                CustomerTestFactory.customerFactory(2L)
         );
-        Occupation someOccupation = new Occupation(
-                1L,
-                LocalDateTime.now(),
-                null,
-                2,
-                null,
-                new ArrayList<>(),
-                new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true),
-                someCustomers,
-                true
-        );
+        Board someBoard = BoardTestFactory.boardFactory(1L, 1, 2);
+        Occupation someOccupation = OccupationTestFactory.openedOccupationFactory(1L, someBoard, someCustomers);
         CreateOccupationDTO input = new CreateOccupationDTO(
                 LocalDateTime.now().minusMinutes(10),
                 2,
-                1L,
+                someBoard.getId(),
                 Set.of(1L, 2L)
         );
-        Board board = new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true);
 
-        when(this.boardRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(board);
+        when(this.boardRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(someBoard);
         when(this.boardRepository.isBoardOccupied(anyLong())).thenReturn(false);
         when(this.occupationRepository.save(any(Occupation.class))).thenReturn(someOccupation);
         when(this.customerRepository.getCustomers(anySet())).thenReturn(someCustomers);
@@ -361,46 +265,29 @@ public class OccupationServiceTest {
         verify(this.occupationRepository).save(argumentCaptor.capture());
         Occupation capturedOccupation = argumentCaptor.getValue();
 
+        OccupationDTO expectedOccupationDTO = new OccupationDTO(someOccupation);
+
         assertAll(
                 () -> assertEquals(input.beginOccupation(), capturedOccupation.getBeginOccupation()),
                 () -> assertEquals(input.peopleCount(), capturedOccupation.getPeopleCount()),
-                () -> assertEquals(board, capturedOccupation.getBoard()),
+                () -> assertEquals(someBoard, capturedOccupation.getBoard()),
 
-                () -> assertEquals(someOccupation.getId(), output.id()),
-                () -> assertEquals(someOccupation.getBeginOccupation(), output.beginOccupation()),
-                () -> assertEquals(someOccupation.getEndOccupation(), output.endOccupation()),
-                () -> assertEquals(someOccupation.getPeopleCount(), output.peopleCount()),
-                () -> assertEquals(someOccupation.getPaymentForm(), output.paymentForm()),
-                () -> assertEquals(someOccupation.getOrderItems().size(), output.orderItems().size()),
-                () -> assertEquals(someOccupation.getBoard().getLocation(), output.board().location()),
-                () -> assertEquals(someOccupation.getBoard().getNumber(), output.board().number()),
-                () -> assertEquals(someOccupation.getCustomers().size(), output.customers().size()),
+                () -> assertEquals(expectedOccupationDTO, output),
                 () -> assertEquals(someCustomers.size(), output.customers().size())
         );
     }
 
     @Test
     void createOccupation_whenCustomersDoesNotExist_shouldThrow() {
-        Occupation someOccupation = new Occupation(
-                1L,
-                LocalDateTime.now(),
-                null,
-                2,
-                null,
-                new ArrayList<>(),
-                new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true),
-                new HashSet<>(),
-                true
-        );
+        Board someBoard = BoardTestFactory.boardFactory(1L, 1, 2);
         CreateOccupationDTO input = new CreateOccupationDTO(
                 LocalDateTime.now().minusMinutes(10),
                 2,
-                1L,
+                someBoard.getId(),
                 Set.of(1L, 2L)
         );
-        Board board = new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true);
 
-        when(this.boardRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(board);
+        when(this.boardRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(someBoard);
         when(this.boardRepository.isBoardOccupied(anyLong())).thenReturn(false);
         when(this.customerRepository.getCustomers(anySet())).thenReturn(new HashSet<>());
 
@@ -414,18 +301,16 @@ public class OccupationServiceTest {
 
     @Test
     void createOccupation_whenSomeCustomerDoesNotExist_shouldThrow() {
-        Set<Customer> someCustomers = Set.of(
-                new Customer(1L, "Cliente 01", null, null, true, null)
-        );
+        Set<Customer> someCustomers = Set.of(CustomerTestFactory.customerFactory(1L));
+        Board someBoard = BoardTestFactory.boardFactory(1L, 1, 2);
         CreateOccupationDTO input = new CreateOccupationDTO(
                 LocalDateTime.now().minusMinutes(10),
                 2,
-                1L,
+                someBoard.getId(),
                 Set.of(1L, 2L)
         );
-        Board board = new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true);
 
-        when(this.boardRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(board);
+        when(this.boardRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(someBoard);
         when(this.boardRepository.isBoardOccupied(anyLong())).thenReturn(false);
         when(this.customerRepository.getCustomers(anySet())).thenReturn(someCustomers);
 
@@ -437,19 +322,10 @@ public class OccupationServiceTest {
         assertEquals("Algum cliente não existe ou foi desativado", exception.getMessage());
     }
 
-    @Test
-    void addOrderItems_whenOccupationIdIsNull_shouldThrow() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.occupationService.addOrderItems(null, null)
-        );
-
-        assertEquals("ID da ocupação inválida", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(longs = {0L, -1L, -10L})
-    void addOrderItems_whenOccupationIdIsLessThanOrEqualToZero_shouldThrow(Long occupationId) {
+    void addOrderItems_whenOccupationIdIsInvalid_shouldThrow(Long occupationId) {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> this.occupationService.addOrderItems(occupationId, null)
@@ -470,9 +346,7 @@ public class OccupationServiceTest {
 
     @Test
     void addOrderItems_whenDTOOrderItemsIsEmpty_shouldThrow() {
-        AddOrderItemsDTO input = new AddOrderItemsDTO(
-                new ArrayList<>()
-        );
+        AddOrderItemsDTO input = new AddOrderItemsDTO(List.of());
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -482,26 +356,10 @@ public class OccupationServiceTest {
         assertEquals("Lista de itens do pedido está vazia", exception.getMessage());
     }
 
-    @Test
-    void addOrderItems_whenDTOOrderItemsHasSomeProductIdBeenNull_shouldThrow() {
-        AddOrderItemsDTO input = new AddOrderItemsDTO(
-                Arrays.asList(
-                        new CreateOrderItemDTO(1L, 2, null),
-                        new CreateOrderItemDTO(null, 2, null)
-                )
-        );
-
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.occupationService.addOrderItems(1L, input)
-        );
-
-        assertEquals("Algum item possui a ID do produto é inválida", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(longs = {0L, -1L, -10L})
-    void addOrderItems_whenDTOOrderItemsHasSomeProductIdLessThanOrEqualToZero_shouldThrow(Long productId) {
+    void addOrderItems_whenDTOOrderItemsHasSomeProductIdIsInvalid_shouldThrow(Long productId) {
         AddOrderItemsDTO input = new AddOrderItemsDTO(
                 Arrays.asList(
                         new CreateOrderItemDTO(1L, 2, null),
@@ -517,26 +375,10 @@ public class OccupationServiceTest {
         assertEquals("Algum item possui a ID do produto é inválida", exception.getMessage());
     }
 
-    @Test
-    void addOrderItems_whenDTOOrderItemsHasSomeProductAmountBeenNull_shouldThrow() {
-        AddOrderItemsDTO input = new AddOrderItemsDTO(
-                Arrays.asList(
-                        new CreateOrderItemDTO(1L, 2, null),
-                        new CreateOrderItemDTO(2L, null, null)
-                )
-        );
-
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.occupationService.addOrderItems(1L, input)
-        );
-
-        assertEquals("Quantidade do produto é inválido", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(ints = {0, -1, -10})
-    void addOrderItems_whenDTOOrderItemsHasSomeProductIdLessThanOrEqualToZero_shouldThrow(Integer productAmount) {
+    void addOrderItems_whenDTOOrderItemsHasSomeProductAmountBeenInvalid_shouldThrow(Integer productAmount) {
         AddOrderItemsDTO input = new AddOrderItemsDTO(
                 Arrays.asList(
                         new CreateOrderItemDTO(1L, 2, null),
@@ -579,17 +421,7 @@ public class OccupationServiceTest {
                         new CreateOrderItemDTO(2L, 1, null)
                 )
         );
-        Occupation someOccupation = new Occupation(
-                1L,
-                LocalDateTime.now(),
-                LocalDateTime.now().plusMinutes(30),
-                2,
-                null,
-                new ArrayList<>(),
-                new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true),
-                new HashSet<>(),
-                true
-        );
+        Occupation someOccupation = OccupationTestFactory.closedOccupationFactory(1L);
 
         when(this.occupationRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(someOccupation);
 
@@ -602,27 +434,15 @@ public class OccupationServiceTest {
     }
 
     @Test
-    void addOrderItems_whenDTOOrderItemsHasNonexistentProducts_shouldThrow() {
+    void addOrderItems_whenDTOOrderItemsHasNonExistentProducts_shouldThrow() {
         AddOrderItemsDTO input = new AddOrderItemsDTO(
                 Arrays.asList(
                         new CreateOrderItemDTO(1L, 2, null),
                         new CreateOrderItemDTO(2L, 1, null)
                 )
         );
-        Occupation someOccupation = new Occupation(
-                1L,
-                LocalDateTime.now(),
-                null,
-                2,
-                null,
-                new ArrayList<>(),
-                new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true),
-                new HashSet<>(),
-                true
-        );
-        List<Product> someProducts = List.of(
-                new Product(1L, "Hamburguer tradicional", 25.9, null, true)
-        );
+        Occupation someOccupation = OccupationTestFactory.openedOccupationFactory(1L);
+        List<Product> someProducts = List.of(ProductTestFactory.productFactory(1L));
 
         when(this.occupationRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(someOccupation);
         when(this.productRepository.getReferenceByActiveTrueAndIdIn(anyList())).thenReturn(someProducts);
@@ -643,20 +463,10 @@ public class OccupationServiceTest {
                         new CreateOrderItemDTO(2L, 1, null)
                 )
         );
-        Occupation someOccupation = new Occupation(
-                1L,
-                LocalDateTime.now(),
-                null,
-                2,
-                null,
-                new ArrayList<>(),
-                new Board(1L, 1, 2, BoardLocation.AREA_INTERNA, true),
-                new HashSet<>(),
-                true
-        );
+        Occupation someOccupation = OccupationTestFactory.openedOccupationFactory(1L);
         List<Product> someProducts = List.of(
-                new Product(1L, "Hamburguer tradicional", 25.9, null, true),
-                new Product(2L, "Hamburguer vegano", 21.5, null, true)
+                ProductTestFactory.productFactory(1L),
+                ProductTestFactory.productFactory(2L)
         );
 
         when(this.occupationRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(someOccupation);
@@ -685,19 +495,10 @@ public class OccupationServiceTest {
         );
     }
 
-    @Test
-    void removeOrderItems_whenOccupationIdIsNull_shouldThrow() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.occupationService.removeOrderItems(null, null)
-        );
-
-        assertEquals("ID da ocupação inválida", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(longs = {0L, -1L, -10L})
-    void removeOrderItems_whenOccupationIdIsLessThanOrEqualToZero_shouldThrow(Long occupationId) {
+    void removeOrderItems_whenOccupationIdIsInvalid_shouldThrow(Long occupationId) {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> this.occupationService.removeOrderItems(occupationId, null)
@@ -760,9 +561,8 @@ public class OccupationServiceTest {
     @Test
     void removeOrderItems_whenOrderItemsDoesNotBelongToOccupation_shouldThrow() {
         RemoveOrderItemsDTO input = new RemoveOrderItemsDTO(List.of(1L, 2L));
-        Occupation someOccupation = new Occupation();
         List<OrderItem> someOrderItems = List.of(
-                new OrderItem(1L, 2, 20.3, OrderItemStatus.PRONTO, null, new Product(), someOccupation, true)
+                OrderItemTestFactory.orderItemFactory(1L)
         );
 
         when(this.occupationRepository.existsByIdAndActiveTrue(anyLong())).thenReturn(true);
@@ -779,10 +579,9 @@ public class OccupationServiceTest {
     @Test
     void removeOrderItems_whenOrderItemsBelongsToOccupation_shouldInactivateAllOrderItems() {
         RemoveOrderItemsDTO input = new RemoveOrderItemsDTO(List.of(1L, 2L));
-        Occupation someOccupation = new Occupation();
         List<OrderItem> someOrderItems = List.of(
-                spy(new OrderItem(1L, 2, 20.3, OrderItemStatus.PRONTO, null, new Product(), someOccupation, true)),
-                spy(new OrderItem(2L, 2, 20.3, OrderItemStatus.PRONTO, null, new Product(), someOccupation, true))
+                spy(OrderItemTestFactory.orderItemFactory(1L)),
+                spy(OrderItemTestFactory.orderItemFactory(2L))
         );
 
         when(this.occupationRepository.existsByIdAndActiveTrue(anyLong())).thenReturn(true);
@@ -795,19 +594,10 @@ public class OccupationServiceTest {
         verify(someOrderItems.get(1), atMostOnce()).inactivate();
     }
 
-    @Test
-    void updateOrderItem_whenOccupationIdIsNull_shouldThrow() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.occupationService.updateOrderItem(null, null, null)
-        );
-
-        assertEquals("ID da ocupação inválida", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(longs = {0L, -1L, -10L})
-    void updateOrderItem_whenOccupationIdIsLessThanOrEqualToZero_shouldThrow(Long occupationId) {
+    void updateOrderItem_whenOccupationIdIsInvalid_shouldThrow(Long occupationId) {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> this.occupationService.updateOrderItem(occupationId, null, null)
@@ -816,19 +606,10 @@ public class OccupationServiceTest {
         assertEquals("ID da ocupação inválida", exception.getMessage());
     }
 
-    @Test
-    void updateOrderItem_whenItemIdIsNull_shouldThrow() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.occupationService.updateOrderItem(1L, null, null)
-        );
-
-        assertEquals("ID do item inválido", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(longs = {0L, -1L, -10L})
-    void updateOrderItem_whenItemIdIsLessThanOrEqualToZero_shouldThrow(Long itemId) {
+    void updateOrderItem_whenItemIdIsInvalid_shouldThrow(Long itemId) {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> this.occupationService.updateOrderItem(1L, itemId, null)
@@ -847,21 +628,10 @@ public class OccupationServiceTest {
         assertEquals("DTO inválido", exception.getMessage());
     }
 
-    @Test
-    void updateOrderItem_whenDTOAmountIsNull_shouldThrow() {
-        UpdateOrderItemDTO input = new UpdateOrderItemDTO(null, null);
-
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.occupationService.updateOrderItem(1L, 1L, input)
-        );
-
-        assertEquals("Quantidade de itens inválida", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(ints = {0, -1, -10})
-    void updateOrderItem_whenDTOAmountIsLessThanOrEqualToZero_shouldThrow(Integer amount) {
+    void updateOrderItem_whenDTOAmountIsInvalid_shouldThrow(Integer amount) {
         UpdateOrderItemDTO input = new UpdateOrderItemDTO(amount, null);
 
         IllegalArgumentException exception = assertThrows(
@@ -904,7 +674,8 @@ public class OccupationServiceTest {
     @Test
     void updateOrderItem_whenItemWasDelivered_shouldThrow() {
         UpdateOrderItemDTO input = new UpdateOrderItemDTO(2, null);
-        OrderItem someOrderItem = new OrderItem(1L, 2, 23.5, OrderItemStatus.ENTREGUE, null, new Product(), new Occupation(), true);
+        OrderItem someOrderItem = OrderItemTestFactory.orderItemFactory(1L);
+        someOrderItem.deliver();
 
         when(this.occupationRepository.existsByIdAndActiveTrue(anyLong())).thenReturn(true);
         when(this.orderItemRepository.getReferenceByIdAndOccupationIdAndActiveTrue(anyLong(), anyLong())).thenReturn(someOrderItem);
@@ -920,7 +691,7 @@ public class OccupationServiceTest {
     @Test
     void updateOrderItem_whenItemIsValid_shouldUpdateOrderItem() {
         UpdateOrderItemDTO input = new UpdateOrderItemDTO(2, null);
-        OrderItem someOrderItemSpy = spy(new OrderItem(1L, 2, 23.5, OrderItemStatus.EM_ANDAMENTO, null, new Product(), new Occupation(), true));
+        OrderItem someOrderItemSpy = spy(OrderItemTestFactory.orderItemFactory(1L, 1));
 
         when(this.occupationRepository.existsByIdAndActiveTrue(anyLong())).thenReturn(true);
         when(this.orderItemRepository.getReferenceByIdAndOccupationIdAndActiveTrue(anyLong(), anyLong())).thenReturn(someOrderItemSpy);
@@ -928,21 +699,13 @@ public class OccupationServiceTest {
         this.occupationService.updateOrderItem(1L, 1L, input);
 
         verify(someOrderItemSpy, atMostOnce()).update(any(UpdateOrderItemDTO.class));
-    }
-
-    @Test
-    void inactivateOccupation_whenOccupationIdIsNull_shouldThrow() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.occupationService.inactivateOccupation(null)
-        );
-
-        assertEquals("ID da ocupação inválida", exception.getMessage());
+        assertEquals(input.amount(), someOrderItemSpy.getAmount());
     }
 
     @ParameterizedTest
+    @NullSource
     @ValueSource(longs = {0L, -1L, -10L})
-    void inactivateOccupation_whenOccupationIdIsLessThanOrEqualToZero_shouldThrow(Long occupationId) {
+    void inactivateOccupation_whenOccupationIdIsInvalid_shouldThrow(Long occupationId) {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> this.occupationService.inactivateOccupation(occupationId)
@@ -966,21 +729,10 @@ public class OccupationServiceTest {
     @Test
     void inactivateOccupation_whenOccupationIsValid_shouldInactivateOccupationAndItsOrderItems() {
         List<OrderItem> someOrderItems = Arrays.asList(
-                spy(new OrderItem(2, 23.5, new Product())),
-                spy(new OrderItem(1, 23.5, new Product()))
+                spy(OrderItemTestFactory.orderItemFactory(1L)),
+                spy(OrderItemTestFactory.orderItemFactory(2L))
         );
-        Occupation someOccupationSpy = spy(new Occupation(
-                1L,
-                LocalDateTime.now(),
-                null,
-                2,
-                PaymentForm.CARTAO_CREDITO,
-                someOrderItems,
-                new Board(),
-                new HashSet<>(),
-                true
-        ));
-
+        Occupation someOccupationSpy = spy(OccupationTestFactory.openedOccupationFactory(1L));
 
         when(this.occupationRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(someOccupationSpy);
         when(this.orderItemRepository.findByOccupationId(anyLong())).thenReturn(someOrderItems);
@@ -996,19 +748,10 @@ public class OccupationServiceTest {
         assertFalse(someOrderItems.get(1).isActive());
     }
 
-    @Test
-    void startOrderItemPreparation_whenOccupationIdIsNull_shouldThrow() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.occupationService.startOrderItemPreparation(null, null)
-        );
-
-        assertEquals("ID da ocupação inválida", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(longs = {0L, -1L, -10L})
-    void startOrderItemPreparation_whenOccupationIdIsLessThanOrEqualToZero_shouldThrow(Long occupationId) {
+    void startOrderItemPreparation_whenOccupationIdIsInvalid_shouldThrow(Long occupationId) {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> this.occupationService.startOrderItemPreparation(occupationId, null)
@@ -1017,19 +760,10 @@ public class OccupationServiceTest {
         assertEquals("ID da ocupação inválida", exception.getMessage());
     }
 
-    @Test
-    void startOrderItemPreparation_whenItemIdIsNull_shouldThrow() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.occupationService.startOrderItemPreparation(1L, null)
-        );
-
-        assertEquals("ID do item inválido", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(longs = {0L, -1L, -10L})
-    void startOrderItemPreparation_whenItemIdIsLessThanOrEqualToZero_shouldThrow(Long itemId) {
+    void startOrderItemPreparation_whenItemIdIsInvalid_shouldThrow(Long itemId) {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> this.occupationService.startOrderItemPreparation(1L, itemId)
@@ -1065,13 +799,7 @@ public class OccupationServiceTest {
 
     @Test
     void startOrderItemPreparation_whenItemIsInProgress_shouldThrow() {
-        OrderItem someOrderItem = new OrderItem(
-                2,
-                21.9,
-                new Product(),
-                new Occupation(),
-                null
-        );
+        OrderItem someOrderItem = OrderItemTestFactory.orderItemFactory(1L);
         someOrderItem.startPreparation();
 
         when(this.occupationRepository.existsByIdAndActiveTrue(anyLong())).thenReturn(true);
@@ -1087,17 +815,10 @@ public class OccupationServiceTest {
 
     @Test
     void startOrderItemPreparation_whenWasReceived_shouldChangeToInProgressState() {
-        OrderItem someOrderItemSpy = spy(new OrderItem(
-                2,
-                21.9,
-                new Product(),
-                new Occupation(),
-                null
-        ));
+        OrderItem someOrderItemSpy = spy(OrderItemTestFactory.orderItemFactory(1L));
 
         when(this.occupationRepository.existsByIdAndActiveTrue(anyLong())).thenReturn(true);
         when(this.orderItemRepository.getReferenceByIdAndOccupationIdAndActiveTrue(anyLong(), anyLong())).thenReturn(someOrderItemSpy);
-
 
         this.occupationService.startOrderItemPreparation(1L, 1L);
 
@@ -1105,19 +826,10 @@ public class OccupationServiceTest {
         assertEquals(OrderItemStatus.EM_ANDAMENTO, someOrderItemSpy.getStatus());
     }
 
-    @Test
-    void finishOrderItemPreparation_whenOccupationIdIsNull_shouldThrow() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.occupationService.finishOrderItemPreparation(null, null)
-        );
-
-        assertEquals("ID da ocupação inválida", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(longs = {0L, -1L, -10L})
-    void finishOrderItemPreparation_whenOccupationIdIsLessThanOrEqualToZero_shouldThrow(Long occupationId) {
+    void finishOrderItemPreparation_whenOccupationIdIsInvalid_shouldThrow(Long occupationId) {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> this.occupationService.finishOrderItemPreparation(occupationId, null)
@@ -1126,17 +838,8 @@ public class OccupationServiceTest {
         assertEquals("ID da ocupação inválida", exception.getMessage());
     }
 
-    @Test
-    void finishOrderItemPreparation_whenItemIdIsNull_shouldThrow() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.occupationService.finishOrderItemPreparation(1L, null)
-        );
-
-        assertEquals("ID do item inválido", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(longs = {0L, -1L, -10L})
     void finishOrderItemPreparation_whenItemIdIsLessThanOrEqualToZero_shouldThrow(Long itemId) {
         IllegalArgumentException exception = assertThrows(
@@ -1174,13 +877,7 @@ public class OccupationServiceTest {
 
     @Test
     void finishOrderItemPreparation_whenItemIsInProgress_shouldThrow() {
-        OrderItem someOrderItem = new OrderItem(
-                2,
-                21.9,
-                new Product(),
-                new Occupation(),
-                null
-        );
+        OrderItem someOrderItem = OrderItemTestFactory.orderItemFactory(1L);
         someOrderItem.finishPreparation();
 
         when(this.occupationRepository.existsByIdAndActiveTrue(anyLong())).thenReturn(true);
@@ -1196,13 +893,7 @@ public class OccupationServiceTest {
 
     @Test
     void finishOrderItemPreparation_whenWasReceived_shouldChangeToInProgressState() {
-        OrderItem someOrderItemSpy = spy(new OrderItem(
-                2,
-                21.9,
-                new Product(),
-                new Occupation(),
-                null
-        ));
+        OrderItem someOrderItemSpy = spy(OrderItemTestFactory.orderItemFactory(1L));
 
         when(this.occupationRepository.existsByIdAndActiveTrue(anyLong())).thenReturn(true);
         when(this.orderItemRepository.getReferenceByIdAndOccupationIdAndActiveTrue(anyLong(), anyLong())).thenReturn(someOrderItemSpy);
@@ -1214,19 +905,10 @@ public class OccupationServiceTest {
         assertEquals(OrderItemStatus.PRONTO, someOrderItemSpy.getStatus());
     }
 
-    @Test
-    void deliverOrderItem_whenOccupationIdIsNull_shouldThrow() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.occupationService.deliverOrderItem(null, null)
-        );
-
-        assertEquals("ID da ocupação inválida", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(longs = {0L, -1L, -10L})
-    void deliverOrderItem_whenOccupationIdIsLessThanOrEqualToZero_shouldThrow(Long occupationId) {
+    void deliverOrderItem_whenOccupationIdIsInvalid_shouldThrow(Long occupationId) {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> this.occupationService.deliverOrderItem(occupationId, null)
@@ -1235,19 +917,10 @@ public class OccupationServiceTest {
         assertEquals("ID da ocupação inválida", exception.getMessage());
     }
 
-    @Test
-    void deliverOrderItem_whenItemIdIsNull_shouldThrow() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.occupationService.deliverOrderItem(1L, null)
-        );
-
-        assertEquals("ID do item inválido", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(longs = {0L, -1L, -10L})
-    void deliverOrderItem_whenItemIdIsLessThanOrEqualToZero_shouldThrow(Long itemId) {
+    void deliverOrderItem_whenItemIdIsInvalid_shouldThrow(Long itemId) {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> this.occupationService.deliverOrderItem(1L, itemId)
@@ -1283,13 +956,7 @@ public class OccupationServiceTest {
 
     @Test
     void deliverOrderItem_whenItemIsInProgress_shouldThrow() {
-        OrderItem someOrderItem = new OrderItem(
-                2,
-                21.9,
-                new Product(),
-                new Occupation(),
-                null
-        );
+        OrderItem someOrderItem = OrderItemTestFactory.orderItemFactory(1L);
         someOrderItem.deliver();
 
         when(this.occupationRepository.existsByIdAndActiveTrue(anyLong())).thenReturn(true);
@@ -1305,13 +972,7 @@ public class OccupationServiceTest {
 
     @Test
     void deliverOrderItem_whenWasReceived_shouldChangeToInProgressState() {
-        OrderItem someOrderItemSpy = spy(new OrderItem(
-                2,
-                21.9,
-                new Product(),
-                new Occupation(),
-                null
-        ));
+        OrderItem someOrderItemSpy = spy(OrderItemTestFactory.orderItemFactory(1L));
 
         when(this.occupationRepository.existsByIdAndActiveTrue(anyLong())).thenReturn(true);
         when(this.orderItemRepository.getReferenceByIdAndOccupationIdAndActiveTrue(anyLong(), anyLong())).thenReturn(someOrderItemSpy);
@@ -1323,19 +984,10 @@ public class OccupationServiceTest {
         assertEquals(OrderItemStatus.ENTREGUE, someOrderItemSpy.getStatus());
     }
 
-    @Test
-    void cancelOrderItem_whenOccupationIdIsNull_shouldThrow() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.occupationService.cancelOrderItem(null, null)
-        );
-
-        assertEquals("ID da ocupação inválida", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(longs = {0L, -1L, -10L})
-    void cancelOrderItem_whenOccupationIdIsLessThanOrEqualToZero_shouldThrow(Long occupationId) {
+    void cancelOrderItem_whenOccupationIdIsInvalid_shouldThrow(Long occupationId) {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> this.occupationService.cancelOrderItem(occupationId, null)
@@ -1344,19 +996,10 @@ public class OccupationServiceTest {
         assertEquals("ID da ocupação inválida", exception.getMessage());
     }
 
-    @Test
-    void cancelOrderItem_whenItemIdIsNull_shouldThrow() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.occupationService.cancelOrderItem(1L, null)
-        );
-
-        assertEquals("ID do item inválido", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(longs = {0L, -1L, -10L})
-    void cancelOrderItem_whenItemIdIsLessThanOrEqualToZero_shouldThrow(Long itemId) {
+    void cancelOrderItem_whenItemIdIsInvalid_shouldThrow(Long itemId) {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> this.occupationService.cancelOrderItem(1L, itemId)
@@ -1392,13 +1035,7 @@ public class OccupationServiceTest {
 
     @Test
     void cancelOrderItem_whenItemIsInProgress_shouldThrow() {
-        OrderItem someOrderItem = new OrderItem(
-                2,
-                21.9,
-                new Product(),
-                new Occupation(),
-                null
-        );
+        OrderItem someOrderItem = OrderItemTestFactory.orderItemFactory(1L);
         someOrderItem.cancel();
 
         when(this.occupationRepository.existsByIdAndActiveTrue(anyLong())).thenReturn(true);
@@ -1414,13 +1051,7 @@ public class OccupationServiceTest {
 
     @Test
     void cancelOrderItem_whenWasReceived_shouldChangeToInProgressState() {
-        OrderItem someOrderItemSpy = spy(new OrderItem(
-                2,
-                21.9,
-                new Product(),
-                new Occupation(),
-                null
-        ));
+        OrderItem someOrderItemSpy = spy(OrderItemTestFactory.orderItemFactory(1L));
 
         when(this.occupationRepository.existsByIdAndActiveTrue(anyLong())).thenReturn(true);
         when(this.orderItemRepository.getReferenceByIdAndOccupationIdAndActiveTrue(anyLong(), anyLong())).thenReturn(someOrderItemSpy);
@@ -1431,17 +1062,8 @@ public class OccupationServiceTest {
         assertEquals(OrderItemStatus.CANCELADO, someOrderItemSpy.getStatus());
     }
 
-    @Test
-    void finishOccupation_whenOccupationIdIsNull_shouldThrow() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.occupationService.finishOccupation(null, null)
-        );
-
-        assertEquals("ID da ocupação inválida", exception.getMessage());
-    }
-
     @ParameterizedTest
+    @NullSource
     @ValueSource(longs = {0L, -1L, -10L})
     void finishOccupation_whenOccupationIdIsLessThanOrEqualToZero_shouldThrow(Long occupationId) {
         IllegalArgumentException exception = assertThrows(
@@ -1524,17 +1146,7 @@ public class OccupationServiceTest {
                 LocalDateTime.now().plusMinutes(1),
                 PaymentForm.CARTAO_CREDITO);
 
-        Occupation someOccupation = new Occupation(
-                1L,
-                LocalDateTime.now().minusMinutes(10),
-                LocalDateTime.now().plusMinutes(1),
-                2,
-                PaymentForm.CARTAO_CREDITO,
-                List.of(new OrderItem()),
-                new Board(),
-                new HashSet<>(),
-                true
-        );
+        Occupation someOccupation = OccupationTestFactory.closedOccupationFactory(1L);
 
         when(this.occupationRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(someOccupation);
 
@@ -1552,20 +1164,10 @@ public class OccupationServiceTest {
                 LocalDateTime.now().plusMinutes(1),
                 PaymentForm.CARTAO_CREDITO);
 
-        OrderItem someOrderItem = new OrderItem(1, 23.5, new Product());
+        OrderItem someOrderItem = OrderItemTestFactory.orderItemFactory(1L);
         someOrderItem.startPreparation();
 
-        Occupation someOccupation = new Occupation(
-                1L,
-                LocalDateTime.now().minusMinutes(10),
-                null,
-                2,
-                PaymentForm.CARTAO_CREDITO,
-                List.of(someOrderItem),
-                new Board(),
-                new HashSet<>(),
-                true
-        );
+        Occupation someOccupation = OccupationTestFactory.openedOccupationFactory(1L, List.of(someOrderItem));
 
         when(this.occupationRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(someOccupation);
 
@@ -1583,20 +1185,10 @@ public class OccupationServiceTest {
                 LocalDateTime.now().plusMinutes(1),
                 PaymentForm.CARTAO_CREDITO);
 
-        OrderItem someOrderItem = new OrderItem(1, 23.5, new Product());
+        OrderItem someOrderItem = OrderItemTestFactory.orderItemFactory(1L);
         someOrderItem.deliver();
 
-        Occupation someOccupationSpy = spy(new Occupation(
-                1L,
-                LocalDateTime.now().minusMinutes(10),
-                null,
-                2,
-                PaymentForm.CARTAO_CREDITO,
-                List.of(someOrderItem),
-                new Board(),
-                new HashSet<>(),
-                true
-        ));
+        Occupation someOccupationSpy = spy(OccupationTestFactory.openedOccupationFactory(1L, List.of(someOrderItem)));
 
         when(this.occupationRepository.getReferenceByIdAndActiveTrue(anyLong())).thenReturn(someOccupationSpy);
 

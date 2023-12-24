@@ -180,47 +180,33 @@ public class OccupationControllerTest {
 
         response
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$.size()",
-                                CoreMatchers.is(3)
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$.size()",
+                        CoreMatchers.is(3))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].field",
-                                CoreMatchers.is("beginOccupation")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].field",
+                        CoreMatchers.is("beginOccupation"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].message",
-                                CoreMatchers.is("must not be null")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].message",
+                        CoreMatchers.is("must not be null"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[1].field",
-                                CoreMatchers.is("boardId")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[1].field",
+                        CoreMatchers.is("boardId"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[1].message",
-                                CoreMatchers.is("must not be null")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[1].message",
+                        CoreMatchers.is("must not be null"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[2].field",
-                                CoreMatchers.is("peopleCount")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[2].field",
+                        CoreMatchers.is("peopleCount"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[2].message",
-                                CoreMatchers.is("must not be null")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[2].message",
+                        CoreMatchers.is("must not be null"))
                 )
                 .andDo(MockMvcResultHandlers.print());
     }
@@ -238,23 +224,17 @@ public class OccupationControllerTest {
 
         response
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$.size()",
-                                CoreMatchers.is(1)
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$.size()",
+                        CoreMatchers.is(1))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].field",
-                                CoreMatchers.is("beginOccupation")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].field",
+                        CoreMatchers.is("beginOccupation"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].message",
-                                CoreMatchers.is("must not be null")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].message",
+                        CoreMatchers.is("must not be null"))
                 )
                 .andDo(MockMvcResultHandlers.print());
     }
@@ -277,23 +257,17 @@ public class OccupationControllerTest {
 
         response
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$.size()",
-                                CoreMatchers.is(1)
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$.size()",
+                        CoreMatchers.is(1))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].field",
-                                CoreMatchers.is("beginOccupation")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].field",
+                        CoreMatchers.is("beginOccupation"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].message",
-                                CoreMatchers.is("must be a date in the past or in the present")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].message",
+                        CoreMatchers.is("must be a date in the past or in the present"))
                 )
                 .andDo(MockMvcResultHandlers.print());
     }
@@ -316,23 +290,17 @@ public class OccupationControllerTest {
 
         response
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$.size()",
-                                CoreMatchers.is(1)
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$.size()",
+                        CoreMatchers.is(1))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].field",
-                                CoreMatchers.is("peopleCount")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].field",
+                        CoreMatchers.is("peopleCount"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].message",
-                                CoreMatchers.is("must not be null")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].message",
+                        CoreMatchers.is("must not be null"))
                 )
                 .andDo(MockMvcResultHandlers.print());
     }
@@ -356,23 +324,17 @@ public class OccupationControllerTest {
 
         response
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$.size()",
-                                CoreMatchers.is(1)
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$.size()",
+                        CoreMatchers.is(1))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].field",
-                                CoreMatchers.is("peopleCount")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].field",
+                        CoreMatchers.is("peopleCount"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].message",
-                                CoreMatchers.is("must be greater than 0")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].message",
+                        CoreMatchers.is("must be greater than 0"))
                 )
                 .andDo(MockMvcResultHandlers.print());
     }
@@ -387,31 +349,24 @@ public class OccupationControllerTest {
         );
 
         ResultActions response = this.mockMvc
-                .perform(
-                        MockMvcRequestBuilders.post("/occupations")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(this.objectMapper.writeValueAsString(input))
+                .perform(MockMvcRequestBuilders.post("/occupations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(input))
                 );
 
         response
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$.size()",
-                                CoreMatchers.is(1)
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$.size()",
+                        CoreMatchers.is(1))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].field",
-                                CoreMatchers.is("boardId")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].field",
+                        CoreMatchers.is("boardId"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].message",
-                                CoreMatchers.is("must not be null")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].message",
+                        CoreMatchers.is("must not be null"))
                 )
                 .andDo(MockMvcResultHandlers.print());
     }
@@ -439,11 +394,9 @@ public class OccupationControllerTest {
                         "$.size()",
                         CoreMatchers.is(1))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].field",
-                                CoreMatchers.is("boardId")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].field",
+                        CoreMatchers.is("boardId"))
                 )
                 .andExpect(MockMvcResultMatchers.jsonPath(
                         "$[0].message",
@@ -560,17 +513,13 @@ public class OccupationControllerTest {
 
         response
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].field",
-                                CoreMatchers.is("orderItems")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].field",
+                        CoreMatchers.is("orderItems"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].message",
-                                CoreMatchers.is("must not be empty")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].message",
+                        CoreMatchers.is("must not be empty"))
                 )
                 .andDo(MockMvcResultHandlers.print());
     }
@@ -588,17 +537,13 @@ public class OccupationControllerTest {
 
         response
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].field",
-                                CoreMatchers.is("orderItems")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].field",
+                        CoreMatchers.is("orderItems"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].message",
-                                CoreMatchers.is("must not be empty")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].message",
+                        CoreMatchers.is("must not be empty"))
                 )
                 .andDo(MockMvcResultHandlers.print());
     }
@@ -656,20 +601,15 @@ public class OccupationControllerTest {
 
         response
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$.size()",
-                                CoreMatchers.is(1)
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$.size()",
+                        CoreMatchers.is(1))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].field",
-                                CoreMatchers.is("orderItems[1].productId")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].field",
+                        CoreMatchers.is("orderItems[1].productId"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
+                .andExpect(MockMvcResultMatchers.jsonPath(
                                 "$[0].message",
                                 CoreMatchers.is("must not be null")
                         )
@@ -696,23 +636,17 @@ public class OccupationControllerTest {
 
         response
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$.size()",
-                                CoreMatchers.is(1)
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$.size()",
+                        CoreMatchers.is(1))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].field",
-                                CoreMatchers.is("orderItems[1].productId")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].field",
+                        CoreMatchers.is("orderItems[1].productId"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].message",
-                                CoreMatchers.is("must be greater than 0")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].message",
+                        CoreMatchers.is("must be greater than 0"))
                 )
                 .andDo(MockMvcResultHandlers.print());
     }
@@ -735,23 +669,17 @@ public class OccupationControllerTest {
 
         response
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$.size()",
-                                CoreMatchers.is(1)
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$.size()",
+                        CoreMatchers.is(1))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].field",
-                                CoreMatchers.is("orderItems[1].amount")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].field",
+                        CoreMatchers.is("orderItems[1].amount"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].message",
-                                CoreMatchers.is("must not be null")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].message",
+                        CoreMatchers.is("must not be null"))
                 )
                 .andDo(MockMvcResultHandlers.print());
     }
@@ -775,23 +703,17 @@ public class OccupationControllerTest {
 
         response
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$.size()",
-                                CoreMatchers.is(1)
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$.size()",
+                        CoreMatchers.is(1))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].field",
-                                CoreMatchers.is("orderItems[1].amount")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].field",
+                        CoreMatchers.is("orderItems[1].amount"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].message",
-                                CoreMatchers.is("must be greater than 0")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].message",
+                        CoreMatchers.is("must be greater than 0"))
                 )
                 .andDo(MockMvcResultHandlers.print());
     }
@@ -809,17 +731,13 @@ public class OccupationControllerTest {
 
         response
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].field",
-                                CoreMatchers.is("orderItems")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].field",
+                        CoreMatchers.is("orderItems"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].message",
-                                CoreMatchers.is("must not be empty")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].message",
+                        CoreMatchers.is("must not be empty"))
                 )
                 .andDo(MockMvcResultHandlers.print());
     }
@@ -853,17 +771,13 @@ public class OccupationControllerTest {
 
         response
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].field",
-                                CoreMatchers.is("amount")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].field",
+                        CoreMatchers.is("amount"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].message",
-                                CoreMatchers.is("must not be null")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].message",
+                        CoreMatchers.is("must not be null"))
                 )
                 .andDo(MockMvcResultHandlers.print());
     }
@@ -882,17 +796,13 @@ public class OccupationControllerTest {
 
         response
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].field",
-                                CoreMatchers.is("amount")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].field",
+                        CoreMatchers.is("amount"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].message",
-                                CoreMatchers.is("must be greater than 0")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].message",
+                        CoreMatchers.is("must be greater than 0"))
                 )
                 .andDo(MockMvcResultHandlers.print());
     }
@@ -1027,17 +937,13 @@ public class OccupationControllerTest {
 
         response
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].field",
-                                CoreMatchers.is("endOccupation")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].field",
+                        CoreMatchers.is("endOccupation"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].message",
-                                CoreMatchers.is("must not be null")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].message",
+                        CoreMatchers.is("must not be null"))
                 )
                 .andDo(MockMvcResultHandlers.print());
     }
@@ -1058,17 +964,13 @@ public class OccupationControllerTest {
 
         response
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].field",
-                                CoreMatchers.is("endOccupation")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].field",
+                        CoreMatchers.is("endOccupation"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].message",
-                                CoreMatchers.is("must be a date in the present or in the future")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].message",
+                        CoreMatchers.is("must be a date in the present or in the future"))
                 )
                 .andDo(MockMvcResultHandlers.print());
     }
@@ -1089,17 +991,13 @@ public class OccupationControllerTest {
 
         response
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].field",
-                                CoreMatchers.is("paymentForm")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].field",
+                        CoreMatchers.is("paymentForm"))
                 )
-                .andExpect(
-                        MockMvcResultMatchers.jsonPath(
-                                "$[0].message",
-                                CoreMatchers.is("must not be null")
-                        )
+                .andExpect(MockMvcResultMatchers.jsonPath(
+                        "$[0].message",
+                        CoreMatchers.is("must not be null"))
                 )
                 .andDo(MockMvcResultHandlers.print());
     }

@@ -7,6 +7,8 @@ import br.com.senior.burger_place.domain.customer.CustomerRepository;
 import br.com.senior.burger_place.domain.occupation.dto.*;
 import br.com.senior.burger_place.domain.product.Product;
 import br.com.senior.burger_place.domain.product.ProductRepository;
+import br.com.senior.burger_place.domain.validation.InvalidDTOValidation;
+import br.com.senior.burger_place.domain.validation.InvalidIdValidation;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,9 +39,7 @@ public class OccupationService {
     }
 
     public Optional<OccupationDTO> showOccupation(Long id) {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("ID inválida");
-        }
+        InvalidIdValidation.validate(id);
 
         Occupation occupation = this.occupationRepository.getReferenceByIdAndActiveTrue(id);
 
@@ -47,13 +47,13 @@ public class OccupationService {
             return Optional.empty();
         }
 
-        return Optional.of(new OccupationDTO(occupation));
+        OccupationDTO occupationDTO = new OccupationDTO(occupation);
+
+        return Optional.of(occupationDTO);
     }
 
     public OccupationDTO createOccupation(CreateOccupationDTO orderData) {
-        if (orderData == null) {
-            throw new IllegalArgumentException("DTO inválido");
-        }
+        InvalidDTOValidation.validate(orderData);
 
         if (orderData.boardId() == null || orderData.boardId() <= 0) {
             throw new IllegalArgumentException("ID da mesa é inválida");
@@ -107,22 +107,15 @@ public class OccupationService {
     }
 
     public void addOrderItems(Long occupationId, AddOrderItemsDTO itemsDTO) {
-        if (occupationId == null || occupationId <= 0) {
-            throw new IllegalArgumentException("ID da ocupação inválida");
-        }
-
-        if (itemsDTO == null) {
-            throw new IllegalArgumentException("DTO inválido");
-        }
+        InvalidIdValidation.validate(occupationId, "ID da ocupação inválida");
+        InvalidDTOValidation.validate(itemsDTO);
 
         if (itemsDTO.orderItems().isEmpty()) {
             throw new IllegalArgumentException("Lista de itens do pedido está vazia");
         }
 
         itemsDTO.orderItems().forEach(item -> {
-            if (item.productId() == null || item.productId() <= 0) {
-                throw new IllegalArgumentException("Algum item possui a ID do produto é inválida");
-            }
+            InvalidIdValidation.validate(item.productId(), "Algum item possui a ID do produto é inválida");
 
             if (item.amount() == null || item.amount() <= 0) {
                 throw new IllegalArgumentException("Quantidade do produto é inválido");
@@ -169,13 +162,8 @@ public class OccupationService {
     }
 
     public void removeOrderItems(Long occupationId, RemoveOrderItemsDTO itemsDTO) {
-        if (occupationId == null || occupationId <= 0) {
-            throw new IllegalArgumentException("ID da ocupação inválida");
-        }
-
-        if (itemsDTO == null) {
-            throw new IllegalArgumentException("DTO inválido");
-        }
+        InvalidIdValidation.validate(occupationId, "ID da ocupação inválida");
+        InvalidDTOValidation.validate(itemsDTO);
 
         if (itemsDTO.orderItems().isEmpty()) {
             throw new IllegalArgumentException("Lista de itens do pedido está vazia");
@@ -207,17 +195,9 @@ public class OccupationService {
     }
 
     public void updateOrderItem(Long occupationId, Long itemId, UpdateOrderItemDTO itemDTO) {
-        if (occupationId == null || occupationId <= 0) {
-            throw new IllegalArgumentException("ID da ocupação inválida");
-        }
-
-        if (itemId == null || itemId <= 0) {
-            throw new IllegalArgumentException("ID do item inválido");
-        }
-
-        if (itemDTO == null) {
-            throw new IllegalArgumentException("DTO inválido");
-        }
+        InvalidIdValidation.validate(occupationId, "ID da ocupação inválida");
+        InvalidIdValidation.validate(itemId, "ID do item inválido");
+        InvalidDTOValidation.validate(itemDTO);
 
         if (itemDTO.amount() == null || itemDTO.amount() <= 0) {
             throw new IllegalArgumentException("Quantidade de itens inválida");
@@ -241,9 +221,7 @@ public class OccupationService {
     }
 
     public void inactivateOccupation(Long occupationId) {
-        if (occupationId == null || occupationId <= 0) {
-            throw new IllegalArgumentException("ID da ocupação inválida");
-        }
+        InvalidIdValidation.validate(occupationId, "ID da ocupação inválida");
 
         Occupation occupation = this.occupationRepository.getReferenceByIdAndActiveTrue(occupationId);
 
@@ -260,13 +238,8 @@ public class OccupationService {
     }
 
     public void startOrderItemPreparation(Long occupationId, Long itemId) {
-        if (occupationId == null || occupationId <= 0) {
-            throw new IllegalArgumentException("ID da ocupação inválida");
-        }
-
-        if (itemId == null || itemId <= 0) {
-            throw new IllegalArgumentException("ID do item inválido");
-        }
+        InvalidIdValidation.validate(occupationId, "ID da ocupação inválida");
+        InvalidIdValidation.validate(itemId, "ID do item inválido");
 
         if (!this.occupationRepository.existsByIdAndActiveTrue(occupationId)) {
             throw new EntityNotFoundException("Ocupação não existe ou foi inativada");
@@ -286,13 +259,8 @@ public class OccupationService {
     }
 
     public void finishOrderItemPreparation(Long occupationId, Long itemId) {
-        if (occupationId == null || occupationId <= 0) {
-            throw new IllegalArgumentException("ID da ocupação inválida");
-        }
-
-        if (itemId == null || itemId <= 0) {
-            throw new IllegalArgumentException("ID do item inválido");
-        }
+        InvalidIdValidation.validate(occupationId, "ID da ocupação inválida");
+        InvalidIdValidation.validate(itemId, "ID do item inválido");
 
         if (!this.occupationRepository.existsByIdAndActiveTrue(occupationId)) {
             throw new EntityNotFoundException("Ocupação não existe ou foi inativada");
@@ -312,13 +280,8 @@ public class OccupationService {
     }
 
     public void deliverOrderItem(Long occupationId, Long itemId) {
-        if (occupationId == null || occupationId <= 0) {
-            throw new IllegalArgumentException("ID da ocupação inválida");
-        }
-
-        if (itemId == null || itemId <= 0) {
-            throw new IllegalArgumentException("ID do item inválido");
-        }
+        InvalidIdValidation.validate(occupationId, "ID da ocupação inválida");
+        InvalidIdValidation.validate(itemId, "ID do item inválido");
 
         if (!this.occupationRepository.existsByIdAndActiveTrue(occupationId)) {
             throw new EntityNotFoundException("Ocupação não existe ou foi inativada");
@@ -338,13 +301,8 @@ public class OccupationService {
     }
 
     public void cancelOrderItem(Long occupationId, Long itemId) {
-        if (occupationId == null || occupationId <= 0) {
-            throw new IllegalArgumentException("ID da ocupação inválida");
-        }
-
-        if (itemId == null || itemId <= 0) {
-            throw new IllegalArgumentException("ID do item inválido");
-        }
+        InvalidIdValidation.validate(occupationId, "ID da ocupação inválida");
+        InvalidIdValidation.validate(itemId, "ID do item inválido");
 
         if (!this.occupationRepository.existsByIdAndActiveTrue(occupationId)) {
             throw new EntityNotFoundException("Ocupação não existe ou foi inativada");
@@ -364,13 +322,8 @@ public class OccupationService {
     }
 
     public void finishOccupation(Long occupationId, FinishOccupationDTO occupationDTO) {
-        if (occupationId == null || occupationId <= 0) {
-            throw new IllegalArgumentException("ID da ocupação inválida");
-        }
-
-        if (occupationDTO == null) {
-            throw new IllegalArgumentException("DTO inválido");
-        }
+        InvalidIdValidation.validate(occupationId, "ID da ocupação inválida");
+        InvalidDTOValidation.validate(occupationDTO);
 
         if (occupationDTO.endOccupation() == null) {
             throw new IllegalArgumentException("Término da ocupação inválido");
