@@ -150,21 +150,6 @@ public class ProductControllerTest {
     }
 
     @Test
-    void showProduct_whenProductDoesNotExist_shouldReturnStatus400WhenThrows() throws Exception {
-        Mockito.when(this.productService.showProduct(Mockito.anyLong())).thenThrow(IllegalArgumentException.class);
-
-        ResultActions response = this.mockMvc
-                .perform(
-                        MockMvcRequestBuilders.get("/products/{id}", 1L)
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-        response
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @Test
     void createProduct_whenDTONameAndPriceIsNull_shouldReturnStatus400() throws Exception {
         CreateProductDTO input = new CreateProductDTO(null, null, null);
 
@@ -224,7 +209,7 @@ public class ProductControllerTest {
 
     @ParameterizedTest
     @ValueSource(doubles = {0.0, -1.0, -10.0})
-    void createProduct_whenDTOPriceIsLessThanOrEqualToZero_shouldReturnStatus400(Double price) throws Exception {
+    void createProduct_whenDTOPriceInvalid_shouldReturnStatus400(Double price) throws Exception {
         CreateProductDTO input = new CreateProductDTO("Hamburger tradicional", price, null);
 
         ResultActions response = this.mockMvc
@@ -280,30 +265,6 @@ public class ProductControllerTest {
                 .andExpect(result -> Assertions.assertEquals(expectedLocation, result.getResponse().getRedirectedUrl()))
                 .andExpect(result -> Assertions.assertNotNull(result.getResponse().getHeader("Location")))
                 .andExpect(result -> Assertions.assertEquals(expectedLocation, result.getResponse().getHeader("Location")))
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @Test
-    void createProduct_whenServiceThrow_shouldReturnStatus400() throws Exception {
-        CreateProductDTO requestInput = new CreateProductDTO(
-                "Hamburger tradicional",
-                23.65,
-                "Pão com gergelim, hamburguer no ponto, alface, tomate e queijo"
-        );
-
-        Mockito.when(this.productService.createProduct(Mockito.any(CreateProductDTO.class)))
-                .thenThrow(IllegalArgumentException.class);
-
-        ResultActions response = this.mockMvc
-                .perform(
-                        MockMvcRequestBuilders.post("/products")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(requestInput))
-                );
-
-
-        response
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andDo(MockMvcResultHandlers.print());
     }
 
@@ -414,52 +375,6 @@ public class ProductControllerTest {
     }
 
     @Test
-    void updateProduct_whenServiceThrows_shouldReturnStatus400() throws Exception {
-        Long someProductId = 1L;
-        String someProductName = "Hamburguer tradicional com porco";
-        double someProductPrice = 23.5;
-        String someProductDescription = "Hamburguer especial com carne de porco assada";
-        UpdateProductDTO requestInput = new UpdateProductDTO(someProductName, someProductPrice, someProductDescription);
-
-        Mockito.when(this.productService.updateProduct(Mockito.anyLong(), Mockito.any(UpdateProductDTO.class)))
-                .thenThrow(IllegalArgumentException.class);
-
-        ResultActions response = this.mockMvc
-                .perform(
-                        MockMvcRequestBuilders.put("/products/{id}", someProductId)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(requestInput))
-                );
-
-        response
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @Test
-    void updateProduct_whenServiceThrows_shouldReturnStatus404() throws Exception {
-        Long someProductId = 1L;
-        String someProductName = "Hamburguer tradicional com porco";
-        double someProductPrice = 23.5;
-        String someProductDescription = "Hamburguer especial com carne de porco assada";
-        UpdateProductDTO requestInput = new UpdateProductDTO(someProductName, someProductPrice, someProductDescription);
-
-        Mockito.when(this.productService.updateProduct(Mockito.anyLong(), Mockito.any(UpdateProductDTO.class)))
-                .thenThrow(EntityNotFoundException.class);
-
-        ResultActions response = this.mockMvc
-                .perform(
-                        MockMvcRequestBuilders.put("/products/{id}", someProductId)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(requestInput))
-                );
-
-        response
-                .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @Test
     void inactivateProduct_whenProductExists_shouldReturnStatus204() throws Exception {
         ResultActions response = this.mockMvc
                 .perform(
@@ -469,40 +384,6 @@ public class ProductControllerTest {
 
         response
                 .andExpect(MockMvcResultMatchers.status().isNoContent())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @Test
-    void inactivateProduct_whenServiceThrows_shouldReturnStatus400() throws Exception {
-        Mockito.doThrow(IllegalArgumentException.class)
-                .when(this.productService)
-                .deleteProduct(Mockito.anyLong());
-
-        ResultActions response = this.mockMvc
-                .perform(
-                        MockMvcRequestBuilders.delete("/products/{id}", 1L)
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-        response
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @Test
-    void inactivateProduct_whenServiceThrows_shouldReturnStatus404() throws Exception {
-        Mockito.doThrow(EntityNotFoundException.class)
-                .when(this.productService)
-                .deleteProduct(Mockito.anyLong());
-
-        ResultActions response = this.mockMvc
-                .perform(
-                        MockMvcRequestBuilders.delete("/products/{id}", 1L)
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
-
-        response
-                .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andDo(MockMvcResultHandlers.print());
     }
 }

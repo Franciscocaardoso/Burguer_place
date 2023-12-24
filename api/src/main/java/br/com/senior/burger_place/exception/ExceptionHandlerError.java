@@ -17,42 +17,30 @@ import java.util.NoSuchElementException;
 public class ExceptionHandlerError {
 
     @ExceptionHandler({
-            EntityNotFoundException.class,
-            DuplicateKeyException.class
+            DuplicateKeyException.class,
+            EntityNotFoundException.class
     })
-    public ResponseEntity handleNotFound(EntityNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseError(e));
+    public ResponseEntity<SimpleResponseError> handleNotFound(Exception e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new SimpleResponseError(e));
     }
 
     @ExceptionHandler({
             NoSuchElementException.class,
-            IllegalArgumentException.class,
-            MethodArgumentNotValidException.class
+            IllegalArgumentException.class
     })
-    public ResponseEntity handleBadRequests(Exception exception) {
-        if (exception instanceof MethodArgumentNotValidException) {
-            List<FieldError> fieldErrors = ((MethodArgumentNotValidException) exception).getFieldErrors();
-
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body((fieldErrors.stream()
-                            .map(DadosErroValidacao::new)
-                            .sorted((Comparator.comparing(o -> o.field)))
-                            .toList()));
-        }
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseError(exception));
+    public ResponseEntity<SimpleResponseError> handleBadRequests(Exception exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new SimpleResponseError(exception));
     }
 
-    private record DadosErroValidacao(String field, String message) {
-        public DadosErroValidacao(FieldError error) {
-            this(error.getField(), error.getDefaultMessage());
-        }
-    }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<List<ResponseErrorWithFieldErrors>> handleBadRequestsWithFieldErrors(MethodArgumentNotValidException exception) {
+        List<FieldError> fieldErrors = exception.getFieldErrors();
 
-    private record ResponseError(String message) {
-        public ResponseError(Exception exception) {
-            this(exception.getMessage());
-        }
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body((fieldErrors.stream()
+                        .map(ResponseErrorWithFieldErrors::new)
+                        .sorted((Comparator.comparing(ResponseErrorWithFieldErrors::field)))
+                        .toList()));
     }
 }
