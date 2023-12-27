@@ -1,10 +1,4 @@
 :host {
-  display: block;
-  height: 100%;
-  position: relative;
-}
-
-main {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -19,21 +13,23 @@ main {
   max-width: 40%;
 }
 
-main h1 {
+h1 {
   margin: 20px 0;
+  text-align: center;
 }
 
-main p {
+p {
   margin-bottom: 30px;
+  text-align: center;
 }
 
-main div {
+div {
   width: 100%;
   display: flex;
   gap: 10px;
 }
 
-main div a {
+div a {
   flex: 1;
   padding: 12px 0;
   border: none;
@@ -50,7 +46,7 @@ main div a {
   gap: 10px;
 }
 
-main div a:hover {
+div a:hover {
   background-color: #294a88;
   transition: 0.2s ease;
 }
