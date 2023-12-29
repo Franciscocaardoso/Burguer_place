@@ -1,0 +1,9 @@
+:host {
+  display: block;
+  height: 100%;
+  position: relative;
+}
+
+main {
+  height: 92%;
+}

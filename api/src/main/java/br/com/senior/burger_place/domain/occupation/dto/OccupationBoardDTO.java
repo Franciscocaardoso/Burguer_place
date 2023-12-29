@@ -4,7 +4,8 @@ import br.com.senior.burger_place.domain.board.Board;
 import br.com.senior.burger_place.domain.board.BoardLocation;
 
 public record OccupationBoardDTO(
-        Integer boardNumber,
+
+        Integer number,
         BoardLocation location
 ) {
     public OccupationBoardDTO(Board board) {

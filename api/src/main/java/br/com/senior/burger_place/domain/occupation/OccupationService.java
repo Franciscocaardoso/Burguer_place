@@ -7,6 +7,8 @@ import br.com.senior.burger_place.domain.customer.CustomerRepository;
 import br.com.senior.burger_place.domain.occupation.dto.*;
 import br.com.senior.burger_place.domain.product.Product;
 import br.com.senior.burger_place.domain.product.ProductRepository;
+import br.com.senior.burger_place.domain.validation.InvalidDTOValidation;
+import br.com.senior.burger_place.domain.validation.InvalidIdValidation;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,16 +39,38 @@ public class OccupationService {
     }
 
     public Optional<OccupationDTO> showOccupation(Long id) {
+        InvalidIdValidation.validate(id);
+
         Occupation occupation = this.occupationRepository.getReferenceByIdAndActiveTrue(id);
 
         if (occupation == null) {
             return Optional.empty();
         }
 
-        return Optional.of(new OccupationDTO(occupation));
+        OccupationDTO occupationDTO = new OccupationDTO(occupation);
+
+        return Optional.of(occupationDTO);
     }
 
     public OccupationDTO createOccupation(CreateOccupationDTO orderData) {
+        InvalidDTOValidation.validate(orderData);
+
+        if (orderData.boardId() == null || orderData.boardId() <= 0) {
+            throw new IllegalArgumentException("ID da mesa é inválida");
+        }
+
+        if (orderData.beginOccupation() == null) {
+            throw new IllegalArgumentException("Data de início da ocupação é inválida");
+        }
+
+        if (orderData.beginOccupation().isAfter(LocalDateTime.now())) {
+            throw new IllegalArgumentException("A data de entrada deve ser menor ou igual a atual");
+        }
+
+        if (orderData.peopleCount() == null || orderData.peopleCount() <= 0) {
+            throw new IllegalArgumentException("Quantidade de pessoas é inválida");
+        }
+
         Board board = this.boardRepository.getReferenceByIdAndActiveTrue(orderData.boardId());
 
         if (board == null) {
@@ -57,17 +81,13 @@ public class OccupationService {
             throw new IllegalArgumentException("Mesa já está ocupada");
         }
 
-        if (orderData.beginOccupation().isAfter(LocalDateTime.now())) {
-            throw new IllegalArgumentException("A data de entrada deve ser menor ou igual a atual");
-        }
-
         Occupation occupation = new Occupation(
                 orderData.beginOccupation(),
                 orderData.peopleCount(),
                 board
         );
 
-        if (!orderData.customerIds().isEmpty()) {
+        if (orderData.customerIds() != null && !orderData.customerIds().isEmpty()) {
             Set<Customer> customers = this.customerRepository.getCustomers(orderData.customerIds());
 
             if (customers.isEmpty()) {
@@ -87,6 +107,21 @@ public class OccupationService {
     }
 
     public void addOrderItems(Long occupationId, AddOrderItemsDTO itemsDTO) {
+        InvalidIdValidation.validate(occupationId, "ID da ocupação inválida");
+        InvalidDTOValidation.validate(itemsDTO);
+
+        if (itemsDTO.orderItems().isEmpty()) {
+            throw new IllegalArgumentException("Lista de itens do pedido está vazia");
+        }
+
+        itemsDTO.orderItems().forEach(item -> {
+            InvalidIdValidation.validate(item.productId(), "Algum item possui a ID do produto é inválida");
+
+            if (item.amount() == null || item.amount() <= 0) {
+                throw new IllegalArgumentException("Quantidade do produto é inválido");
+            }
+        });
+
         Occupation occupation = this.occupationRepository.getReferenceByIdAndActiveTrue(occupationId);
 
         if (occupation == null) {
@@ -97,11 +132,7 @@ public class OccupationService {
             throw new IllegalCallerException("A ocupação já foi finalizada");
         }
 
-        if (itemsDTO.orderItems().isEmpty()) {
-            throw new IllegalArgumentException("Lista de itens do pedido está vazia");
-        }
-
-        List<Product> products = this.productRepository.getProductsPriceById(
+        List<Product> products = this.productRepository.getReferenceByActiveTrueAndIdIn(
                 itemsDTO.orderItems()
                         .stream()
                         .map(CreateOrderItemDTO::productId)
@@ -109,7 +140,7 @@ public class OccupationService {
         );
 
         if (products.size() != itemsDTO.orderItems().size()) {
-            throw new EntityNotFoundException("Existem produtos inválidos!");
+            throw new EntityNotFoundException("Existem produtos inválidos");
         }
 
         List<OrderItem> orderItems = itemsDTO.orderItems().stream().map(item -> {
@@ -131,15 +162,18 @@ public class OccupationService {
     }
 
     public void removeOrderItems(Long occupationId, RemoveOrderItemsDTO itemsDTO) {
-        if (!this.occupationRepository.existsByIdAndActiveTrue(occupationId)) {
-            throw new EntityNotFoundException("Ocupação não existe ou foi inativada");
-        }
+        InvalidIdValidation.validate(occupationId, "ID da ocupação inválida");
+        InvalidDTOValidation.validate(itemsDTO);
 
         if (itemsDTO.orderItems().isEmpty()) {
             throw new IllegalArgumentException("Lista de itens do pedido está vazia");
         }
 
-        List<OrderItem> orderItems = this.orderItemRepository.findOrderItems(occupationId, itemsDTO.orderItems());
+        if (!this.occupationRepository.existsByIdAndActiveTrue(occupationId)) {
+            throw new EntityNotFoundException("Ocupação não existe ou foi inativada");
+        }
+
+        List<OrderItem> orderItems = this.orderItemRepository.getReferenceByActiveTrueAndOccupationIdAndIdIn(occupationId, itemsDTO.orderItems());
 
         if (orderItems.isEmpty()) {
             throw new EntityNotFoundException("Nenhum item pertence ao pedido");
@@ -161,12 +195,16 @@ public class OccupationService {
     }
 
     public void updateOrderItem(Long occupationId, Long itemId, UpdateOrderItemDTO itemDTO) {
-        if (!this.occupationRepository.existsByIdAndActiveTrue(occupationId)) {
-            throw new EntityNotFoundException("Ocupação não existe ou foi inativada");
+        InvalidIdValidation.validate(occupationId, "ID da ocupação inválida");
+        InvalidIdValidation.validate(itemId, "ID do item inválido");
+        InvalidDTOValidation.validate(itemDTO);
+
+        if (itemDTO.amount() == null || itemDTO.amount() <= 0) {
+            throw new IllegalArgumentException("Quantidade de itens inválida");
         }
 
-        if (itemDTO.amount() <= 0) {
-            throw new IllegalArgumentException("Quantidade de itens inválida");
+        if (!this.occupationRepository.existsByIdAndActiveTrue(occupationId)) {
+            throw new EntityNotFoundException("Ocupação não existe ou foi inativada");
         }
 
         OrderItem item = this.orderItemRepository.getReferenceByIdAndOccupationIdAndActiveTrue(itemId, occupationId);
@@ -183,10 +221,12 @@ public class OccupationService {
     }
 
     public void inactivateOccupation(Long occupationId) {
+        InvalidIdValidation.validate(occupationId, "ID da ocupação inválida");
+
         Occupation occupation = this.occupationRepository.getReferenceByIdAndActiveTrue(occupationId);
 
         if (occupation == null) {
-            throw new EntityNotFoundException("Pedido não existe");
+            throw new EntityNotFoundException("Ocupação não existe");
         }
         occupation.inactivate();
 
@@ -198,6 +238,9 @@ public class OccupationService {
     }
 
     public void startOrderItemPreparation(Long occupationId, Long itemId) {
+        InvalidIdValidation.validate(occupationId, "ID da ocupação inválida");
+        InvalidIdValidation.validate(itemId, "ID do item inválido");
+
         if (!this.occupationRepository.existsByIdAndActiveTrue(occupationId)) {
             throw new EntityNotFoundException("Ocupação não existe ou foi inativada");
         }
@@ -216,6 +259,9 @@ public class OccupationService {
     }
 
     public void finishOrderItemPreparation(Long occupationId, Long itemId) {
+        InvalidIdValidation.validate(occupationId, "ID da ocupação inválida");
+        InvalidIdValidation.validate(itemId, "ID do item inválido");
+
         if (!this.occupationRepository.existsByIdAndActiveTrue(occupationId)) {
             throw new EntityNotFoundException("Ocupação não existe ou foi inativada");
         }
@@ -234,6 +280,9 @@ public class OccupationService {
     }
 
     public void deliverOrderItem(Long occupationId, Long itemId) {
+        InvalidIdValidation.validate(occupationId, "ID da ocupação inválida");
+        InvalidIdValidation.validate(itemId, "ID do item inválido");
+
         if (!this.occupationRepository.existsByIdAndActiveTrue(occupationId)) {
             throw new EntityNotFoundException("Ocupação não existe ou foi inativada");
         }
@@ -252,6 +301,9 @@ public class OccupationService {
     }
 
     public void cancelOrderItem(Long occupationId, Long itemId) {
+        InvalidIdValidation.validate(occupationId, "ID da ocupação inválida");
+        InvalidIdValidation.validate(itemId, "ID do item inválido");
+
         if (!this.occupationRepository.existsByIdAndActiveTrue(occupationId)) {
             throw new EntityNotFoundException("Ocupação não existe ou foi inativada");
         }
@@ -270,6 +322,21 @@ public class OccupationService {
     }
 
     public void finishOccupation(Long occupationId, FinishOccupationDTO occupationDTO) {
+        InvalidIdValidation.validate(occupationId, "ID da ocupação inválida");
+        InvalidDTOValidation.validate(occupationDTO);
+
+        if (occupationDTO.endOccupation() == null) {
+            throw new IllegalArgumentException("Término da ocupação inválido");
+        }
+
+        if (occupationDTO.endOccupation().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Término da ocupação deve ser igual ou maior que a data atual");
+        }
+
+        if (occupationDTO.paymentForm() == null) {
+            throw new IllegalArgumentException("Forma de pagamento inválida");
+        }
+
         Occupation occupation = this.occupationRepository.getReferenceByIdAndActiveTrue(occupationId);
 
         if (occupation == null) {

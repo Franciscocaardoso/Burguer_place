@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Positive;
 
 public record CreateOrderItemDTO(
         @NotNull
+        @Positive
         Long productId,
         @NotNull
         @Positive

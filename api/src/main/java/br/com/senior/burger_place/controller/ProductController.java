@@ -1,12 +1,14 @@
 package br.com.senior.burger_place.controller;
 
+import br.com.senior.burger_place.domain.product.ProductCategory;
 import br.com.senior.burger_place.domain.product.ProductService;
-import br.com.senior.burger_place.domain.product.dto.CreateProductData;
-import br.com.senior.burger_place.domain.product.dto.ProductData;
-import br.com.senior.burger_place.domain.product.dto.UpdateProductData;
+import br.com.senior.burger_place.domain.product.dto.CreateProductDTO;
+import br.com.senior.burger_place.domain.product.dto.ProductDTO;
+import br.com.senior.burger_place.domain.product.dto.UpdateProductDTO;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,36 +25,37 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping
-    public ResponseEntity listProducts(Pageable pageable) {
-        return ResponseEntity.ok(this.productService.listProducts(pageable));
+    public ResponseEntity<Page<ProductDTO>> listProducts(
+            Pageable pageable,
+            @RequestParam(name = "category", required = false)
+            ProductCategory category
+    ) {
+        return ResponseEntity.ok(this.productService.listProducts(pageable, category));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity showProduct(
+    public ResponseEntity<ProductDTO> showProduct(
             @PathVariable
             Long id
     ) {
-        Optional<ProductData> productOptional = this.productService.showProduct(id);
+        Optional<ProductDTO> productOptional = this.productService.showProduct(id);
 
-        if (productOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
+        return productOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 
-        return ResponseEntity.ok(productOptional.get());
     }
 
     @PostMapping
     @Transactional
-    public ResponseEntity createProduct(
+    public ResponseEntity<ProductDTO> createProduct(
             @RequestBody
             @Valid
-            CreateProductData productData,
+            CreateProductDTO productData,
             UriComponentsBuilder uriComponentsBuilder
     ) {
-        ProductData product = this.productService.createProduct(productData);
+        ProductDTO product = this.productService.createProduct(productData);
 
         URI uri = uriComponentsBuilder
-                .path("/pets/{id}")
+                .path("/products/{id}")
                 .buildAndExpand(product.id())
                 .toUri();
 
@@ -61,12 +64,12 @@ public class ProductController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity updateProduct(
+    public ResponseEntity<ProductDTO> updateProduct(
             @PathVariable
             Long id,
             @RequestBody
             @Valid
-            UpdateProductData productData
+            UpdateProductDTO productData
     ) {
         return ResponseEntity.ok(
                 this.productService.updateProduct(id, productData)
@@ -75,7 +78,7 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity inactivateProduct(
+    public ResponseEntity<Void> inactivateProduct(
             @PathVariable
             Long id
     ) {
