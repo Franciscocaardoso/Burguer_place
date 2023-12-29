@@ -16,7 +16,7 @@ public record OrderItemDTO(
         this(
                 orderItem.getId(),
                 orderItem.getProduct().getId(),
-                orderItem.getProduct().getDescription(),
+                orderItem.getProduct().getIngredients(),
                 orderItem.getItemValue(),
                 orderItem.getAmount(),
                 orderItem.getStatus(),

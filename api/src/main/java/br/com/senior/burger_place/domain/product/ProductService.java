@@ -10,6 +10,7 @@ import br.com.senior.burger_place.domain.validation.InvalidIdValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,8 +20,10 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    public Page<ProductDTO> listProducts(Pageable pageable) {
-        return this.productRepository.findAllByActiveTrue(pageable).map(ProductDTO::new);
+    public Page<ProductDTO> listProducts(Pageable pageable, ProductCategory category) {
+        Specification<Product> specification = ProductSpecification.apply(category);
+
+        return this.productRepository.findAll(specification, pageable).map(ProductDTO::new);
     }
 
     public Optional<ProductDTO> showProduct(Long id) {

@@ -19,20 +19,23 @@ public class Product {
     private Long id;
     private String name;
     private double price;
-    private String description;
+    private String ingredients;
+    @Enumerated(EnumType.STRING)
+    private ProductCategory category;
+    private String url;
     private boolean active;
 
-    public Product(String name, double price, String description) {
+    public Product(String name, double price, String ingredients) {
         this.name = name;
         this.price = price;
-        this.description = description;
+        this.ingredients = ingredients;
         this.active = true;
     }
 
     public void update(UpdateProductDTO productData) {
         this.name = productData.name();
         this.price = productData.price();
-        this.description = productData.description();
+        this.ingredients = productData.ingredients();
     }
 
     public void inactivate() {
