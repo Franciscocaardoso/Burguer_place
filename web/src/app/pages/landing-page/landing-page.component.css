@@ -44,9 +44,10 @@ div a {
   align-items: center;
   justify-content: center;
   gap: 10px;
+
+  transition: 0.2s ease;
 }
 
 div a:hover {
-  background-color: #294a88;
-  transition: 0.2s ease;
+  background-color: var(--blue-hover);
 }
