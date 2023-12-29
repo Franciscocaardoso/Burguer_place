@@ -1,11 +1,12 @@
 package br.com.senior.burger_place.controller;
 
+import br.com.senior.burger_place.domain.product.ProductCategory;
 import br.com.senior.burger_place.domain.product.ProductService;
 import br.com.senior.burger_place.domain.product.dto.CreateProductDTO;
 import br.com.senior.burger_place.domain.product.dto.ProductDTO;
 import br.com.senior.burger_place.domain.product.dto.UpdateProductDTO;
+import br.com.senior.burger_place.utils.ProductTestFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityNotFoundException;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -47,8 +48,8 @@ public class ProductControllerTest {
     @Test
     void listProducts_whenProductsExist_shouldReturnStatus200WithProducts() throws Exception {
         List<ProductDTO> someProductDTOs = Arrays.asList(
-                new ProductDTO(1L, "Hamburguer tradicional", 25.9, null),
-                new ProductDTO(2L, "Hamburguer vegetariano", 21.9, null)
+                ProductTestFactory.productDTOFactory(1L),
+                ProductTestFactory.productDTOFactory(2L)
         );
 
         Page<ProductDTO> page = new PageImpl<>(
@@ -57,8 +58,10 @@ public class ProductControllerTest {
                 10
         );
 
-        Mockito.when(this.productService.listProducts(Mockito.any(Pageable.class)))
-                .thenReturn(page);
+        Mockito.when(this.productService.listProducts(
+                Mockito.any(Pageable.class),
+                Mockito.any(ProductCategory.class))
+        ).thenReturn(page);
 
         ResultActions response = this.mockMvc
                 .perform(
@@ -83,8 +86,8 @@ public class ProductControllerTest {
                         )
                 )
                 .andExpect(MockMvcResultMatchers.jsonPath(
-                                "$.content[0].description",
-                                CoreMatchers.is(someProductDTOs.get(0).description())
+                                "$.content[0].ingredients",
+                                CoreMatchers.is(someProductDTOs.get(0).ingredients())
                         )
                 )
                 .andExpect(MockMvcResultMatchers.jsonPath(
@@ -104,8 +107,8 @@ public class ProductControllerTest {
                         )
                 )
                 .andExpect(MockMvcResultMatchers.jsonPath(
-                                "$.content[1].description",
-                                CoreMatchers.is(someProductDTOs.get(1).description())
+                                "$.content[1].ingredients",
+                                CoreMatchers.is(someProductDTOs.get(1).ingredients())
                         )
                 )
                 .andExpect(MockMvcResultMatchers.jsonPath(
@@ -118,7 +121,8 @@ public class ProductControllerTest {
 
     @Test
     void showProduct_whenProductExists_shouldReturnStatus200WithProduct() throws Exception {
-        ProductDTO productDTO = new ProductDTO(1L, "Hamburguer tradicional", 24.9, null);
+//        ProductDTO productDTO = new ProductDTO(1L, "Hamburguer tradicional", 24.9, null);
+        ProductDTO productDTO = ProductTestFactory.productDTOFactory(1L);
 
         Mockito.when(this.productService.showProduct(Mockito.anyLong())).thenReturn(Optional.of(productDTO));
 
@@ -130,7 +134,7 @@ public class ProductControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id", CoreMatchers.is(productDTO.id()), Long.class))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name", CoreMatchers.is(productDTO.name())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.price", CoreMatchers.is(productDTO.price())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.description", CoreMatchers.is(productDTO.description())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.ingredients", CoreMatchers.is(productDTO.ingredients())))
                 .andDo(MockMvcResultHandlers.print());
     }
 
@@ -231,18 +235,21 @@ public class ProductControllerTest {
         Long someProductId = 1L;
         String someProductName = "Hamburger tradicional";
         double someProductPrice = 23.65;
-        String someProductDescription = "Pão com gergelim, hamburguer no ponto, alface, tomate e queijo";
+        String someIngredients = "Carne, tomate, pepino, bacon, alface, maionese";
+        ProductCategory someProductCategory = ProductCategory.BURGER;
 
         CreateProductDTO requestInput = new CreateProductDTO(
                 someProductName,
                 someProductPrice,
-                someProductDescription
+                someIngredients
         );
         ProductDTO productDTO = new ProductDTO(
                 someProductId,
                 someProductName,
                 someProductPrice,
-                someProductDescription
+                someIngredients,
+                someProductCategory,
+                null
         );
 
         Mockito.when(this.productService.createProduct(Mockito.any(CreateProductDTO.class))).thenReturn(productDTO);
@@ -261,7 +268,9 @@ public class ProductControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id", CoreMatchers.is(someProductId), Long.class))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name", CoreMatchers.is(someProductName)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.price", CoreMatchers.is(someProductPrice)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.description", CoreMatchers.is(someProductDescription)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.ingredients", CoreMatchers.is(someIngredients)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.category", CoreMatchers.is(someProductCategory)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.url", CoreMatchers.nullValue()))
                 .andExpect(result -> Assertions.assertEquals(expectedLocation, result.getResponse().getRedirectedUrl()))
                 .andExpect(result -> Assertions.assertNotNull(result.getResponse().getHeader("Location")))
                 .andExpect(result -> Assertions.assertEquals(expectedLocation, result.getResponse().getHeader("Location")))
@@ -350,10 +359,18 @@ public class ProductControllerTest {
         Long someProductId = 1L;
         String someProductName = "Hamburguer tradicional com porco";
         double someProductPrice = 23.5;
-        String someProductDescription = "Hamburguer especial com carne de porco assada";
-        UpdateProductDTO requestInput = new UpdateProductDTO(someProductName, someProductPrice, someProductDescription);
+        String someProductIngredients = "Carne, tomate, pepino, bacon, alface, maionese";
+        ProductCategory someProductCategory = ProductCategory.BURGER;
+        UpdateProductDTO requestInput = new UpdateProductDTO(someProductName, someProductPrice, someProductIngredients);
 
-        ProductDTO productDTO = new ProductDTO(someProductId, someProductName, someProductPrice, someProductDescription);
+        ProductDTO productDTO = ProductTestFactory.productDTOFactory(
+                someProductId,
+                someProductName,
+                someProductPrice,
+                someProductIngredients,
+                someProductCategory,
+                null
+        );
 
         Mockito.when(this.productService.updateProduct(Mockito.anyLong(), Mockito.any(UpdateProductDTO.class)))
                 .thenReturn(productDTO);
@@ -370,7 +387,9 @@ public class ProductControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id", CoreMatchers.is(someProductId), Long.class))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name", CoreMatchers.is(someProductName)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.price", CoreMatchers.is(someProductPrice)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.description", CoreMatchers.is(someProductDescription)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.ingredients", CoreMatchers.is(someProductIngredients)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.category", CoreMatchers.is(someProductCategory)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.url", CoreMatchers.nullValue()))
                 .andDo(MockMvcResultHandlers.print());
     }
 

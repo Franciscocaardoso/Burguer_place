@@ -10,6 +10,6 @@ public record UpdateProductDTO(
         @NotNull
         @Positive
         Double price,
-        String description
+        String ingredients
 ) {
 }
