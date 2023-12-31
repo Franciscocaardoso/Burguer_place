@@ -8,12 +8,14 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.NoSuchElementException;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Table(name = "reviews")
 @Entity(name = "Review")
 @JsonIgnoreProperties({"hibernateLazyInitializer"})
