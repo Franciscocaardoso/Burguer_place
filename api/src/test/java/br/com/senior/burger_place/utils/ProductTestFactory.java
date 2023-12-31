@@ -15,20 +15,57 @@ public class ProductTestFactory {
                 45.8,
                 "Carne, tomate, pepino, bacon, alface, maionese",
                 ProductCategory.BURGER,
-                null,
+                "http://some-image.com.br",
                 true
         );
     }
 
-    public static CreateProductDTO createProductDTOFactory(String name, Double price) {
-        return new CreateProductDTO(name, price, null);
+    public static CreateProductDTO createProductDTOFactory(
+            String name,
+            String ingredients,
+            ProductCategory categoryDouble,
+            Double price
+    ) {
+        return new CreateProductDTO(name, ingredients, price, categoryDouble, null);
+    }
+
+    public static UpdateProductDTO updateProductDTOFactory(
+            String name,
+            String ingredients,
+            Double price,
+            ProductCategory category
+    ) {
+        return new UpdateProductDTO(
+                name,
+                ingredients,
+                price,
+                category,
+                "http://some-image.com.br"
+        );
+    }
+
+    public static UpdateProductDTO updateProductDTOFactory(
+            String name,
+            String ingredients,
+            Double price,
+            ProductCategory category,
+            String url
+    ) {
+        return new UpdateProductDTO(
+                name,
+                ingredients,
+                price,
+                category,
+                url
+        );
     }
 
     public static UpdateProductDTO updateProductDTOFactory(String name, Double price) {
-        return new UpdateProductDTO(
+        return updateProductDTOFactory(
                 name,
+                "Carne, tomate, pepino, bacon, alface, maionese",
                 price,
-                "Carne, tomate, pepino, bacon, alface, maionese"
+                null
         );
     }
 
@@ -38,8 +75,7 @@ public class ProductTestFactory {
                 "Hamburguer tradicional",
                 25.9,
                 "Carne, tomate, pepino, bacon, alface, maionese",
-                ProductCategory.BURGER,
-                null
+                ProductCategory.BURGER
         );
     }
 
@@ -48,8 +84,7 @@ public class ProductTestFactory {
             String name,
             Double price,
             String ingredients,
-            ProductCategory category,
-            String URL
+            ProductCategory category
     ) {
         return new ProductDTO(
                 id,
@@ -57,7 +92,7 @@ public class ProductTestFactory {
                 price,
                 ingredients,
                 category,
-                URL
+                null
         );
     }
 

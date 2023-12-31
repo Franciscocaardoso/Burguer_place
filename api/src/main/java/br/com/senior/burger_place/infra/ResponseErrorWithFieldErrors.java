@@ -1,4 +1,4 @@
-package br.com.senior.burger_place.exception;
+package br.com.senior.burger_place.infra;
 
 import org.springframework.validation.FieldError;
 

@@ -40,12 +40,19 @@ public class ProductService {
 
     public ProductDTO createProduct(CreateProductDTO productData) {
         InvalidDTOValidation.validate(productData);
-        ProductDTOFieldsValidation.validate(productData.name(), productData.price());
+        ProductDTOFieldsValidation.validate(
+                productData.name(),
+                productData.ingredients(),
+                productData.price(),
+                productData.category()
+        );
 
         Product product = new Product(
                 productData.name(),
+                productData.ingredients(),
                 productData.price(),
-                productData.description()
+                productData.category(),
+                productData.url()
         );
 
         return new ProductDTO(this.productRepository.save(product));
@@ -54,7 +61,10 @@ public class ProductService {
     public ProductDTO updateProduct(Long id, UpdateProductDTO productData) {
         InvalidIdValidation.validate(id);
         InvalidDTOValidation.validate(productData);
-        ProductDTOFieldsValidation.validate(productData.name(), productData.price());
+
+        if (productData.price() == null || productData.price() <= 0) {
+            throw new IllegalArgumentException("preço inválido");
+        }
 
         Product product = this.productRepository.getReferenceByIdAndActiveTrue(id);
 
