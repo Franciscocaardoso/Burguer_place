@@ -40,7 +40,6 @@ public class Board {
             this.number = data.number();
         }
     }
-
     public void inactivate() {
         this.active = false;
     }

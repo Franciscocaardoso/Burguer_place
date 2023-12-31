@@ -14,9 +14,7 @@ public record CustomerRegistrationDTO(
         String cpf,
         @NotNull
         @Valid
-        AdressDto address,
-
-        boolean active
+        AdressDto address
 
 ) {
 }

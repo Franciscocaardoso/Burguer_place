@@ -13,6 +13,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("reviews")
@@ -27,10 +28,12 @@ public class ReviewController {
             @PathVariable
             Long occupationId,
             @RequestBody @Valid
-            ReviewRegisterDTO dto
+            ReviewRegisterDTO dto,
+            UriComponentsBuilder uriBuilder
     ) {
         Review review = service.addReview(occupationId, dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(review);
+        var uri = uriBuilder.path("/reviews/{id}").buildAndExpand(review.getId()).toUri();
+        return ResponseEntity.created(uri).body(review);
     }
 
     @GetMapping
@@ -55,7 +58,7 @@ public class ReviewController {
             ReviewUpdateDTO dto
     ){
         ReviewRegisterDTO newReview = service.updateReview(id, dto);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(newReview);
+        return ResponseEntity.status(HttpStatus.OK).body(newReview);
     }
 
     @DeleteMapping("/{id}")

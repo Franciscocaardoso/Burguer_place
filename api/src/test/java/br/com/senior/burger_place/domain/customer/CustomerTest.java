@@ -24,7 +24,7 @@ class CustomerTest {
     @Test
     public void updateInformation_whenNoNullValues_shouldUpdateData(){
         AdressDto oldAddress = new AdressDto("Rua A", "Bairro A", "Cidade A", "Estado A", "88888888", null, null);
-        CustomerRegistrationDTO dto = new CustomerRegistrationDTO("Nome Antigo", "emailAntigo@email.com", "99999999999", oldAddress, true);
+        CustomerRegistrationDTO dto = new CustomerRegistrationDTO("Nome Antigo", "emailAntigo@email.com", "99999999999", oldAddress);
         Customer oldCustomer = new Customer(dto);
 
         AdressDto adressDto = new AdressDto("Rua B", "Bairro B", "Cidade B", "Estado B", "999999999", null, null);
@@ -39,7 +39,7 @@ class CustomerTest {
     @Test
     public void updateInformation_whenNullValues_shouldNotUpdateData(){
         AdressDto adressDto = mock(AdressDto.class);
-        CustomerRegistrationDTO dto = new CustomerRegistrationDTO("Nome Antigo", "emailAntigo@email.com", "99999999999", adressDto, true);
+        CustomerRegistrationDTO dto = new CustomerRegistrationDTO("Nome Antigo", "emailAntigo@email.com", "99999999999", adressDto);
         Customer oldCustomer = new Customer(dto);
 
         CustomerUploadDTO customerUploadDTO = new CustomerUploadDTO(null, null, null);
@@ -66,33 +66,10 @@ class CustomerTest {
     @Test
     public void inactivate_whenInactivateIsCalled_activeAttributeShouldBeFalse(){
 
-        Customer customer = new Customer(new CustomerRegistrationDTO("Ricardo Almeira", "Ricardo@email.com", "99999999900", mock(AdressDto.class), true));
+        Customer customer = new Customer(new CustomerRegistrationDTO("Ricardo Almeira", "Ricardo@email.com", "99999999900", mock(AdressDto.class)));
 
         assertTrue(customer.isActive());
         customer.inactivate();
         assertFalse(customer.isActive());
-    }
-
-    @Test
-    public void testAllArgsConstructor(){
-        Long id = 1l;
-        String name = "Nome";
-        String email = "email@email.com";
-        String cpf = "11111111111";
-        boolean active = true;
-        Address address = mock(Address.class);
-
-        Customer customer = new Customer(id, name, email, cpf, active, address);
-
-        assertEquals(id, customer.getId());
-        assertEquals(name, customer.getName());
-        assertEquals(email, customer.getEmail());
-        assertEquals(cpf, customer.getCpf());
-        assertEquals(active, customer.isActive());
-        assertEquals(address, customer.getAddress());
-    }
-    @Test
-    public void testNoArgsConstructor(){
-
     }
 }

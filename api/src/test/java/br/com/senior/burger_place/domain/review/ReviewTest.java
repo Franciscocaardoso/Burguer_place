@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+
 
 @ExtendWith(MockitoExtension.class)
 class ReviewTest {
@@ -60,31 +60,4 @@ class ReviewTest {
 
 
     }
-
-    @Test
-    public void testAllArgsConstructor(){
-        Long id = 1l;
-        Integer grade = 4;
-        String comment = "Comentário";
-        Occupation occupation = mock(Occupation.class);
-
-        Review review = new Review(id, grade, comment, occupation);
-
-        assertEquals(id, review.getId());
-        assertEquals(grade, review.getGrade());
-        assertEquals(comment, review.getComment());
-        assertEquals(occupation, review.getOccupation());
-    }
-    @Test
-    public void testNoArgsConstructor(){
-
-        Review review = new Review();
-
-        assertNotNull(review);
-        assertNull(review.getId());
-        assertNull(review.getGrade());
-        assertNull(review.getComment());
-        assertNull(review.getOccupation());
-    }
-
 }

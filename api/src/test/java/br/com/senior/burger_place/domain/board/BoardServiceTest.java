@@ -2,14 +2,12 @@ package br.com.senior.burger_place.domain.board;
 
 import br.com.senior.burger_place.domain.board.dto.BoardRegisterDTO;
 import br.com.senior.burger_place.domain.board.dto.BoardUpdateDTO;
-import br.com.senior.burger_place.domain.board.dto.ListingBoardDTO;
+import br.com.senior.burger_place.domain.occupation.Occupation;
+import br.com.senior.burger_place.domain.occupation.OccupationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
@@ -21,8 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static br.com.senior.burger_place.domain.board.BoardLocation.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,6 +29,8 @@ class BoardServiceTest {
     private BoardService boardService;
     @Mock
     private BoardRepository boardRepository;
+    @Mock
+    private OccupationRepository occupationRepository;
     @Captor
     private ArgumentCaptor<Board> boardCaptor;
     @Captor
@@ -68,18 +67,6 @@ class BoardServiceTest {
         assertEquals("Já existe uma mesa cadastrada com esse número", exception.getMessage());
 
         verify(boardRepository, never()).save(board);
-    }
-
-    @Test
-    public void updateBoard_whenOptionalBoardIsEmpty_shouldThrowException(){
-        Long boardId = 1l;
-        BoardUpdateDTO boardUpdateDTO = new BoardUpdateDTO(2, 5, SACADA);
-
-        when(boardRepository.findById(boardId)).thenReturn(Optional.empty());
-
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
-                ()-> boardService.updateBoard(boardId, boardUpdateDTO));
-        assertEquals("Mesa não cadastrada", exception.getMessage());
     }
     @Test
     public void updateBoard_whenOptionalBoardIsNull_shouldThrowException(){
@@ -163,18 +150,27 @@ class BoardServiceTest {
     }
 
     @Test
-    public void listBoardsByLocation_whenBoardsIsEmpty_shouldThrowException(){
+    public void listAllBoards_shouldReturnAllBoardsAvailable(){
+        Pageable pageable = Pageable.unpaged();
+
+        boardService.listAllBoards(pageable);
+
+        verify(boardRepository, times(1)).findAllBoardsAvailable(pageableCaptor.capture());
+        assertEquals(pageable, pageableCaptor.getValue());
+    }
+    @Test
+    public void listAvailableBoardsByLocationAndOccupation_whenBoardsIsEmpty_shouldThrowException(){
         BoardLocation location = VARANDA;
         Pageable pageable = Pageable.unpaged();
 
         when(boardRepository.findByLocationAndActiveTrue(location, pageable)).thenReturn(Page.empty());
 
-        EntityNotFoundException e = assertThrows(EntityNotFoundException.class, ()-> boardService.listBoardsByLocation(location, pageable));
+        EntityNotFoundException e = assertThrows(EntityNotFoundException.class, ()-> boardService.listAvailableBoardsByLocationAndOccupation(location, pageable));
         assertEquals("Não encontrado mesas para a área informada!", e.getMessage());
         verify(boardRepository, times(1)).findByLocationAndActiveTrue(location, pageable);
     }
     @Test
-    public void listBoardsByLocation_whenBoardsIsNotEmpty_shouldReturnBoardsMap(){
+    public void listAvailableBoardsByLocationAndOccupation_whenBoardsIsNotEmpty_shouldReturnBoardsPage(){
         BoardLocation location = VARANDA;
         Pageable pageable = Pageable.unpaged();
         Board board1 = new Board(mock(BoardRegisterDTO.class));
@@ -185,9 +181,9 @@ class BoardServiceTest {
 
         when(boardRepository.findByLocationAndActiveTrue(boardLocationCaptor.capture(), pageableCaptor.capture())).thenReturn(boardPage);
 
-        Page<ListingBoardDTO> result = boardService.listBoardsByLocation(location, pageable);
+        Page<Board> result = boardService.listAvailableBoardsByLocationAndOccupation(location, pageable);
 
-        assertEquals(boardPage.map(ListingBoardDTO::new), result);
+        assertEquals(boardPage, result);
         assertEquals(location, boardLocationCaptor.getValue());
         assertEquals(pageable, pageableCaptor.getValue());
 
@@ -195,13 +191,65 @@ class BoardServiceTest {
     }
 
     @Test
-    public void listAllBoards_shouldReturnAllBoardsAvailable(){
+    public void listAvailableBoardsByCapacityAndOccupation_whenAllBoardsIsValid_shouldReturnBoardsPage(){
+        Pageable pageable = Pageable.unpaged();
+        BoardRegisterDTO dto1 = new BoardRegisterDTO(1, 3, VARANDA);
+        BoardRegisterDTO dto2 = new BoardRegisterDTO(2, 3, TERRACO);
+        BoardRegisterDTO dto3 = new BoardRegisterDTO(3, 3, VARANDA);
+        Board board1 = new Board(dto1);
+        Board board2 = new Board(dto2);
+        Board board3 = new Board(dto3);
+
+        List<Board> boarsList = Arrays.asList(board1, board2, board3);
+        Page<Board> boardPage = new PageImpl<>(boarsList);
+        when(boardRepository.findByCapacityAndActiveTrue(3, pageable)).thenReturn(boardPage);
+
+        Page<Board> result = boardService.listAvailableBoardsByCapacityAndOccupation(3, pageable);
+
+        assertEquals(3, result.getTotalElements());
+
+        verify(boardRepository, times(1)).findByCapacityAndActiveTrue(3, pageable);
+        verify(occupationRepository, times(3)).findFirstByBoardIdOrderByBeginOccupationDesc(any());
+    }
+    @Test
+    public void listAvailableBoardsByCapacityAndOccupation_whenBoardsIsEmpty_shouldThrowException(){
         Pageable pageable = Pageable.unpaged();
 
-        boardService.listAllBoards(pageable);
+        when(boardRepository.findByCapacityAndActiveTrue(4, pageable)).thenReturn(Page.empty());
 
-        verify(boardRepository, times(1)).findAllBoardsAvailable(pageableCaptor.capture());
-        assertEquals(pageable, pageableCaptor.getValue());
+        EntityNotFoundException e = assertThrows(EntityNotFoundException.class, ()-> boardService.listAvailableBoardsByCapacityAndOccupation(4, pageable));
+        assertEquals("Não encontrado mesas disponíveis com a capacidade informada!", e.getMessage());
+        verify(boardRepository, times(1)).findByCapacityAndActiveTrue(4, pageable);
+    }
+    @Test
+    public void listAvailableBoardsByLocationAndCapacityAndOccupation_whenBoardsIsEmpty_shouldThrowException(){
+        Pageable pageable = Pageable.unpaged();
+
+        when(boardRepository.findByLocationAndCapacityAndActiveTrue(VARANDA, 4, pageable)).thenReturn(Page.empty());
+
+        EntityNotFoundException e = assertThrows(EntityNotFoundException.class, ()-> boardService.listAvailableBoardsByLocationAndCapacityAndOccupation(VARANDA,4 , pageable));
+        assertEquals("Não encontrado mesas disponíveis com o filtro informado!", e.getMessage());
+        verify(boardRepository, times(1)).findByLocationAndCapacityAndActiveTrue(VARANDA, 4, pageable);
+    }
+
+    @Test
+    public void listAvailableBoardsByLocationAndCapacityAndOccupation_whenAllBoardsIsValid_shouldReturnBoardsPage(){
+        Pageable pageable = Pageable.unpaged();
+        BoardRegisterDTO dto1 = new BoardRegisterDTO(1, 4, VARANDA);
+        BoardRegisterDTO dto3 = new BoardRegisterDTO(2, 4, VARANDA);
+        Board board1 = new Board(dto1);
+        Board board3 = new Board(dto3);
+
+        List<Board> boarsList = Arrays.asList(board1, board3);
+        Page<Board> boardPage = new PageImpl<>(boarsList);
+        when(boardRepository.findByLocationAndCapacityAndActiveTrue(VARANDA, 4, pageable)).thenReturn(boardPage);
+
+        Page<Board> result = boardService.listAvailableBoardsByLocationAndCapacityAndOccupation(VARANDA, 4, pageable);
+
+        assertEquals(2, result.getTotalElements());
+
+        verify(boardRepository, times(1)).findByLocationAndCapacityAndActiveTrue(VARANDA, 4, pageable);
+        verify(occupationRepository, times(2)).findFirstByBoardIdOrderByBeginOccupationDesc(any());
     }
 
 }

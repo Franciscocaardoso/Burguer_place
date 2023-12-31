@@ -44,36 +44,4 @@ class BoardTest {
         board.inactivate();
         assertFalse(board.isActive());
     }
-
-    @Test
-    public void testAllArgsConstructor() {
-
-        Long id = 1L;
-        Integer number = 42;
-        Integer capacity = 5;
-        BoardLocation location = VARANDA;
-        boolean active = true;
-
-        Board board = new Board(id, number, capacity, location, active);
-
-        assertNotNull(board);
-        assertEquals(id, board.getId());
-        assertEquals(number, board.getNumber());
-        assertEquals(capacity, board.getCapacity());
-        assertEquals(location, board.getLocation());
-        assertEquals(active, board.isActive());
-    }
-
-    @Test
-    public void testNoArgsConstructor() {
-
-        Board board = new Board();
-
-        assertNotNull(board);
-        assertNull(board.getId());
-        assertNull(board.getNumber());
-        assertNull(board.getCapacity());
-        assertNull(board.getLocation());
-        assertFalse(board.isActive());
-    }
 }

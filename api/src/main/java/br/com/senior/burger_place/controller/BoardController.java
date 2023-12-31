@@ -1,6 +1,8 @@
 package br.com.senior.burger_place.controller;
 
-import br.com.senior.burger_place.domain.board.*;
+import br.com.senior.burger_place.domain.board.Board;
+import br.com.senior.burger_place.domain.board.BoardLocation;
+import br.com.senior.burger_place.domain.board.BoardService;
 import br.com.senior.burger_place.domain.board.dto.BoardRegisterDTO;
 import br.com.senior.burger_place.domain.board.dto.BoardUpdateDTO;
 import br.com.senior.burger_place.domain.board.dto.ListingBoardDTO;
@@ -14,9 +16,10 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping("boards")
+@RequestMapping("/boards")
 public class BoardController {
 
     @Autowired
@@ -24,9 +27,10 @@ public class BoardController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<Object> register(@RequestBody @Valid BoardRegisterDTO dto){
+    public ResponseEntity<Object> register(@RequestBody @Valid BoardRegisterDTO dto, UriComponentsBuilder uriBuilder){
         Board board = service.addBoard(dto);
-        return ResponseEntity.status(HttpStatus.OK).body(board);
+        var uri = uriBuilder.path("/boards/{id}").buildAndExpand(board.getId()).toUri();
+        return ResponseEntity.created(uri).body(board);
     }
 
     @PutMapping("/{id}")
@@ -39,35 +43,48 @@ public class BoardController {
             BoardUpdateDTO dto
     ){
         service.updateBoard(id, dto);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
-
-    @GetMapping
-    public ResponseEntity<Page<Board>> listAllBoards(@PageableDefault(size = 10, sort = {"location"}) Pageable pageable){
-        Page<Board> boards = service.listAllBoards(pageable);
-        return ResponseEntity.status(HttpStatus.OK).body(boards);
-    }
-
-
     @GetMapping("/{id}")
     public ResponseEntity<Object> listBoardById(@PathVariable Long id){
         Board board = service.verifyOccupiedBoard(id);
         return ResponseEntity.ok(new ListingBoardDTO(board));
     }
 
-    @GetMapping("/locale")
-    public ResponseEntity<Page<ListingBoardDTO>> listBoardByLocation(
-            @RequestParam
-            (required = false) BoardLocation location,
+    @GetMapping()
+    public ResponseEntity<Page<Board>> listBoards(
+            @RequestParam (required = false) String location,
+            @RequestParam (required = false) Integer capacity,
             @PageableDefault(size = 10)
             Pageable pageable) {
-        Page<ListingBoardDTO> boards;
 
-        if (location == null) {
-            throw new EntityNotFoundException("Localização não pode ser nula");
+        if ((location == null && capacity == null)) {
+            Page<Board> boards = service.listAllBoards(pageable);
+            return ResponseEntity.ok().body(boards);
         }
-        boards = service.listBoardsByLocation(location, pageable);
-        return ResponseEntity.status(HttpStatus.OK).body(boards);
+        if (capacity != null && location == null) {
+                Page<Board> boards = service.listAvailableBoardsByCapacityAndOccupation(capacity, pageable);
+                return ResponseEntity.ok().body(boards);
+        }
+        if (capacity == null && location != null) {
+            try {
+                BoardLocation boardLocation = BoardLocation.valueOf(location.toUpperCase());
+                Page<Board> boards = service.listAvailableBoardsByLocationAndOccupation(boardLocation, pageable);
+                return ResponseEntity.ok().body(boards);
+            } catch (IllegalArgumentException e) {
+                throw new EntityNotFoundException("Não encontrado mesa para a localização: " + location);
+            }
+        }
+        if (capacity != null && location != null) {
+            try {
+                BoardLocation boardLocation = BoardLocation.valueOf(location.toUpperCase());
+                Page<Board> boards = service.listAvailableBoardsByLocationAndCapacityAndOccupation(boardLocation, capacity, pageable);
+                return ResponseEntity.ok().body(boards);
+            } catch (IllegalArgumentException e) {
+                throw new EntityNotFoundException("Não encontrado mesa para a localização: " + location);
+            }
+        }
+        return null;
     }
 
     @DeleteMapping("/{id}")

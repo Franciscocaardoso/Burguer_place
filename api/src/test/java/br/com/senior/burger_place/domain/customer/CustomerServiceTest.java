@@ -34,7 +34,7 @@ class CustomerServiceTest {
     public void addCustomer_whenNotExistsAclientWithSameEmail_shouldSaveCustomer() {
 
         AdressDto adressDto = new AdressDto("Rua A", "Bairro A", "Cidade A", "Estado A", "88888888", null, null);
-        CustomerRegistrationDTO dto = new CustomerRegistrationDTO("Ricardo Almeira", "Ricardo@email.com", "99999999900", adressDto, true);
+        CustomerRegistrationDTO dto = new CustomerRegistrationDTO("Ricardo Almeira", "Ricardo@email.com", "99999999900", adressDto);
 
         when(customerRepository.existsByCpf(dto.cpf())).thenReturn(false);
         when(customerRepository.existsByEmail(dto.email())).thenReturn(false);
@@ -62,7 +62,7 @@ class CustomerServiceTest {
     public void addCustomer_whenExistsAclientWithSameCpf_shouldThrowException() {
 
         AdressDto adressDto = new AdressDto("Rua A", "Bairro A", "Cidade A", "Estado A", "88888888", null, null);
-        CustomerRegistrationDTO dto = new CustomerRegistrationDTO("Ricardo Almeira", "Ricardo@email.com", "99999999900", adressDto, true);
+        CustomerRegistrationDTO dto = new CustomerRegistrationDTO("Ricardo Almeira", "Ricardo@email.com", "99999999900", adressDto);
 
         when(customerRepository.existsByCpf(dto.cpf())).thenReturn(true);
         DuplicateKeyException exception = assertThrows(DuplicateKeyException.class,
@@ -76,7 +76,7 @@ class CustomerServiceTest {
     public void addCustomer_whenExistsAclientWithSameEmail_shouldThrowException() {
 
         AdressDto adressDto = new AdressDto("Rua A", "Bairro A", "Cidade A", "Estado A", "88888888", null, null);
-        CustomerRegistrationDTO dto = new CustomerRegistrationDTO("Ricardo Almeira", "Ricardo@email.com", "99999999900", adressDto, true);
+        CustomerRegistrationDTO dto = new CustomerRegistrationDTO("Ricardo Almeira", "Ricardo@email.com", "99999999900", adressDto);
 
         when(customerRepository.existsByCpf(dto.cpf())).thenReturn(false);
         when(customerRepository.existsByEmail(dto.email())).thenReturn(true);
@@ -90,8 +90,8 @@ class CustomerServiceTest {
     @Test
     public void listCustomer_whenCustomerIsActive_shouldReturnInPagination() {
         AdressDto adressDto = new AdressDto("Rua A", "Bairro A", "Cidade A", "Estado A", "88888888", null, null);
-        CustomerRegistrationDTO customer01 = new CustomerRegistrationDTO("Ricardo Almeira", "Ricardo@email.com", "99999999900", adressDto, true);
-        CustomerRegistrationDTO customer02 = new CustomerRegistrationDTO("Rodrigo Alencar", "Rodrigo@email.com", "99999999911", adressDto, true);
+        CustomerRegistrationDTO customer01 = new CustomerRegistrationDTO("Ricardo Almeira", "Ricardo@email.com", "99999999900", adressDto);
+        CustomerRegistrationDTO customer02 = new CustomerRegistrationDTO("Rodrigo Alencar", "Rodrigo@email.com", "99999999911", adressDto);
         List<Customer> customersActiveList = List.of(new Customer(customer01), new Customer(customer02));
 
         when(customerRepository.findAllByActiveTrue(any(Pageable.class))).
@@ -108,7 +108,7 @@ class CustomerServiceTest {
     @Test
     public void listCustomerById_whenCustomerIsNotNull_shouldReturnCustomer(){
         Long customerId = 1l;
-        CustomerRegistrationDTO customer01 = new CustomerRegistrationDTO("Ricardo Almeira", "Ricardo@email.com", "99999999900", mock(AdressDto.class), true);
+        CustomerRegistrationDTO customer01 = new CustomerRegistrationDTO("Ricardo Almeira", "Ricardo@email.com", "99999999900", mock(AdressDto.class));
         Customer customer = new Customer(customer01);
 
         when(customerRepository.getReferenceByIdAndActiveTrue(customerId)).thenReturn(customer);

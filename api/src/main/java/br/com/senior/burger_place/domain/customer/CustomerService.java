@@ -26,7 +26,7 @@ public class CustomerService {
         return customerRepository.save(new Customer(data));
     }
 
-    public Page<ListingCustomersDTO> listCustomer(@PageableDefault(size = 5) Pageable pageable) {
+    public Page<ListingCustomersDTO> listCustomer(Pageable pageable) {
         return customerRepository.findAllByActiveTrue(pageable).map(ListingCustomersDTO::new);
     }
 
