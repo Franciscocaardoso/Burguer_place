@@ -140,8 +140,8 @@ public class ProductServiceTest {
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {" ", "  ", "\t", "\n    "})
-    void createProduct_whenDTONameIsNull_shouldThrow(String name) {
-        CreateProductDTO input = createProductDTOFactory(name, 10.5);
+    void createProduct_whenDTONameIsInvalid_shouldThrow(String name) {
+        CreateProductDTO input = createProductDTOFactory(name, null, null, null);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -152,10 +152,51 @@ public class ProductServiceTest {
     }
 
     @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "  ", "\t", "\n    "})
+    void createProduct_whenDTOIngredientsIsInvalid_shouldThrow(String ingredients) {
+        CreateProductDTO input = createProductDTOFactory(
+                "Hamburguer tradicional",
+                ingredients,
+                null,
+                null
+        );
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> this.productService.createProduct(input)
+        );
+
+        assertEquals("ingredientes inválidos", exception.getMessage());
+    }
+
+    @Test
+    void createProduct_whenDTOCategoryIsNull_shouldThrow() {
+        CreateProductDTO input = createProductDTOFactory(
+                "Hamburguer tradicional",
+                "Pão, hamburguer, tomate, cebola, queijo, tomate",
+                null,
+                null
+        );
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> this.productService.createProduct(input)
+        );
+
+        assertEquals("categoria inválida", exception.getMessage());
+    }
+
+    @ParameterizedTest
     @NullSource
     @ValueSource(doubles = {0D, -1D, -10D})
     void createProduct_whenDTOPriceIsInvalid_shouldThrow(Double price) {
-        CreateProductDTO input = createProductDTOFactory("Hamburguer tradicional", price);
+        CreateProductDTO input = createProductDTOFactory(
+                "Hamburguer tradicional",
+                "Pão, hamburguer, queijo, tomate, cebola, pepino, alface",
+                ProductCategory.BURGER,
+                price
+        );
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -170,6 +211,8 @@ public class ProductServiceTest {
         Product product = productFactory(1L);
         CreateProductDTO input = createProductDTOFactory(
                 product.getName(),
+                product.getIngredients(),
+                product.getCategory(),
                 product.getPrice()
         );
 
@@ -186,7 +229,7 @@ public class ProductServiceTest {
 
         assertAll(
                 () -> assertEquals(input.name(), capturedValue.getName()),
-                () -> assertEquals(input.description(), capturedValue.getIngredients()),
+                () -> assertEquals(input.ingredients(), capturedValue.getIngredients()),
                 () -> assertEquals(input.price(), capturedValue.getPrice()),
 
                 () -> assertEquals(product.getId(), output.id()),
@@ -216,20 +259,6 @@ public class ProductServiceTest {
         );
 
         assertEquals("DTO inválido", exception.getMessage());
-    }
-
-    @ParameterizedTest
-    @NullSource
-    @ValueSource(strings = {"", " "})
-    void updateProduct_whenDTONameIsInvalid_shouldThrow(String name) {
-        UpdateProductDTO input = updateProductDTOFactory(name, null);
-
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> this.productService.updateProduct(1L, input)
-        );
-
-        assertEquals("nome inválido", exception.getMessage());
     }
 
     @ParameterizedTest
@@ -266,7 +295,9 @@ public class ProductServiceTest {
         Product product = productFactory(someProductId);
         UpdateProductDTO input = updateProductDTOFactory(
                 product.getName(),
-                product.getPrice()
+                product.getIngredients(),
+                product.getPrice(),
+                product.getCategory()
         );
 
         Product productSpy = spy(product);
@@ -280,7 +311,9 @@ public class ProductServiceTest {
                 () -> assertEquals(product.getId(), output.id()),
                 () -> assertEquals(product.getName(), output.name()),
                 () -> assertEquals(product.getIngredients(), output.ingredients()),
-                () -> assertEquals(product.getPrice(), output.price())
+                () -> assertEquals(product.getPrice(), output.price()),
+                () -> assertEquals(product.getCategory(), output.category()),
+                () -> assertEquals(product.getUrl(), output.url())
         );
     }
 

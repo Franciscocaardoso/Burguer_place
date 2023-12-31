@@ -1,4 +1,4 @@
-package br.com.senior.burger_place.exception;
+package br.com.senior.burger_place.infra;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DuplicateKeyException;

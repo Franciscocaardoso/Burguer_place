@@ -1,4 +1,4 @@
-package br.com.senior.burger_place.exception;
+package br.com.senior.burger_place.infra;
 
 import br.com.senior.burger_place.controller.ProductController;
 import br.com.senior.burger_place.domain.product.ProductService;
