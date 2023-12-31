@@ -5,7 +5,7 @@ import br.com.senior.burger_place.domain.board.BoardLocation;
 
 public record ListingBoardDTO(
         Long id,
-        Integer boardNumber,
+        Integer number,
         Integer capacity,
         BoardLocation location
 ) {
@@ -18,6 +18,5 @@ public record ListingBoardDTO(
                 board.getLocation()
         );
     }
-
 }
 
