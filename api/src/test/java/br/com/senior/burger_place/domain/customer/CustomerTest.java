@@ -21,8 +21,9 @@ class CustomerTest {
     private Address address;
     @InjectMocks
     private Customer customer;
+
     @Test
-    public void updateInformation_whenNoNullValues_shouldUpdateData(){
+    public void updateInformation_whenNoNullValues_shouldUpdateData() {
         AdressDto oldAddress = new AdressDto("Rua A", "Bairro A", "Cidade A", "Estado A", "88888888", null, null);
         CustomerRegistrationDTO dto = new CustomerRegistrationDTO("Nome Antigo", "emailAntigo@email.com", "99999999999", oldAddress);
         Customer oldCustomer = new Customer(dto);
@@ -36,25 +37,22 @@ class CustomerTest {
         assertEquals("novoEmail@email.com", oldCustomer.getEmail());
 
     }
+
     @Test
-    public void updateInformation_whenNullValues_shouldNotUpdateData(){
+    public void updateInformation_whenNullValues_shouldNotUpdateData() {
         AdressDto adressDto = mock(AdressDto.class);
         CustomerRegistrationDTO dto = new CustomerRegistrationDTO("Nome Antigo", "emailAntigo@email.com", "99999999999", adressDto);
         Customer oldCustomer = new Customer(dto);
 
         CustomerUpdatedDTO customerUploadDTO = new CustomerUpdatedDTO(null, null, null);
 
-        customer.updateInformation(customerUploadDTO);
-
-        assertEquals("Nome Antigo", oldCustomer.getName());
-        assertEquals("emailAntigo@email.com", oldCustomer.getEmail());
+        assertThrows(IllegalArgumentException.class, () -> customer.updateInformation(customerUploadDTO));
 
         verify(address, never()).updateInformationAdress(any(AdressDto.class));
-
     }
 
     @Test
-    public void updateInformation_whenAddressIsNotNull_shouldCallUpdateInformationAdressMethod(){
+    public void updateInformation_whenAddressIsNotNull_shouldCallUpdateInformationAdressMethod() {
         AdressDto adressDto = new AdressDto("Rua B", "Bairro B", "Cidade B", "Estado B", "999999999", null, null);
         CustomerUpdatedDTO customerUploadDTO = new CustomerUpdatedDTO("Novo nome", "novoEmail@email.com", adressDto);
 
@@ -64,7 +62,7 @@ class CustomerTest {
     }
 
     @Test
-    public void inactivate_whenInactivateIsCalled_activeAttributeShouldBeFalse(){
+    public void inactivate_whenInactivateIsCalled_activeAttributeShouldBeFalse() {
 
         Customer customer = new Customer(new CustomerRegistrationDTO("Ricardo Almeira", "Ricardo@email.com", "99999999900", mock(AdressDto.class)));
 
