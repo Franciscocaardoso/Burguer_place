@@ -1,14 +1,13 @@
 package br.com.senior.burger_place.domain.customer;
 
 import br.com.senior.burger_place.domain.customer.dto.CustomerRegistrationDTO;
-import br.com.senior.burger_place.domain.customer.dto.CustomerUploadDTO;
+import br.com.senior.burger_place.domain.customer.dto.CustomerUpdatedDTO;
 import br.com.senior.burger_place.domain.customer.dto.ListingCustomersDTO;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,16 +30,16 @@ public class CustomerService {
     }
 
     public Customer listCustomerById(Long id) {
-        Customer customer =  customerRepository.getReferenceByIdAndActiveTrue(id);
-        if (customer == null){
+        Customer customer = customerRepository.getReferenceByIdAndActiveTrue(id);
+        if (customer == null) {
             throw new EntityNotFoundException("Cliente não existe ou está inativado");
         }
         return customer;
     }
 
-    public void updateCustomer(Long id, CustomerUploadDTO data) {
+    public void updateCustomer(Long id, CustomerUpdatedDTO data) {
         Customer customer = customerRepository.getReferenceByIdAndActiveTrue(id);
-        if (customer == null){
+        if (customer == null) {
             throw new EntityNotFoundException("Cliente não existe ou está inativado");
         }
         customer.updateInformation(data);

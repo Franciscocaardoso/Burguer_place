@@ -2,7 +2,7 @@ package br.com.senior.burger_place.domain.customer;
 
 import br.com.senior.burger_place.domain.address.AdressDto;
 import br.com.senior.burger_place.domain.customer.dto.CustomerRegistrationDTO;
-import br.com.senior.burger_place.domain.customer.dto.CustomerUploadDTO;
+import br.com.senior.burger_place.domain.customer.dto.CustomerUpdatedDTO;
 import br.com.senior.burger_place.domain.customer.dto.ListingCustomersDTO;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -130,7 +130,7 @@ class CustomerServiceTest {
     @Test
     public void updateCustomer_whenCustomerIsNull_shouldThrowException(){
         Long customerId = 1l;
-        CustomerUploadDTO customerUploadDTO = new CustomerUploadDTO("Roberto de Assis", "Roberto@email.com", mock(AdressDto.class));
+        CustomerUpdatedDTO customerUploadDTO = new CustomerUpdatedDTO("Roberto de Assis", "Roberto@email.com", mock(AdressDto.class));
 
         when(customerRepository.getReferenceByIdAndActiveTrue(customerId)).thenReturn(null);
 
@@ -141,7 +141,7 @@ class CustomerServiceTest {
     @Test
     public void updateCustomer_whenCustomerIsNull_shouldReturnUpdatedCustomar(){
         Long customerId = 1l;
-        CustomerUploadDTO customerUploadDTO = new CustomerUploadDTO("Roberto de Assis", "Roberto@email.com", mock(AdressDto.class));
+        CustomerUpdatedDTO customerUploadDTO = new CustomerUpdatedDTO("Roberto de Assis", "Roberto@email.com", mock(AdressDto.class));
         Customer existingCustomer = mock(Customer.class);
 
         when(customerRepository.getReferenceByIdAndActiveTrue(customerId)).thenReturn(existingCustomer);

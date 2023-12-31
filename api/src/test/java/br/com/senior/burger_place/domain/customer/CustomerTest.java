@@ -3,7 +3,7 @@ package br.com.senior.burger_place.domain.customer;
 import br.com.senior.burger_place.domain.address.Address;
 import br.com.senior.burger_place.domain.address.AdressDto;
 import br.com.senior.burger_place.domain.customer.dto.CustomerRegistrationDTO;
-import br.com.senior.burger_place.domain.customer.dto.CustomerUploadDTO;
+import br.com.senior.burger_place.domain.customer.dto.CustomerUpdatedDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,7 +28,7 @@ class CustomerTest {
         Customer oldCustomer = new Customer(dto);
 
         AdressDto adressDto = new AdressDto("Rua B", "Bairro B", "Cidade B", "Estado B", "999999999", null, null);
-        CustomerUploadDTO customerUploadDTO = new CustomerUploadDTO("Novo nome", "novoEmail@email.com", adressDto);
+        CustomerUpdatedDTO customerUploadDTO = new CustomerUpdatedDTO("Novo nome", "novoEmail@email.com", adressDto);
 
         oldCustomer.updateInformation(customerUploadDTO);
 
@@ -42,7 +42,7 @@ class CustomerTest {
         CustomerRegistrationDTO dto = new CustomerRegistrationDTO("Nome Antigo", "emailAntigo@email.com", "99999999999", adressDto);
         Customer oldCustomer = new Customer(dto);
 
-        CustomerUploadDTO customerUploadDTO = new CustomerUploadDTO(null, null, null);
+        CustomerUpdatedDTO customerUploadDTO = new CustomerUpdatedDTO(null, null, null);
 
         customer.updateInformation(customerUploadDTO);
 
@@ -56,7 +56,7 @@ class CustomerTest {
     @Test
     public void updateInformation_whenAddressIsNotNull_shouldCallUpdateInformationAdressMethod(){
         AdressDto adressDto = new AdressDto("Rua B", "Bairro B", "Cidade B", "Estado B", "999999999", null, null);
-        CustomerUploadDTO customerUploadDTO = new CustomerUploadDTO("Novo nome", "novoEmail@email.com", adressDto);
+        CustomerUpdatedDTO customerUploadDTO = new CustomerUpdatedDTO("Novo nome", "novoEmail@email.com", adressDto);
 
         customer.updateInformation(customerUploadDTO);
 

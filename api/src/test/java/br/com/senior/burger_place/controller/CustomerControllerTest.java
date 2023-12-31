@@ -36,7 +36,7 @@ class CustomerControllerTest {
     @Test
     public void register_whenJsonFileIsNotNull_shouldReturnHttpStatus200() throws Exception {
         AdressDto adressDto = new AdressDto("Avenida Principal", "Bairro II", "Cidade II", "Estado II", "89120000", "22", "Apartamento 3");
-        CustomerRegistrationDTO dto = new CustomerRegistrationDTO("Ana Silva", "ana.silva123@email.com", "98765432110", adressDto, true);
+        CustomerRegistrationDTO dto = new CustomerRegistrationDTO("Ana Silva", "ana.silva123@email.com", "98765432110", adressDto);
 
 
         MockHttpServletResponse response = mvc.perform(
