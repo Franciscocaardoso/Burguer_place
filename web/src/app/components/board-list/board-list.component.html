@@ -1,4 +1,4 @@
-<ol>
+<ol *ngIf="boards.length > 0">
   <li *ngFor="let board of boards">
     <div [class.available]="!board.occupied">
       <span>nº</span>
@@ -12,7 +12,7 @@
       </p>
       <p>
         <b>Localização: </b>
-        <span>{{ board.localization }}</span>
+        <span>{{ getBoardLocationText(board.location) }}</span>
       </p>
     </div>
   </li>
