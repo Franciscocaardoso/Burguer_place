@@ -41,7 +41,7 @@ class BoardServiceTest {
     private ArgumentCaptor<BoardLocation> boardLocationCaptor;
 
     @Test
-    public void addBoard_whenExistsBoardWithSameNumber_shouldThrowException(){
+    public void addBoard_whenExistsBoardWithSameNumber_shouldThrowException() {
         BoardRegisterDTO dto = new BoardRegisterDTO(2, 4, VARANDA);
 
         when(boardRepository.existsByNumber(dto.number())).thenReturn(false);
@@ -57,30 +57,31 @@ class BoardServiceTest {
     }
 
     @Test
-    public void addBoard_whenNotExistsBoardWithSameNumber_shouldSaveBoard(){
+    public void addBoard_whenNotExistsBoardWithSameNumber_shouldSaveBoard() {
         BoardRegisterDTO dto = new BoardRegisterDTO(2, 4, VARANDA);
         Board board = new Board(dto);
 
         when(boardRepository.existsByNumber(dto.number())).thenReturn(true);
 
-        DuplicateKeyException exception = assertThrows(DuplicateKeyException.class, ()-> boardService.addBoard(dto));
+        DuplicateKeyException exception = assertThrows(DuplicateKeyException.class, () -> boardService.addBoard(dto));
         assertEquals("Já existe uma mesa cadastrada com esse número", exception.getMessage());
 
         verify(boardRepository, never()).save(board);
     }
+
     @Test
-    public void updateBoard_whenOptionalBoardIsNull_shouldThrowException(){
+    public void updateBoard_whenOptionalBoardIsNull_shouldThrowException() {
         Long boardId = 1l;
         BoardUpdateDTO boardUpdateDTO = new BoardUpdateDTO(2, 5, SACADA);
 
-        when(boardRepository.findById(boardId)).thenReturn(null);
+        when(boardRepository.findById(boardId)).thenReturn(Optional.empty());
 
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, ()-> boardService.updateBoard(boardId, boardUpdateDTO));
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> boardService.updateBoard(boardId, boardUpdateDTO));
         assertEquals("Mesa não cadastrada", exception.getMessage());
     }
 
     @Test
-    public void updateBoard_whenOptionalBoardIsValid_shouldCalledUpdateInformationMethod(){
+    public void updateBoard_whenOptionalBoardIsValid_shouldCalledUpdateInformationMethod() {
         Long boardId = 1L;
         BoardUpdateDTO boardUpdateDTO = new BoardUpdateDTO(2, 5, SACADA);
         Board existingBoard = mock(Board.class);
@@ -105,7 +106,7 @@ class BoardServiceTest {
 
         when(boardRepository.getReferenceByIdAndActiveTrue(boardId)).thenReturn(null);
 
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, ()-> boardService.listBoardsById(boardId));
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> boardService.listBoardsById(boardId));
         assertEquals("Mesa não existe", exception.getMessage());
     }
 
@@ -122,20 +123,20 @@ class BoardServiceTest {
     }
 
     @Test
-    public void verifyOccupiedBoard_whenBoardIsOccupied_shouldThrowException(){
+    public void verifyOccupiedBoard_whenBoardIsOccupied_shouldThrowException() {
         Long boardId = 1l;
         Board board = mock(Board.class);
 
         when(boardRepository.getReferenceByIdAndActiveTrue(boardId)).thenReturn(board);
         when(boardRepository.isBoardOccupied(boardId)).thenReturn(true);
 
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, ()-> boardService.verifyOccupiedBoard(boardId));
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> boardService.verifyOccupiedBoard(boardId));
         assertEquals("A mesa já está ocupada", exception.getMessage());
         verify(boardRepository, times(1)).getReferenceByIdAndActiveTrue(boardId);
     }
 
     @Test
-    public void verifyOccupiedBoard_whenBoardNotIsOccupied_shouldReturnBoard(){
+    public void verifyOccupiedBoard_whenBoardNotIsOccupied_shouldReturnBoard() {
         Long boardId = 1l;
         BoardRegisterDTO dto = new BoardRegisterDTO(3, 3, AREA_INTERNA);
         Board board = new Board(dto);
@@ -150,7 +151,7 @@ class BoardServiceTest {
     }
 
     @Test
-    public void listAllBoards_shouldReturnAllBoardsAvailable(){
+    public void listAllBoards_shouldReturnAllBoardsAvailable() {
         Pageable pageable = Pageable.unpaged();
 
         boardService.listAllBoards(pageable);
@@ -158,19 +159,21 @@ class BoardServiceTest {
         verify(boardRepository, times(1)).findAllBoardsAvailable(pageableCaptor.capture());
         assertEquals(pageable, pageableCaptor.getValue());
     }
+
     @Test
-    public void listAvailableBoardsByLocationAndOccupation_whenBoardsIsEmpty_shouldThrowException(){
+    public void listAvailableBoardsByLocationAndOccupation_whenBoardsIsEmpty_shouldThrowException() {
         BoardLocation location = VARANDA;
         Pageable pageable = Pageable.unpaged();
 
         when(boardRepository.findByLocationAndActiveTrue(location, pageable)).thenReturn(Page.empty());
 
-        EntityNotFoundException e = assertThrows(EntityNotFoundException.class, ()-> boardService.listAvailableBoardsByLocationAndOccupation(location, pageable));
-        assertEquals("Não encontrado mesas para a área informada!", e.getMessage());
+        Page<Board> output = boardService.listAvailableBoardsByLocationAndOccupation(location, pageable);
+        assertEquals(0, output.getSize());
         verify(boardRepository, times(1)).findByLocationAndActiveTrue(location, pageable);
     }
+
     @Test
-    public void listAvailableBoardsByLocationAndOccupation_whenBoardsIsNotEmpty_shouldReturnBoardsPage(){
+    public void listAvailableBoardsByLocationAndOccupation_whenBoardsIsNotEmpty_shouldReturnBoardsPage() {
         BoardLocation location = VARANDA;
         Pageable pageable = Pageable.unpaged();
         Board board1 = new Board(mock(BoardRegisterDTO.class));
@@ -191,7 +194,7 @@ class BoardServiceTest {
     }
 
     @Test
-    public void listAvailableBoardsByCapacityAndOccupation_whenAllBoardsIsValid_shouldReturnBoardsPage(){
+    public void listAvailableBoardsByCapacityAndOccupation_whenAllBoardsIsValid_shouldReturnBoardsPage() {
         Pageable pageable = Pageable.unpaged();
         BoardRegisterDTO dto1 = new BoardRegisterDTO(1, 3, VARANDA);
         BoardRegisterDTO dto2 = new BoardRegisterDTO(2, 3, TERRACO);
@@ -211,29 +214,31 @@ class BoardServiceTest {
         verify(boardRepository, times(1)).findByCapacityAndActiveTrue(3, pageable);
         verify(occupationRepository, times(3)).findFirstByBoardIdOrderByBeginOccupationDesc(any());
     }
+
     @Test
-    public void listAvailableBoardsByCapacityAndOccupation_whenBoardsIsEmpty_shouldThrowException(){
+    public void listAvailableBoardsByCapacityAndOccupation_whenBoardsIsEmpty_shouldThrowException() {
         Pageable pageable = Pageable.unpaged();
 
         when(boardRepository.findByCapacityAndActiveTrue(4, pageable)).thenReturn(Page.empty());
 
-        EntityNotFoundException e = assertThrows(EntityNotFoundException.class, ()-> boardService.listAvailableBoardsByCapacityAndOccupation(4, pageable));
-        assertEquals("Não encontrado mesas disponíveis com a capacidade informada!", e.getMessage());
+        Page<Board> output = boardService.listAvailableBoardsByCapacityAndOccupation(4, pageable);
+        assertEquals(0, output.getSize());
         verify(boardRepository, times(1)).findByCapacityAndActiveTrue(4, pageable);
     }
+
     @Test
-    public void listAvailableBoardsByLocationAndCapacityAndOccupation_whenBoardsIsEmpty_shouldThrowException(){
+    public void listAvailableBoardsByLocationAndCapacityAndOccupation_whenBoardsIsEmpty_shouldThrowException() {
         Pageable pageable = Pageable.unpaged();
 
         when(boardRepository.findByLocationAndCapacityAndActiveTrue(VARANDA, 4, pageable)).thenReturn(Page.empty());
 
-        EntityNotFoundException e = assertThrows(EntityNotFoundException.class, ()-> boardService.listAvailableBoardsByLocationAndCapacityAndOccupation(VARANDA,4 , pageable));
-        assertEquals("Não encontrado mesas disponíveis com o filtro informado!", e.getMessage());
+        Page<Board> output = boardService.listAvailableBoardsByLocationAndCapacityAndOccupation(VARANDA, 4, pageable);
+        assertEquals(0, output.getSize());
         verify(boardRepository, times(1)).findByLocationAndCapacityAndActiveTrue(VARANDA, 4, pageable);
     }
 
     @Test
-    public void listAvailableBoardsByLocationAndCapacityAndOccupation_whenAllBoardsIsValid_shouldReturnBoardsPage(){
+    public void listAvailableBoardsByLocationAndCapacityAndOccupation_whenAllBoardsIsValid_shouldReturnBoardsPage() {
         Pageable pageable = Pageable.unpaged();
         BoardRegisterDTO dto1 = new BoardRegisterDTO(1, 4, VARANDA);
         BoardRegisterDTO dto3 = new BoardRegisterDTO(2, 4, VARANDA);

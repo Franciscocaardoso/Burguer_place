@@ -26,7 +26,7 @@ public class BoardService {
     OccupationRepository occupationRepository;
 
     public Board addBoard(BoardRegisterDTO data) {
-        if (repository.existsByNumber(data.number())){
+        if (repository.existsByNumber(data.number())) {
             throw new DuplicateKeyException("Já existe uma mesa cadastrada com esse número");
         }
         return repository.save(new Board(data));
@@ -34,22 +34,24 @@ public class BoardService {
 
     public void updateBoard(Long id, BoardUpdateDTO data) {
         Optional<Board> optionalBoard = repository.findById(id);
-        if (optionalBoard == null){
+        if (optionalBoard.isEmpty()) {
             throw new EntityNotFoundException("Mesa não cadastrada");
         }
         Board board = optionalBoard.get();
         board.updateInformation(data);
     }
+
     public Board listBoardsById(Long id) {
         Board board = repository.getReferenceByIdAndActiveTrue(id);
-        if (board == null){
+        if (board == null) {
             throw new EntityNotFoundException("Mesa não existe");
         }
         return board;
     }
+
     public Board verifyOccupiedBoard(Long id) {
         Board board = listBoardsById(id);
-        if (repository.isBoardOccupied(id)){
+        if (repository.isBoardOccupied(id)) {
             throw new EntityNotFoundException("A mesa já está ocupada");
         }
         return board;
@@ -62,9 +64,6 @@ public class BoardService {
 
     public Page<Board> listAvailableBoardsByLocationAndOccupation(BoardLocation location, Pageable pageable) {
         Page<Board> boards = repository.findByLocationAndActiveTrue(location, pageable);
-        if (boards.isEmpty()){
-            throw new EntityNotFoundException("Não encontrado mesas para a área informada!");
-        }
         List<Board> filteredBoards = boards.getContent().stream()
                 .filter(board -> !isBoardOccupied(board.getId()))
                 .collect(Collectors.toList());
@@ -73,9 +72,6 @@ public class BoardService {
 
     public Page<Board> listAvailableBoardsByCapacityAndOccupation(Integer capacity, Pageable pageable) {
         Page<Board> boards = repository.findByCapacityAndActiveTrue(capacity, pageable);
-        if (boards.isEmpty()){
-            throw new EntityNotFoundException("Não encontrado mesas disponíveis com a capacidade informada!");
-        }
         List<Board> filteredBoards = boards.getContent().stream()
                 .filter(board -> !isBoardOccupied(board.getId()))
                 .collect(Collectors.toList());
@@ -86,9 +82,6 @@ public class BoardService {
             BoardLocation location, Integer capacity, Pageable pageable) {
 
         Page<Board> boards = repository.findByLocationAndCapacityAndActiveTrue(location, capacity, pageable);
-        if (boards.isEmpty()){
-            throw new EntityNotFoundException("Não encontrado mesas disponíveis com o filtro informado!");
-        }
         List<Board> filteredBoards = boards.getContent().stream()
                 .filter(board -> !isBoardOccupied(board.getId()))
                 .collect(Collectors.toList());
