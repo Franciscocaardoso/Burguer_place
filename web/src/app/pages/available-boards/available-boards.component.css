@@ -186,6 +186,13 @@ aside > button.clean-filters:hover {
   color: var(--gray-font);
 }
 
+.available-boards-container .container .pagination {
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 #empty-list-message {
   position: absolute;
   top: 60%;

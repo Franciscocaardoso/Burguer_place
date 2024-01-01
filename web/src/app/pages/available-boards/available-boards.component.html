@@ -84,5 +84,12 @@
         </div>
       </li>
     </ol>
+
+    <div class="pagination">
+      <app-pagination
+        (activePageEvent)="changeCurrentPage($event)"
+        [totalPages]="totalPages"
+      />
+    </div>
   </div>
 </div>
