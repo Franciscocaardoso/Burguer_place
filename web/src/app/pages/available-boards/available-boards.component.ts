@@ -113,7 +113,7 @@ export class AvailableBoardsComponent implements OnInit {
 
   onSelectBoard(board: Board) {
     console.log(board);
-    this.modalService.openModal().subscribe({
+    this.modalService.openCreateOccupationModal().subscribe({
       next: (peopleCount) => {
         this.createOccupation(board.id, peopleCount);
       },

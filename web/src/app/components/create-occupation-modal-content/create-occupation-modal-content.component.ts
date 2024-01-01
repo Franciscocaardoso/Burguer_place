@@ -6,10 +6,10 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-modal-content',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './modal-content.component.html',
-  styleUrl: './modal-content.component.css',
+  templateUrl: './create-occupation-modal-content.component.html',
+  styleUrl: './create-occupation-modal-content.component.css',
 })
-export class ModalContentComponent {
+export class CreateOccupationModalContentComponent {
   private _amountPeople: number;
   @Output()
   public amountPeopleEventEmitter: EventEmitter<number>;
