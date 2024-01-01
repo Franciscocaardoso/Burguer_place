@@ -43,12 +43,14 @@ public class BoardController {
             BoardUpdateDTO dto
     ) {
         service.updateBoard(id, dto);
-        return ResponseEntity.status(HttpStatus.OK).body(dto);
+        Board board = service.listBoardsById(id);
+        ListingBoardDTO updatedData = new ListingBoardDTO(board);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedData);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> listBoardById(@PathVariable Long id) {
-        Board board = service.verifyOccupiedBoard(id);
+        Board board = service.listBoardsById(id);
         return ResponseEntity.ok(new ListingBoardDTO(board));
     }
 
@@ -85,7 +87,7 @@ public class BoardController {
                 throw new EntityNotFoundException("Não encontrado mesa para a localização: " + location);
             }
         }
-        return null;
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")

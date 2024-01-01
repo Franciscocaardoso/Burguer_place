@@ -34,7 +34,7 @@ public class CustomerController {
 
     @GetMapping
     public ResponseEntity<Page<ListingCustomersDTO>> listAllCustomer(@PageableDefault(size = 5, sort = {"name"}) Pageable pageable) {
-        Page<ListingCustomersDTO> customers =  customerService.listCustomer(pageable);
+        Page<ListingCustomersDTO> customers = customerService.listCustomer(pageable);
         return ResponseEntity.ok().body(customers);
     }
 
@@ -54,7 +54,9 @@ public class CustomerController {
             CustomerUpdatedDTO dto
     ) {
         customerService.updateCustomer(id, dto);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(dto);
+        Customer customer = customerService.listCustomerById(id);
+        ListingCustomersDTO updatedData = new ListingCustomersDTO((customer));
+        return ResponseEntity.status(HttpStatus.OK).body(updatedData);
     }
 
     @DeleteMapping("/{id}")
