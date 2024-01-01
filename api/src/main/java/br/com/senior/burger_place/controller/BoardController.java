@@ -56,7 +56,6 @@ public class BoardController {
     public ResponseEntity<Page<ListingBoardDTO>> listBoards(
             @RequestParam(required = false) String location,
             @RequestParam(required = false) Integer capacity,
-            @PageableDefault(size = 10)
             Pageable pageable) {
 
         if ((location == null && capacity == null)) {

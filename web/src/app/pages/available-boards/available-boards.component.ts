@@ -20,6 +20,7 @@ import {
   CreateOccupationDTO,
   OccupationService,
 } from '../../services/occupation.service';
+import { PaginationComponent } from '../../components/pagination/pagination.component';
 
 @Component({
   selector: 'app-available-boards',
@@ -30,6 +31,7 @@ import {
     BreadcrumbComponent,
     SvgImageComponent,
     FormsModule,
+    PaginationComponent,
   ],
   templateUrl: './available-boards.component.html',
   styleUrl: './available-boards.component.css',
@@ -46,8 +48,12 @@ export class AvailableBoardsComponent implements OnInit {
   private _boards: Board[];
   private _activeLocationFilterId: BoardLocationType | null;
   private _activeCapacityFilter: number | null;
+  private _totalPages: number;
+  private _currentPage: number;
 
   constructor() {
+    this._currentPage = 0;
+    this._totalPages = 0;
     this._boards = [];
     this._activeCapacityFilter = null;
     this._activeLocationFilterId = null;
@@ -56,7 +62,7 @@ export class AvailableBoardsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.fetchProducts();
+    this.fetchBoards();
   }
 
   public get capacityFilterItems() {
@@ -87,14 +93,18 @@ export class AvailableBoardsComponent implements OnInit {
     this._activeLocationFilterId = id;
   }
 
+  public get totalPages() {
+    return this._totalPages;
+  }
+
   resetFilters() {
     this._activeCapacityFilter = null;
     this._activeLocationFilterId = null;
-    this.fetchProducts();
+    this.fetchBoards();
   }
 
   applyFilters() {
-    this.fetchProducts();
+    this.fetchBoards();
   }
 
   activateCapacityFilter(capacity: number) {
@@ -120,8 +130,15 @@ export class AvailableBoardsComponent implements OnInit {
     });
   }
 
-  private fetchProducts() {
-    const options: FetchBoardsFilters = {};
+  changeCurrentPage(page: number) {
+    this._currentPage = page;
+    this.fetchBoards();
+  }
+
+  private fetchBoards() {
+    const options: FetchBoardsFilters = {
+      page: this._currentPage,
+    };
 
     if (this._activeCapacityFilter) {
       options.capacity = this._activeCapacityFilter;
@@ -135,6 +152,7 @@ export class AvailableBoardsComponent implements OnInit {
       next: (data) => {
         console.log(data.boards);
         this._boards = data.boards;
+        this._totalPages = data.totalPages;
       },
       error: (error) => console.error(error),
       complete: () => console.log('Successfull'),
@@ -158,7 +176,7 @@ export class AvailableBoardsComponent implements OnInit {
     this.occupationService.createOccupation(createOccupationDTO).subscribe({
       next: (occupationId) => {
         console.log(occupationId);
-        this.fetchProducts();
+        this.fetchBoards();
         this.modalService.closeModal();
         this.router.navigate([`customers/${occupationId}`]);
       },
