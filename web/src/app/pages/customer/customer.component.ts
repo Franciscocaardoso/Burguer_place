@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { SvgImageComponent } from '../../components/svg-image/svg-image.component';
@@ -35,6 +35,9 @@ export class CustomerComponent implements OnInit {
   private _totalPages: number;
   private _currentPage: number;
 
+  @Input()
+  private occupationId: number | undefined;
+
   constructor() {
     this._currentPage = 0;
     this._totalPages = 0;
@@ -45,6 +48,7 @@ export class CustomerComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log(`occupationId: ${this.occupationId}`);
     this.fetchProducts();
   }
 

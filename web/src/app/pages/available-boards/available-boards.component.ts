@@ -1,7 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component';
-import { BoardListComponent } from '../../components/board-list/board-list.component';
+import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
 import {
   Board,
   BoardLocation,
@@ -11,9 +12,14 @@ import {
   FetchBoardsFilters,
   LocationFilter,
 } from '../../services/board.service';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+
+import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component';
 import { SvgImageComponent } from '../../components/svg-image/svg-image.component';
+import { ModalService } from '../../services/modal.service';
+import {
+  CreateOccupationDTO,
+  OccupationService,
+} from '../../services/occupation.service';
 
 @Component({
   selector: 'app-available-boards',
@@ -22,7 +28,6 @@ import { SvgImageComponent } from '../../components/svg-image/svg-image.componen
     CommonModule,
     RouterLink,
     BreadcrumbComponent,
-    BoardListComponent,
     SvgImageComponent,
     FormsModule,
   ],
@@ -30,7 +35,10 @@ import { SvgImageComponent } from '../../components/svg-image/svg-image.componen
   styleUrl: './available-boards.component.css',
 })
 export class AvailableBoardsComponent implements OnInit {
+  private occupationService: OccupationService = inject(OccupationService);
   private boardService: BoardService = inject(BoardService);
+  private modalService: ModalService = inject(ModalService);
+  private router: Router = inject(Router);
 
   private _capacityFilterItems: CapacityFilter[];
   private _locationFilterItems: LocationFilter[];
@@ -99,6 +107,19 @@ export class AvailableBoardsComponent implements OnInit {
     }
   }
 
+  getBoardLocationText(type: BoardLocationType) {
+    return BoardLocation[type];
+  }
+
+  onSelectBoard(board: Board) {
+    console.log(board);
+    this.modalService.openModal().subscribe({
+      next: (peopleCount) => {
+        this.createOccupation(board.id, peopleCount);
+      },
+    });
+  }
+
   private fetchProducts() {
     const options: FetchBoardsFilters = {};
 
@@ -117,6 +138,33 @@ export class AvailableBoardsComponent implements OnInit {
       },
       error: (error) => console.error(error),
       complete: () => console.log('Successfull'),
+    });
+  }
+
+  private createOccupation(boardId: number, peopleCount: number) {
+    if (peopleCount <= 0) {
+      return alert('A quantidade de pessoas deve ser maior ou igual a 1');
+    }
+
+    const beginOccupation = new Date();
+    beginOccupation.setSeconds(beginOccupation.getSeconds() - 1);
+
+    const createOccupationDTO: CreateOccupationDTO = {
+      beginOccupation: beginOccupation.toISOString(),
+      boardId,
+      peopleCount,
+    };
+
+    this.occupationService.createOccupation(createOccupationDTO).subscribe({
+      next: (occupationId) => {
+        console.log(occupationId);
+        this.fetchProducts();
+        this.modalService.closeModal();
+        this.router.navigate([`customers/${occupationId}`]);
+      },
+      error: (error) => {
+        console.log(error);
+      },
     });
   }
 }
