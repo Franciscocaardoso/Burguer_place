@@ -1,28 +1,28 @@
-package br.com.senior.burger_place.domain.occupation.dto;
+package br.com.senior.burger_place.domain.orderItem.dto;
 
 import br.com.senior.burger_place.domain.orderItem.OrderItem;
 import br.com.senior.burger_place.domain.orderItem.OrderItemStatus;
 
-public record OrderItemDTO(
+public record ListOrderItemsDTO(
         Long id,
-        Long productId,
         String productName,
         String ingredients,
-        Double itemValue,
         Integer amount,
+        String observation,
+        Integer boardNumber,
         OrderItemStatus status,
-        String observation
+        Long occupationId
 ) {
-    public OrderItemDTO(OrderItem orderItem) {
+    public ListOrderItemsDTO(OrderItem orderItem) {
         this(
                 orderItem.getId(),
-                orderItem.getProduct().getId(),
                 orderItem.getProduct().getName(),
                 orderItem.getProduct().getIngredients(),
-                orderItem.getItemValue(),
                 orderItem.getAmount(),
+                orderItem.getObservation(),
+                orderItem.getOccupation().getBoard().getNumber(),
                 orderItem.getStatus(),
-                orderItem.getObservation()
+                orderItem.getOccupation().getId()
         );
     }
 }
