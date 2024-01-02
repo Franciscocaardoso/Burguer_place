@@ -69,7 +69,7 @@
       <li *ngFor="let board of boards" (click)="onSelectBoard(board)">
         <div [class.available]="!board.occupied">
           <span>nº</span>
-          <b>{{ board.boardNumber | number : "2.0" }}</b>
+          <b>{{ board.number | number : "2.0" }}</b>
         </div>
 
         <div>

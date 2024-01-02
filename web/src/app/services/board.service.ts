@@ -65,7 +65,7 @@ export type BoardLocationType = keyof typeof BoardLocation;
 
 export interface Board {
   id: number;
-  boardNumber: number;
+  number: number;
   capacity: number;
   location: BoardLocationType;
   occupied: boolean;
