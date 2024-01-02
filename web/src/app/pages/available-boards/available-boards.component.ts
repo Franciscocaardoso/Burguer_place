@@ -167,8 +167,28 @@ export class AvailableBoardsComponent implements OnInit {
     const beginOccupation = new Date();
     beginOccupation.setSeconds(beginOccupation.getSeconds() - 1);
 
+    const formattedBeginOccupationDate = `${beginOccupation.getFullYear()}-${(
+      beginOccupation.getMonth() + 1
+    )
+      .toString()
+      .padStart(2, '0')}-${beginOccupation
+      .getDate()
+      .toString()
+      .padStart(2, '0')}T${beginOccupation
+      .getHours()
+      .toString()
+      .padStart(2, '0')}:${beginOccupation
+      .getMinutes()
+      .toString()
+      .padStart(2, '0')}:${beginOccupation
+      .getSeconds()
+      .toString()
+      .padStart(2, '0')}`;
+
+    console.log(formattedBeginOccupationDate);
+
     const createOccupationDTO: CreateOccupationDTO = {
-      beginOccupation: beginOccupation.toISOString(),
+      beginOccupation: formattedBeginOccupationDate,
       boardId,
       peopleCount,
     };

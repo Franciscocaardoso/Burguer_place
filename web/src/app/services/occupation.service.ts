@@ -4,6 +4,7 @@ import { Observable, from, map } from 'rxjs';
 import { api } from '../lib/api';
 
 import { BoardLocationType } from './board.service';
+import { OrderItem } from './order-item.service';
 
 @Injectable({
   providedIn: 'root',
@@ -87,27 +88,6 @@ export interface Occupation {
   orderItems: OrderItem[];
   customers: [];
 }
-
-export interface OrderItem {
-  id: number;
-  productId: number;
-  productName: string;
-  ingredients: string;
-  itemValue: number;
-  amount: number;
-  status: OrderItemStatusType;
-  observation: string | null;
-}
-
-export enum OrderItemStatus {
-  RECEBIDO = 'Recebido',
-  EM_ANDAMENTO = 'Em andamento',
-  PRONTO = 'Pronto',
-  ENTREGUE = 'Entregue',
-  CANCELADO = 'Cancelado',
-}
-
-export type OrderItemStatusType = keyof typeof OrderItemStatus;
 
 export interface CreateOrderItemsDTO {
   orderItems: Array<{

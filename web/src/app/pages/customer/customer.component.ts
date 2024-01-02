@@ -7,9 +7,6 @@ import {
   CreateOrderItemsDTO,
   Occupation,
   OccupationService,
-  OrderItem,
-  OrderItemStatus,
-  OrderItemStatusType,
   UpdateOrderItemDTO,
 } from '../../services/occupation.service';
 import {
@@ -22,6 +19,11 @@ import {
 import { SvgImageComponent } from '../../components/svg-image/svg-image.component';
 import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component';
 import { PaginationComponent } from '../../components/pagination/pagination.component';
+import {
+  OrderItem,
+  OrderItemStatus,
+  OrderItemStatusType,
+} from '../../services/order-item.service';
 
 @Component({
   selector: 'app-customer',

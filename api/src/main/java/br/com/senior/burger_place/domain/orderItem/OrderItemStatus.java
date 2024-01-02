@@ -1,4 +1,4 @@
-package br.com.senior.burger_place.domain.occupation;
+package br.com.senior.burger_place.domain.orderItem;
 
 public enum OrderItemStatus {
     RECEBIDO,
