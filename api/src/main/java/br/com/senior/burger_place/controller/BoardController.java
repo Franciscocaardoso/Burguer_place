@@ -77,7 +77,6 @@ public class BoardController {
                 throw new EntityNotFoundException("Não encontrado mesa para a localização: " + location);
             }
         }
-        if (capacity != null && location != null) {
             try {
                 BoardLocation boardLocation = BoardLocation.valueOf(location.toUpperCase());
                 Page<Board> boards = service.listAvailableBoardsByLocationAndCapacityAndOccupation(boardLocation, capacity, pageable);
@@ -85,8 +84,6 @@ public class BoardController {
             } catch (IllegalArgumentException e) {
                 throw new EntityNotFoundException("Não encontrado mesa para a localização: " + location);
             }
-        }
-        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")

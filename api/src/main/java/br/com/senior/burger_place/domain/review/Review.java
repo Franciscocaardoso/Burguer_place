@@ -41,11 +41,8 @@ public class Review {
     }
 
     public void updateInformation(ReviewUpdateDTO data) {
-        if (data.grade() < 0 || data.grade() > 5){
+        if (data.grade() != null && (data.grade() < 0 || data.grade() > 5)){
             throw new NoSuchElementException("A nota deve ser entre 0 e 5");
-        }
-        if (data.grade() != null){
-            this.grade = data.grade();
         }
         if (data.comment() != null){
             this.comment = data.comment();
