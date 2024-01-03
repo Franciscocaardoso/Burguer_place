@@ -42,7 +42,7 @@ public class ReviewService {
         }
         Review review = optionalReview.get();
         review.updateInformation(data);
-        ReviewRegisterDTO responseData = new ReviewRegisterDTO(review.getOccupation().getId(), review.getComment(), review.getId(), List.of());
+        ReviewRegisterDTO responseData = new ReviewRegisterDTO(review.getOccupation().getId(), review.getComment(),List.of());
         return responseData;
     }
 

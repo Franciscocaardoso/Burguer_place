@@ -1,44 +1,26 @@
 <div class="container">
   <h2>Realizar avaliação</h2>
 
-  <div class="general-avaliation">
-    <button>
-      <app-svg-image
-        [path]="'../../../assets/star-icon.svg'"
-        [width]="'30px'"
-        [height]="'30px'"
-        [color]="'red'"
-      />
-    </button>
-    <button>
-      <app-svg-image
-        [path]="'../../../assets/star-icon.svg'"
-        [width]="'30px'"
-        [height]="'30px'"
-      />
-    </button>
-    <button>
-      <app-svg-image
-        [path]="'../../../assets/star-icon.svg'"
-        [width]="'30px'"
-        [height]="'30px'"
-      />
-    </button>
-    <button>
-      <app-svg-image
-        [path]="'../../../assets/star-icon.svg'"
-        [width]="'30px'"
-        [height]="'30px'"
-      />
-    </button>
-    <button>
-      <app-svg-image
-        [path]="'../../../assets/star-icon.svg'"
-        [width]="'30px'"
-        [height]="'30px'"
-      />
-    </button>
+  <div class="avaliations">
+    <div *ngFor="let item of review.items; index as itemIndex" class="avaliation-category">
+      <p>{{item.category}}</p>
+      <div class="stars">
+        <button 
+          *ngFor="let isSelected of item.stars; index as starIndex;"
+          (click)="doRate(itemIndex, starIndex)"
+        >
+          <app-svg-image 
+            [path]="'../../../assets/star-icon.svg'" 
+            [width]="'24px'" 
+            [height]="'24px'"
+            [color]="isSelected ? 'var(--yellow)' : 'var(--gray-var-2)'" 
+          />
+        </button>
+      </div>
+    </div>
   </div>
+
+  <textarea placeholder="Conte-nos como foi a sua experiência...">{{review.comment}}</textarea>
 
   <button>Realizar avaliação</button>
 </div>

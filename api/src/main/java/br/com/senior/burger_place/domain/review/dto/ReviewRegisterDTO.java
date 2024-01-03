@@ -10,8 +10,6 @@ public record ReviewRegisterDTO(
         @NotNull
         Long occupationId,
         String comment,
-        @NotNull
-        Long reviewId,
         @NotEmpty
         List<TopicReviewRegisterDTO> items
 ) {
