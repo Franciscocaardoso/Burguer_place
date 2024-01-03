@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -50,14 +51,12 @@ class ReviewTest {
 
     @Test
     public void updateInformation_whenDataIsNotNull_shouldUpdateData(){
-        Review review = new Review();
+        Review review = new Review(1l, 3, "Comentário antigo", mock(Occupation.class));
         ReviewUpdateDTO dto = new ReviewUpdateDTO(4, "Comentário");
 
         review.updateInformation(dto);
 
         assertEquals(review.getGrade(), dto.grade());
         assertEquals(review.getComment(), dto.comment());
-
-
     }
 }

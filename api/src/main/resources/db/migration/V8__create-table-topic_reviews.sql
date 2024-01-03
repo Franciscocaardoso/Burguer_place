@@ -1,8 +1,8 @@
-CREATE TABLE reviews (
+CREATE TABLE topic_reviews (
     id              SERIAL        PRIMARY KEY,
     grade           INT           NOT NULL,
-    comment         VARCHAR(255),
+    category        VARCHAR(20)   NOT NULL,
     occupation_id   BIGINT        NOT NULL,
 
-    FOREIGN KEY (occupation_id) REFERENCES occupations(id)
+    FOREIGN KEY (occupation_id)   REFERENCES occupations(id)
 );

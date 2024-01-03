@@ -43,6 +43,10 @@ public class ReviewService {
         return repository.findAll(pageable);
     }
 
+//    public Page<Object[]> getAllReviewsAndTopicReviews(Pageable pageable) {
+//        return repository.getAllReviewsAndTopicReviews(pageable);
+//    }
+
     public Review listReviewById(Long id) {
         Optional<Review> optionalReview = repository.findById(id);
         if (optionalReview.isEmpty()){

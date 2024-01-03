@@ -6,7 +6,6 @@ public record ReviewRegisterDTO(
         @NotNull
         Integer grade,
         String comment
-
 ) {
 
 }

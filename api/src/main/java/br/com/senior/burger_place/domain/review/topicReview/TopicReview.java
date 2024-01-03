@@ -1,7 +1,7 @@
-package br.com.senior.burger_place.domain.review;
+package br.com.senior.burger_place.domain.review.topicReview;
 
 import br.com.senior.burger_place.domain.occupation.Occupation;
-import br.com.senior.burger_place.domain.review.dto.ReviewRegisterDTO;
+import br.com.senior.burger_place.domain.review.Review;
 import br.com.senior.burger_place.domain.review.dto.ReviewUpdateDTO;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -16,37 +16,37 @@ import java.util.NoSuchElementException;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "reviews")
-@Entity(name = "Review")
-@JsonIgnoreProperties({"hibernateLazyInitializer"})
-public class Review {
+@Table(name = "topic_reviews")
+@Entity(name = "TopicReview")
+public class TopicReview {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Integer grade;
-    private String comment;
+    @Enumerated(EnumType.STRING)
+    private Category category;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "occupation_id")
     @JsonIgnoreProperties({"beginOccupation", "endOccupation", "peopleCount", "paymentForm", "orderItems", "board", "customers", "active"})
     private Occupation occupation;
 
-    public Review(Long occupationId, ReviewRegisterDTO data) {
-        if (data.grade() < 1 || data.grade() > 5) {
+    public TopicReview(Long occupationId, TopicReviewRegisterDTO dto) {
+        if (dto.grade() < 1 || dto.grade() > 5) {
             throw new NoSuchElementException("A nota deve ser entre 1 e 5");
         }
-        this.grade = data.grade();
-        this.comment = data.comment();
+        if (dto.category() != null){
+            this.category = dto.category();
+        }
+        this.grade = dto.grade();
         this.occupation = new Occupation(occupationId);
     }
 
-    public void updateInformation(ReviewUpdateDTO data) {
-        if (data.grade() != null && (data.grade() < 1 || data.grade() > 5)) {
+    public void updateInformation(TopicReviewUpdateDto data) {
+        if (data.grade() != null && (data.grade() < 1 || data.grade() > 5)){
             throw new NoSuchElementException("A nota deve ser entre 1 e 5");
         } else {
             this.grade = data.grade();
-        }
-        if (data.comment() != null) {
-            this.comment = data.comment();
         }
     }
 }
