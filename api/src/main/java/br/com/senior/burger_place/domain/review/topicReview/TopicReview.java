@@ -1,15 +1,15 @@
 package br.com.senior.burger_place.domain.review.topicReview;
 
-import br.com.senior.burger_place.domain.occupation.Occupation;
-import br.com.senior.burger_place.domain.review.Review;
-import br.com.senior.burger_place.domain.review.dto.ReviewUpdateDTO;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import br.com.senior.burger_place.domain.review.topicReview.dto.ListingTopicReviewDTO;
+import br.com.senior.burger_place.domain.review.topicReview.dto.TopicReviewRegisterDTO;
+import br.com.senior.burger_place.domain.review.topicReview.dto.TopicReviewUpdateDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @AllArgsConstructor
@@ -26,27 +26,33 @@ public class TopicReview {
     private Integer grade;
     @Enumerated(EnumType.STRING)
     private Category category;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "occupation_id")
-    @JsonIgnoreProperties({"beginOccupation", "endOccupation", "peopleCount", "paymentForm", "orderItems", "board", "customers", "active"})
-    private Occupation occupation;
+    @Column(name = "review_id")
+    private Long reviewId;
 
-    public TopicReview(Long occupationId, TopicReviewRegisterDTO dto) {
+
+        public TopicReview(ListingTopicReviewDTO dto) {
         if (dto.grade() < 1 || dto.grade() > 5) {
             throw new NoSuchElementException("A nota deve ser entre 1 e 5");
         }
-        if (dto.category() != null){
+        if (dto.category() != null) {
             this.category = dto.category();
         }
         this.grade = dto.grade();
-        this.occupation = new Occupation(occupationId);
     }
 
-    public void updateInformation(TopicReviewUpdateDto data) {
-        if (data.grade() != null && (data.grade() < 1 || data.grade() > 5)){
+    public TopicReview(Integer grade, Category category, Long reviewId) {
+        this.grade = grade;
+        this.category = category;
+        this.reviewId = reviewId;
+    }
+
+    public void updateInformation(TopicReviewUpdateDTO data) {
+        if (data.grade() == null) {
             throw new NoSuchElementException("A nota deve ser entre 1 e 5");
-        } else {
-            this.grade = data.grade();
         }
+        if (data.grade() < 1 || data.grade() > 5) {
+            throw new NoSuchElementException("A nota deve ser entre 1 e 5");
+        }
+        this.grade = data.grade();
     }
 }

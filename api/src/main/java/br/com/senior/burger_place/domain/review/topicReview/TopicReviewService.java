@@ -1,5 +1,7 @@
 package br.com.senior.burger_place.domain.review.topicReview;
 
+import br.com.senior.burger_place.domain.review.topicReview.dto.TopicReviewRegisterDTO;
+import br.com.senior.burger_place.domain.review.topicReview.dto.TopicReviewUpdateDTO;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,12 +16,12 @@ public class TopicReviewService {
     @Autowired
     TopicReviewRepository repository;
 
-    public TopicReview addReview(Long occupationId, TopicReviewRegisterDTO dto) {
-        if (!repository.verifyOccupationExists(occupationId)){
-            throw new EntityNotFoundException("Não existe uma ocupação com esse ID");
-        }
-        return repository.save(new TopicReview(occupationId, dto));
-    }
+//    public TopicReview addReview(Long occupationId, TopicReviewRegisterDTO dto) {
+//        if (!repository.verifyOccupationExists(occupationId)){
+//            throw new EntityNotFoundException("Não existe uma ocupação com esse ID");
+//        }
+//        return repository.save(new TopicReview(occupationId, dto));
+//    }
 
     public void deleteTopicReview(Long id) {
         if (!repository.existsById(id)) {
@@ -28,7 +30,7 @@ public class TopicReviewService {
         repository.deleteById(id);
     }
 
-    public TopicReviewRegisterDTO updateTopicReview(Long id, TopicReviewUpdateDto dto) {
+    public TopicReviewRegisterDTO updateTopicReview(Long id, TopicReviewUpdateDTO dto) {
         Optional<TopicReview> optionalTopicReview = repository.findById(id);
         if (optionalTopicReview.isEmpty()) {
             throw new EntityNotFoundException("Avaliação não existe");

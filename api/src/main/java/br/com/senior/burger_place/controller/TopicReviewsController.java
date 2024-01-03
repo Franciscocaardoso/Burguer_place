@@ -1,6 +1,9 @@
 package br.com.senior.burger_place.controller;
 
 import br.com.senior.burger_place.domain.review.topicReview.*;
+import br.com.senior.burger_place.domain.review.topicReview.dto.ListingTopicReviewDTO;
+import br.com.senior.burger_place.domain.review.topicReview.dto.TopicReviewRegisterDTO;
+import br.com.senior.burger_place.domain.review.topicReview.dto.TopicReviewUpdateDTO;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("reviews/topics")
@@ -16,20 +18,6 @@ public class TopicReviewsController {
 
     @Autowired
     TopicReviewService service;
-
-    @PostMapping("/{occupationId}")
-    @Transactional
-    public ResponseEntity register(
-            @PathVariable
-            Long occupationId,
-            @RequestBody
-            TopicReviewRegisterDTO dto,
-            UriComponentsBuilder uriBuilder
-    ) {
-        TopicReview topicReview = service.addReview(occupationId, dto);
-        var uri = uriBuilder.path("reviews/topics/{id}").buildAndExpand(topicReview.getId()).toUri();
-        return ResponseEntity.created(uri).body(topicReview);
-    }
 
     @GetMapping()
     public ResponseEntity<Page<ListingTopicReviewDTO>> listAllTByCategory(
@@ -51,7 +39,7 @@ public class TopicReviewsController {
             @PathVariable
             Long id,
             @RequestBody
-            TopicReviewUpdateDto dto
+            TopicReviewUpdateDTO dto
     ) {
         TopicReviewRegisterDTO newTopicReview = service.updateTopicReview(id, dto);
         return ResponseEntity.ok().body(newTopicReview);
