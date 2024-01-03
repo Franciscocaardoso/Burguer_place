@@ -27,11 +27,11 @@ public class ReviewService {
         if (!repository.verifyOccupationExists(data.occupationId())) {
             throw new EntityNotFoundException("Não existe uma ocupação com esse ID");
         }
-
         Review review = repository.save(new Review(data.occupationId(), data.comment()));
         List<TopicReview> list = data.items().stream().map(item -> new TopicReview(item.grade(), item.category(), review.getId())).toList();
         topicReviewRepository.saveAll(list);
         review.setTopicReviews(list);
+
         return new ListingReviewDTO(review);
     }
 
@@ -42,7 +42,7 @@ public class ReviewService {
         }
         Review review = optionalReview.get();
         review.updateInformation(data);
-        ReviewRegisterDTO responseData = new ReviewRegisterDTO(review.getOccupation().getId(), review.getComment(), review.getId(), List.of());
+        ReviewRegisterDTO responseData = new ReviewRegisterDTO(review.getOccupation().getId(), review.getComment(), List.of());
         return responseData;
     }
 

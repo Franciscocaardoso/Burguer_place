@@ -29,7 +29,7 @@ public class TopicReviewsController {
             Page<TopicReview> topicReviews = service.listTopicReviewByCategory(categoryUpperCase, pageable);
             return ResponseEntity.ok().body(topicReviews.map(ListingTopicReviewDTO::new));
         } catch (IllegalArgumentException e) {
-            throw new EntityNotFoundException("Não avaliação para a categoria: " + category);
+            throw new EntityNotFoundException("Não há avaliação para a categoria: " + category);
         }
     }
 

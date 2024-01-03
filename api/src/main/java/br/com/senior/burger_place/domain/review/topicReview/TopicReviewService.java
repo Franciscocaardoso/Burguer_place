@@ -16,13 +16,6 @@ public class TopicReviewService {
     @Autowired
     TopicReviewRepository repository;
 
-//    public TopicReview addReview(Long occupationId, TopicReviewRegisterDTO dto) {
-//        if (!repository.verifyOccupationExists(occupationId)){
-//            throw new EntityNotFoundException("Não existe uma ocupação com esse ID");
-//        }
-//        return repository.save(new TopicReview(occupationId, dto));
-//    }
-
     public void deleteTopicReview(Long id) {
         if (!repository.existsById(id)) {
             throw new EntityNotFoundException("Avaliação não existe");
