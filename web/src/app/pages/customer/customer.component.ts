@@ -194,6 +194,10 @@ export class CustomerComponent implements OnInit {
     return this._activeMenu === categoryType;
   }
 
+  onReview() {
+    this.modalService.openCreateOrEditReviewModal();
+  }
+
   private fetchProducts() {
     this.productService
       .fetchProducts({
