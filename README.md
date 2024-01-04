@@ -28,11 +28,11 @@ O **Burger Place App** é um sistema web que foi construído  com o intuito de i
 <a name="App"></a>
 ## :desktop_computer: App
 <p align="center">
- <img src="https://git.senior.com.br/testes-learning/godev-nov-2023/-/raw/francisco-igor/burger_place_app/.github/root_page.png"/>
- <img src="https://git.senior.com.br/testes-learning/godev-nov-2023/-/raw/francisco-igor/burger_place_app/.github/available_boards_page.png"/>
- <img src="https://git.senior.com.br/testes-learning/godev-nov-2023/-/raw/francisco-igor/burger_place_app/.github/customer_page.png"/>
- <img src="https://git.senior.com.br/testes-learning/godev-nov-2023/-/raw/francisco-igor/burger_place_app/.github/customer_page_rating.png"/>
- <img src="https://git.senior.com.br/testes-learning/godev-nov-2023/-/raw/francisco-igor/burger_place_app/.github/kitchen_page.png"/>
+ <img src="https://github.com/Franciscocaardoso/delivery-api/blob/main/.github/root_page.png"/>
+ <img src="https://github.com/Franciscocaardoso/delivery-api/blob/main/.github/available_boards_page.png"/>
+ <img src="https://github.com/Franciscocaardoso/delivery-api/blob/main/.github/customer_page.png"/>
+ <img src="https://github.com/Franciscocaardoso/delivery-api/blob/main/.github/customer_page_rating.png"/>
+ <img src="https://github.com/Franciscocaardoso/delivery-api/blob/main/.github/kitchen_page.png"/>
 </p>
 
 <a name="Modelagem"></a>
@@ -40,12 +40,12 @@ O **Burger Place App** é um sistema web que foi construído  com o intuito de i
 
 ### Modelo conceitual
 <p align="center">
- <img src="https://git.senior.com.br/testes-learning/godev-nov-2023/-/raw/francisco-igor/burger_place_app/.github/modelo_conceitual.png"/>
+ <img src="https://github.com/Franciscocaardoso/delivery-api/blob/main/.github/modelo_conceitual.png"/>
 </p>
 
 ### Modelo lógico
 <p align="center">
-  <img src="https://git.senior.com.br/testes-learning/godev-nov-2023/-/raw/francisco-igor/burger_place_app/.github/modelo_logico.png"/>
+  <img src="https://github.com/Franciscocaardoso/delivery-api/blob/main/.github/modelo_logico.png"/>
 </p>
 
 ## :paperclip: Endpoints
