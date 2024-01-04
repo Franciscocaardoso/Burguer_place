@@ -24,7 +24,7 @@ public class ReviewController {
     @Autowired
     ReviewService service;
 
-    @PostMapping()
+    @PostMapping
     @Transactional
     public ResponseEntity<Object> register(
             @RequestBody @Valid

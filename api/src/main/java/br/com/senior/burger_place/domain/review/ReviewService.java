@@ -28,10 +28,23 @@ public class ReviewService {
             throw new EntityNotFoundException("Não existe uma ocupação com esse ID");
         }
 
+        if (data.items().isEmpty()) {
+            throw new IllegalArgumentException("Não pode ser nulo");
+        }
+        for (TopicReviewRegisterDTO item : data.items()) {
+            if (item.grade() == null) {
+                throw new IllegalArgumentException("Grade não pode ser nulo");
+            }
+            if (item.category() == null) {
+                throw new IllegalArgumentException("Category não pode ser nulo");
+            }
+        }
+
         Review review = repository.save(new Review(data.occupationId(), data.comment()));
         List<TopicReview> list = data.items().stream().map(item -> new TopicReview(item.grade(), item.category(), review.getId())).toList();
         topicReviewRepository.saveAll(list);
         review.setTopicReviews(list);
+
         return new ListingReviewDTO(review);
     }
 
@@ -55,10 +68,6 @@ public class ReviewService {
 
     public Page<Review> listAllReview(Pageable pageable) {
         return repository.findAll(pageable);
-    }
-
-    public Page<Object[]> getAllReviewsAndTopicReviews(Pageable pageable) {
-        return repository.getAllReviewsAndTopicReviews(pageable);
     }
 
     public ListingReviewDTO listReviewById(Long id) {

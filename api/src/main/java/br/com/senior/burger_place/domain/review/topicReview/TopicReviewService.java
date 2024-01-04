@@ -45,10 +45,12 @@ public class TopicReviewService {
         }
         TopicReview topicReview = optionalTopicReview.get();
         topicReview.updateInformation(dto);
-        TopicReviewRegisterDTO responseData = new TopicReviewRegisterDTO(topicReview.getGrade(), topicReview.getCategory());
+        TopicReviewRegisterDTO responseData = new TopicReviewRegisterDTO(
+                topicReview.getGrade(),
+                topicReview.getCategory());
+
         return responseData;
     }
-
     public Page<TopicReview> listTopicReviewByCategory(Category category, Pageable pageable) {
         Page<TopicReview> topicReviews = repository.findByCategory(category, pageable);
         return topicReviews;
