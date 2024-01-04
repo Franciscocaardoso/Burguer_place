@@ -205,6 +205,9 @@ export class CustomerComponent implements OnInit {
 
   onReview() {
     this.fetchReview();
+    console.log('Fetched reviews');
+    console.log(this._review);
+
     this.modalService.openCreateOrEditReviewModal(this._review).subscribe({
       next: (data) => {
         const mappedReview = this.reviewService.mapToReview(data);
@@ -231,9 +234,6 @@ export class CustomerComponent implements OnInit {
           (item) => typeof item.id !== 'undefined' && item.grade === 0
         );
 
-        console.log('Items to delete');
-        console.log(itemsToDelete);
-
         itemsToDelete.forEach((item, index) => {
           this.reviewService.deleteReviewTopic(item.id as number);
         });
@@ -251,6 +251,9 @@ export class CustomerComponent implements OnInit {
             grade: item.grade,
           });
         });
+
+        this.fetchReview();
+        this.modalService.closeModal();
       },
     });
   }
@@ -298,13 +301,15 @@ export class CustomerComponent implements OnInit {
 
     this.reviewService.fetchReview(this.occupationId).subscribe({
       next: (data) => {
+        console.log('Data');
+        console.log(data);
         this._review = {
           id: data.id,
           comment: data.comment,
           topicReviews: data.topicReviews,
         };
       },
-      // error: (error) => console.error(error),
+      error: (error) => console.error(error),
       complete: () => console.log('Successfull'),
     });
   }

@@ -11,9 +11,15 @@ export class ReviewService {
   fetchReview(occupationId: number): Observable<Review> {
     return from(api.get(`reviews/${occupationId}`)).pipe(
       map((response) => {
+        console.log('response');
+        console.log(response);
+
         const items: ReviewItems[] = this.populateReviewItems(
           response.data.topicReviews
         );
+
+        console.log('items fetched');
+        console.log(items);
 
         return {
           id: response.data.id,
@@ -68,13 +74,22 @@ export class ReviewService {
   }
 
   populateReviewItems(items: ReviewItems[]) {
-    const _items: ReviewItems[] = items;
+    const _items: ReviewItems[] = [];
 
     Object.keys(ReviewItemCategory).forEach((category) => {
-      const index = _items.findIndex((item) => item.category === category);
+      const index = items.findIndex((item) => item.category === category);
 
       if (index === -1) {
-        _items.push({ category: category as ReviewItemCategoryType, grade: 0 });
+        _items.push({
+          category: category as ReviewItemCategoryType,
+          grade: 0,
+        });
+      } else {
+        _items.push({
+          id: items[index].id,
+          category: items[index].category,
+          grade: items[index].grade,
+        });
       }
     });
 
