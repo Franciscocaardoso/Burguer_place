@@ -5,6 +5,7 @@ import br.com.senior.burger_place.domain.review.dto.ReviewRegisterDTO;
 import br.com.senior.burger_place.domain.review.dto.ReviewUpdateDTO;
 import br.com.senior.burger_place.domain.review.topicReview.TopicReview;
 import br.com.senior.burger_place.domain.review.topicReview.TopicReviewRepository;
+import br.com.senior.burger_place.domain.review.topicReview.dto.ListingTopicReviewDTO;
 import br.com.senior.burger_place.domain.review.topicReview.dto.TopicReviewRegisterDTO;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ public class ReviewService {
         if (!repository.verifyOccupationExists(data.occupationId())) {
             throw new EntityNotFoundException("Não existe uma ocupação com esse ID");
         }
+
         if (data.items().isEmpty()) {
             throw new IllegalArgumentException("Não pode ser nulo");
         }
@@ -37,15 +39,12 @@ public class ReviewService {
                 throw new IllegalArgumentException("Category não pode ser nulo");
             }
         }
-        Review review = repository.save(new Review(data.occupationId(), data.comment()));
-        List<TopicReview> list = data.items().stream().map(
-                item -> new TopicReview(
-                        item.grade(),
-                        item.category(),
-                        review.getId())).toList();
 
+        Review review = repository.save(new Review(data.occupationId(), data.comment()));
+        List<TopicReview> list = data.items().stream().map(item -> new TopicReview(item.grade(), item.category(), review.getId())).toList();
         topicReviewRepository.saveAll(list);
         review.setTopicReviews(list);
+
         return new ListingReviewDTO(review);
     }
 
@@ -56,10 +55,7 @@ public class ReviewService {
         }
         Review review = optionalReview.get();
         review.updateInformation(data);
-        ReviewRegisterDTO responseData = new ReviewRegisterDTO(
-                review.getOccupation().getId(),
-                review.getComment(),
-                List.of());
+        ReviewRegisterDTO responseData = new ReviewRegisterDTO(review.getOccupation().getId(), review.getComment(),List.of());
         return responseData;
     }
 
