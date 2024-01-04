@@ -47,3 +47,84 @@ O **Burger Place App** é um sistema web que foi construído  com o intuito de i
 <p align="center">
   <img src="https://git.senior.com.br/testes-learning/godev-nov-2023/-/raw/francisco-igor/burger_place_app/.github/modelo_logico.png"/>
 </p>
+
+## :paperclip: Endpoints
+<details>
+  <summary>
+    <strong>products</strong>
+  </summary>
+<ul>
+  <li><strong>GET</strong> /products</li>
+  <li><strong>GET</strong> /products/{id}</li>
+  <li><strong>POST</strong> /products</li>
+  <li><strong>PUT</strong> /products/{id}</li>
+  <li><strong>DELETE</strong> /products/{id}</li>
+</ul>
+</details>
+
+<details>
+  <summary>
+    <strong>occupations</strong>
+  </summary>
+<ul>
+  <li><strong>GET</strong> /occupations</li>
+  <li><strong>GET</strong> /occupations/{occupationId}</li>
+  <li><strong>POST</strong> /occupations</li>
+  <li><strong>POST</strong> /occupations/{occupationId}/items</li>
+  <li><strong>DELETE</strong> /occupations/{occupationId}/items</li>
+  <li><strong>DELETE</strong> /occupations/{occupationId}</li>
+  <li><strong>PUT</strong> /occupations/{occupationId}/items/{itemId}</li>
+  <li><strong>PATCH</strong> /occupations/{occupationId}/items/{itemId}/start-preparation</li>
+  <li><strong>PATCH</strong> /occupations/{occupationId}/items/{itemId}/finish-preparation</li>
+  <li><strong>PATCH</strong> /occupations/{occupationId}/items/{itemId}/deliver</li>
+  <li><strong>PATCH</strong> /occupations/{occupationId}/items/finish</li>
+</ul>
+</details>
+
+<details>
+  <summary>
+    <strong>customers</strong>
+  </summary>
+<ul>
+  <li><strong>GET</strong> /customers</li>
+  <li><strong>GET</strong> /customers/{id}</li>
+  <li><strong>POST</strong> /customers</li>
+  <li><strong>PUT</strong> /customers/{id}</li>
+  <li><strong>DELETE</strong> /customers/{id}</li>
+</ul>
+</details>
+
+<details>
+  <summary>
+    <strong>boards</strong>
+  </summary>
+<ul>
+  <li><strong>GET</strong> /boards</li>
+  <li><strong>GET</strong> /boards/{id}</li>
+  <li><strong>POST</strong> /boards</li>
+  <li><strong>PUT</strong> /boards/{id}</li>
+  <li><strong>DELETE</strong> /boards/{id}</li>
+</ul>
+</details>
+
+<details>
+  <summary>
+    <strong>review</strong>
+  </summary>
+<ul>
+  <li><strong>GET</strong> /reviews</li>
+  <li><strong>GET</strong> /reviews/{id}</li>
+  <li><strong>POST</strong> /reviews</li>
+  <li><strong>PUT</strong> /reviews/{id}</li>
+  <li><strong>DELETE</strong> /reviews/{id}</li>
+</ul>
+</details>
+
+<details>
+  <summary>
+    <strong>order-items</strong>
+  </summary>
+<ul>
+  <li><strong>GET</strong> /order-items</li>
+</ul>
+</details>
