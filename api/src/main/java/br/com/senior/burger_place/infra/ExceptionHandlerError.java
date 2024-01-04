@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,6 +32,12 @@ public class ExceptionHandlerError {
     public ResponseEntity<SimpleResponseError> handleBadRequests(Exception exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new SimpleResponseError(exception));
     }
+
+//    @ExceptionHandler(HttpMessageNotReadableException.class)
+//    public ResponseEntity handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+//        String errorMessage = "Não é possível avaliar a categoria informada";
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+//    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<List<ResponseErrorWithFieldErrors>> handleBadRequestsWithFieldErrors(MethodArgumentNotValidException exception) {
