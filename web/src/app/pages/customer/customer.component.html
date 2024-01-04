@@ -13,10 +13,10 @@
   </ul>
 
   <ul class="products">
-    <li *ngFor="let product of products">
+    <li *ngFor="let product of products" (click)="onSelectProduct(product)">
       <img
         src="{{ IMG_BASE_URL }}/{{ product.url }}"
-        alt="{{ product.category }}}"
+        alt="{{ product.category }}"
       />
       <div>
         <strong>{{ product.name }}</strong>
@@ -45,19 +45,28 @@
       />
       Histórico
     </button>
+
     <div class="expandable" [class.expanded]="expandedItems[0]">
-      <ul>
-        <li>
-          <p><b>Produto:</b> Duas carnes</p>
-          <p><b>Quantidade:</b> 2</p>
-          <p><b>Observação:</b> Sem maionese e picles e tomate e alface</p>
-          <p><b>Subtotal:</b> R$ 65,80</p>
-        </li>
-        <li>
-          <p><b>Produto:</b> Duas carnes</p>
-          <p><b>Quantidade:</b> 2</p>
-          <p><b>Observação:</b> Sem maionese e picles e tomate e alface</p>
-          <p><b>Subtotal:</b> R$ 65,80</p>
+      <p class="empty-item-message" *ngIf="getHistoryOrderItems().length === 0">
+        Nenhum item no histórico
+      </p>
+      <ul *ngIf="getHistoryOrderItems().length > 0">
+        <li *ngFor="let orderItem of getHistoryOrderItems()">
+          <p><b>Produto:</b> {{ orderItem.productName }}</p>
+          <p><b>Quantidade:</b> {{ orderItem.amount }}</p>
+          <p *ngIf="orderItem.observation">
+            <b>Observação:</b> {{ orderItem.observation }}
+          </p>
+          <p>
+            <b>Status:</b> {{ getOrderItemStatusDescription(orderItem.status) }}
+          </p>
+          <p>
+            <b>Subtotal:</b>
+            {{
+              orderItem.amount * orderItem.itemValue
+                | currency : "BRL" : "symbol-narrow"
+            }}
+          </p>
         </li>
       </ul>
     </div>
@@ -74,13 +83,32 @@
       Em andamento
     </button>
     <div class="expandable" [class.expanded]="expandedItems[1]">
-      <ul>
-        <li>
-          <p><b>Produto:</b> Duas carnes</p>
-          <p><b>Quantidade:</b> 2</p>
-          <p><b>Observação:</b> Sem maionese e picles e tomate e alface</p>
-          <p><b>Subtotal:</b> 65,80</p>
-          <p><b>Status:</b>Sendo preparado</p>
+      <p
+        class="empty-item-message"
+        *ngIf="getInProgressOrderItems().length === 0"
+      >
+        Nenhum pedido realizado
+      </p>
+      <ul *ngIf="getInProgressOrderItems().length > 0">
+        <li
+          *ngFor="let orderItem of getInProgressOrderItems()"
+          (click)="onSelectOrderItem(orderItem)"
+        >
+          <p><b>Produto:</b> {{ orderItem.productName }}</p>
+          <p><b>Quantidade:</b> {{ orderItem.amount }}</p>
+          <p *ngIf="orderItem.observation">
+            <b>Observação:</b> {{ orderItem.observation }}
+          </p>
+          <p>
+            <b>Subtotal:</b>
+            {{
+              orderItem.amount * orderItem.itemValue
+                | currency : "BRL" : "symbol-narrow"
+            }}
+          </p>
+          <p>
+            <b>Status:</b> {{ getOrderItemStatusDescription(orderItem.status) }}
+          </p>
         </li>
       </ul>
     </div>
@@ -88,6 +116,6 @@
 
   <p class="total-cost">
     <span>Valor total:</span>
-    <b>R$ 140,00</b>
+    <b>{{ getOccupationTotalCost() | currency : "BRL" : "symbol-narrow" }}</b>
   </p>
 </aside>

@@ -1,5 +1,6 @@
-package br.com.senior.burger_place.domain.occupation;
+package br.com.senior.burger_place.domain.orderItem;
 
+import br.com.senior.burger_place.domain.occupation.Occupation;
 import br.com.senior.burger_place.domain.occupation.dto.UpdateOrderItemDTO;
 import br.com.senior.burger_place.domain.product.Product;
 import jakarta.persistence.*;

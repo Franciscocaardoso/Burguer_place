@@ -65,6 +65,31 @@
       <b>Nenhuma mesa disponível!</b>
     </div>
 
-    <app-board-list [boards]="boards" />
+    <ol *ngIf="boards.length > 0">
+      <li *ngFor="let board of boards" (click)="onSelectBoard(board)">
+        <div [class.available]="!board.occupied">
+          <span>nº</span>
+          <b>{{ board.number | number : "2.0" }}</b>
+        </div>
+
+        <div>
+          <p>
+            <b>Capacidade: </b>
+            <span>{{ board.capacity }} pessoas</span>
+          </p>
+          <p>
+            <b>Localização: </b>
+            <span>{{ getBoardLocationText(board.location) }}</span>
+          </p>
+        </div>
+      </li>
+    </ol>
+
+    <div class="pagination">
+      <app-pagination
+        (activePageEvent)="changeCurrentPage($event)"
+        [totalPages]="totalPages"
+      />
+    </div>
   </div>
 </div>
