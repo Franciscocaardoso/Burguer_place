@@ -214,7 +214,7 @@ export class CustomerComponent implements OnInit {
         console.log("mappedReview");
         console.log(mappedReview);
 
-        if (mappedReview.topicReviews.length === 0) {
+        if (mappedReview.topicReviews.filter(item => item.grade > 0).length === 0) {
           alert(
             'É necessário realizar alguma avaliação para concluir a operação'
           );
@@ -223,6 +223,7 @@ export class CustomerComponent implements OnInit {
 
         if (typeof this._review?.id === 'undefined') {
           this.createReview(mappedReview);
+          this.modalService.closeModal();
           return;
         }
 
