@@ -1,5 +1,8 @@
 package br.com.senior.burger_place.domain.review.topicReview;
 
+import br.com.senior.burger_place.domain.review.ReviewRepository;
+import br.com.senior.burger_place.domain.review.topicReview.dto.CreateTopicReviewDTO;
+import br.com.senior.burger_place.domain.review.topicReview.dto.ListingTopicReviewDTO;
 import br.com.senior.burger_place.domain.review.topicReview.dto.TopicReviewRegisterDTO;
 import br.com.senior.burger_place.domain.review.topicReview.dto.TopicReviewUpdateDTO;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,13 +18,18 @@ public class TopicReviewService {
 
     @Autowired
     TopicReviewRepository repository;
+    @Autowired
+    private ReviewRepository reviewRepository;
 
-//    public TopicReview addReview(Long occupationId, TopicReviewRegisterDTO dto) {
-//        if (!repository.verifyOccupationExists(occupationId)){
-//            throw new EntityNotFoundException("Não existe uma ocupação com esse ID");
-//        }
-//        return repository.save(new TopicReview(occupationId, dto));
-//    }
+    public ListingTopicReviewDTO register(CreateTopicReviewDTO dto) {
+        if (!this.reviewRepository.existsById(dto.reviewId())) {
+            throw new IllegalArgumentException("Avaliação não existe");
+        }
+
+        TopicReview topicReview = repository.save(new TopicReview(dto.grade(), dto.category(), dto.reviewId()));
+
+        return new ListingTopicReviewDTO(topicReview);
+    }
 
     public void deleteTopicReview(Long id) {
         if (!repository.existsById(id)) {

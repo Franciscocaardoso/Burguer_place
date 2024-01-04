@@ -29,8 +29,7 @@ public class TopicReview {
     @Column(name = "review_id")
     private Long reviewId;
 
-
-        public TopicReview(ListingTopicReviewDTO dto) {
+    public TopicReview(ListingTopicReviewDTO dto) {
         if (dto.grade() < 1 || dto.grade() > 5) {
             throw new NoSuchElementException("A nota deve ser entre 1 e 5");
         }
