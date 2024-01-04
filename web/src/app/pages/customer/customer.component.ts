@@ -211,6 +211,8 @@ export class CustomerComponent implements OnInit {
     this.modalService.openCreateOrEditReviewModal(this._review).subscribe({
       next: (data) => {
         const mappedReview = this.reviewService.mapToReview(data);
+        console.log("mappedReview");
+        console.log(mappedReview);
 
         if (mappedReview.topicReviews.length === 0) {
           alert(
@@ -234,7 +236,7 @@ export class CustomerComponent implements OnInit {
           (item) => typeof item.id !== 'undefined' && item.grade === 0
         );
 
-        itemsToDelete.forEach((item, index) => {
+        itemsToDelete.forEach((item) => {
           this.reviewService.deleteReviewTopic(item.id as number);
         });
 
@@ -252,7 +254,11 @@ export class CustomerComponent implements OnInit {
           });
         });
 
-        this.fetchReview();
+        if (mappedReview.comment) {
+          this.reviewService.updateReview(mappedReview.id as number, mappedReview.comment);
+        }
+
+        this._review = mappedReview;
         this.modalService.closeModal();
       },
     });

@@ -39,6 +39,14 @@ export class CreateOrEditReviewModalComponent {
     this._comment = comment;
   }
 
+  public get type() {
+    return this._type;
+  }
+
+  public set type(type: ModalType) {
+    this._type = type;
+  }
+
   setReview(review: Review | undefined) {
     if (!review) {
       const _review: Review = {

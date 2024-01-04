@@ -46,6 +46,8 @@ export class ReviewService {
   deleteReviewTopic(topicId: number): Observable<any> {
     return from(api.delete(`reviews/topics/${topicId}`)).pipe(
       map((response) => {
+        console.log("Dentro da response do DELETE");
+        
         console.log(response);
       })
     );
@@ -60,6 +62,14 @@ export class ReviewService {
         console.log(response);
       })
     );
+  }
+
+  updateReview(reviewId: number, comment: string) {
+    return from(api.put(`reviews/${reviewId}`, { comment })).pipe(
+      map((response) => {
+        console.log(response)
+      })  
+    )
   }
 
   createReviewTopic(dto: CreateReviewTopicDTO): Observable<any> {

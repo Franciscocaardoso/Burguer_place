@@ -146,6 +146,9 @@ export class ModalService {
     });
 
     newComponent.instance.setReview(review);
+    if (review) {
+      newComponent.instance.type = "EDIT";
+    }
     this.createOrEditReviewNotifier =
       newComponent.instance.submitEvent.asObservable();
 
