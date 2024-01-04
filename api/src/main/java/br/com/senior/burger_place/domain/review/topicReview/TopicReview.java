@@ -1,7 +1,6 @@
 package br.com.senior.burger_place.domain.review.topicReview;
 
 import br.com.senior.burger_place.domain.review.topicReview.dto.ListingTopicReviewDTO;
-import br.com.senior.burger_place.domain.review.topicReview.dto.TopicReviewRegisterDTO;
 import br.com.senior.burger_place.domain.review.topicReview.dto.TopicReviewUpdateDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @AllArgsConstructor
@@ -30,7 +28,7 @@ public class TopicReview {
     private Long reviewId;
 
 
-        public TopicReview(ListingTopicReviewDTO dto) {
+    public TopicReview(ListingTopicReviewDTO dto) {
         if (dto.grade() < 1 || dto.grade() > 5) {
             throw new NoSuchElementException("A nota deve ser entre 1 e 5");
         }

@@ -1,6 +1,8 @@
 package br.com.senior.burger_place.controller;
 
-import br.com.senior.burger_place.domain.review.topicReview.*;
+import br.com.senior.burger_place.domain.review.topicReview.Category;
+import br.com.senior.burger_place.domain.review.topicReview.TopicReview;
+import br.com.senior.burger_place.domain.review.topicReview.TopicReviewService;
 import br.com.senior.burger_place.domain.review.topicReview.dto.ListingTopicReviewDTO;
 import br.com.senior.burger_place.domain.review.topicReview.dto.TopicReviewRegisterDTO;
 import br.com.senior.burger_place.domain.review.topicReview.dto.TopicReviewUpdateDTO;
